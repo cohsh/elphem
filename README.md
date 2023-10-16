@@ -1,5 +1,5 @@
 # Elphem
-Python Package for Calculations of **El**ectron-**Ph**onon Interactions with **Em**pty Lattice
+Python Library for Calculations of **El**ectron-**Ph**onon Interactions with **Em**pty Lattice
 
 ## Installation
 ```shell
