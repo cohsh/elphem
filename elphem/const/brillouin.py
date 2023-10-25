@@ -1,4 +1,4 @@
-class Gamma(dict):
+class Gamma:
     points = {
         "G" : [0, 0, 0]
         }
