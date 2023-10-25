@@ -84,8 +84,19 @@ class AtomicWeight:
     }
     
     @classmethod
-    def get_from_list(cls, atomic_name: list) -> list:
+    def get_from_list(cls, atomic_names: list) -> list:
+        if not isinstance(atomic_names, list):
+            raise TypeError("Input must be a list of atomic symbols.")
+            
         mass_list = []
-        for name in atomic_name:
-            mass_list.append(cls.table[name])
+        for name in atomic_names:
+            if not isinstance(name, str):
+                raise TypeError("Each item in the list must be a string representing an atomic symbol.")
+                
+            try:
+                atomic_mass = cls.table[name]
+            except KeyError:
+                raise ValueError(f"{name} is not a valid atomic symbol.")
+            else:
+                mass_list.append(atomic_mass)
         return mass_list
