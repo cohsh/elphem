@@ -12,9 +12,13 @@
 
 ## Installation
 ```shell
+pip install elphem
+```
+or
+```shell
 git clone git@github.com:cohsh/elphem.git
 cd elphem
-pip install .
+pip install -e .
 ```
 
 ## Features
