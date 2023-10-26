@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 DESCRIPTION = 'Elphem: Calculating electron-phonon interactions with the empty lattice.'
 NAME = 'elphem'
 AUTHOR = 'Kohei Ishii'
-AUTHOR_EMAIL = 'kishii@issp.u-tokyo.ac.jp'
+AUTHOR_EMAIL = ''
 URL = 'https://github.com/cohsh/elphem'
 LICENSE = 'MIT'
 DOWNLOAD_URL = URL
