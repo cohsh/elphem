@@ -12,28 +12,69 @@ class DebyeModel:
     mass: float
 
     def __post_init__(self):
-        self.number_density = self.number_of_atom / self.lattice.volume["primitive"]
+        if self.number_of_atom <= 0:
+            raise ValueError("Number of atoms must be positive.")
+        if self.debye_temperature < 0.0:
+            raise ValueError("Debye temperature must be not-negative.")
+        if self.mass <= 0.0:
+            raise ValueError("Mass must be positive.")
+
+        try:
+            self.number_density = self.number_of_atom / self.lattice.volume["primitive"]
+        except ZeroDivisionError:
+            ValueError("Lattice volume must be positive.")
+
         self.speed = self.speed_of_sound()
 
     def speed_of_sound(self) -> float:
+        """
+        Get the speed of sound.
+        
+        Return
+            Speed of sound in Hartee atomic unit.
+        """
         debye_frequency = self.debye_temperature * Energy.KELVIN["->"]
-        speed_of_sound = debye_frequency * (6.0 * np.pi ** 2 * self.number_density) ** (-1.0/3.0)
-        return speed_of_sound
+
+        return debye_frequency * (6.0 * np.pi ** 2 * self.number_density) ** (-1.0/3.0)
     
     def eigenenergy(self, q: np.ndarray) -> np.ndarray:
-        eigenenergy = self.speed_of_sound() * np.linalg.norm(q, axis=q.ndim-1)
-        return eigenenergy
+        """
+        Get phonon eigenenergies.
+        
+        Arg
+            q: A numpy array representing q-vector in the reciprocal space.
+            
+        Return
+            A numpy array representing eigenenergies.
+        """
+        return self.speed_of_sound() * np.linalg.norm(q, axis=q.ndim-1)
     
     def eigenvector(self, q: np.ndarray) -> np.ndarray:
-        q_norm = np.linalg.norm(q, axis=q.ndim-1)
+        """
+        Get phonon eigenvector
         
-        q_normalized = np.empty(q.shape)
-        for i in range(3):
-            q_normalized[..., i] = 1.0j * q[..., i] / q_norm
+        Arg
+            q: A numpy array representing q-vector in the reciprocal space.
+            
+        Return
+            A numpy array representing eigenvectors.
+        """
+        q_norm = np.linalg.norm(q, axis=q.ndim-1)
 
-        return q_normalized
+        q_normalized = np.divide(q, q_norm[:, np.newaxis], out=np.zeros_like(q), where=q_norm[:, np.newaxis] != 0)
+        return 1.0j * q_normalized
+
     
     def grid(self, n_q: np.ndarray) -> np.ndarray:
+        """
+        Get q-grid.
+        
+        Arg
+            n_q: A numpy array representing the dense of q-vector in the reciprocal space.
+        
+        Return
+            A numpy array (meshgrid) representing q-grid.
+        """
         basis = self.lattice.basis["reciprocal"]
         
         grid = np.meshgrid(*[np.linspace(-0.5, 0.5, i) for i in n_q])
@@ -46,6 +87,13 @@ class DebyeModel:
         return x @ basis
     
     def get_dispersion(self, *q_via: list[np.ndarray], n_via=20) -> tuple:
+        """
+        Get phonon dispersions.
+        
+        Args
+            q_via: Numpy arrays representing special points in the first Brillouin zone.
+            n_via: Number of points between special points. The default value is 20.
+        """
         x, q, x_special = self.lattice.reciprocal_cell.path(n_via, *q_via)
         omega = self.eigenenergy(q)
         
