@@ -9,7 +9,7 @@ from elphem.lattice.empty import LatticeConstant, EmptyLattice
 from elphem.electron.free import FreeElectron
 
 class TestUnit(TestCase):
-    def test_figure(self):
+    def test_band_structure(self):
         lattice_constant = LatticeConstant(5,5,5,60,60,60)
         lattice = EmptyLattice(lattice_constant)
         n_cut = np.array([2]*3)
@@ -21,11 +21,9 @@ class TestUnit(TestCase):
         for name in k_names:
             k_via.append(SpecialPoints.FCC[name])
         
-        file_name = "".join(random.choices(string.ascii_letters + string.digits, k=20)) + ".png"
+        x, eig, x_special = electron.get_band_structure(n_cut, *k_via)
         
-        electron.save_band(file_name, n_cut, k_names, *k_via)
-        is_file = os.path.isfile(file_name)
-        if is_file:
-            os.remove(file_name)
-        
-        self.assertTrue(is_file)
+        n_band = np.prod(n_cut) * 8
+        self.assertEqual(len(eig), n_band)
+        self.assertEqual(len(eig[0]), len(x))
+        self.assertEqual(len(k_names), len(x_special))

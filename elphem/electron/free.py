@@ -46,27 +46,23 @@ class FreeElectron:
 
         return tuple(grid_set)
     
-    def save_band(self, file_name, n_g: np.ndarray, k_names: list, *k_via: list[np.ndarray], 
-                    ylim=[], n_via=20) -> None:
+    def get_band_structure(self, n_g: np.ndarray, *k_via: list[np.ndarray], n_via=20) -> tuple:
+        """
+        Calculate the electronic band structures.
+
+        Args
+            n_g: A numpy array representing the grid in reciprocal space.
+            k_via: A list of numpy arrays representing the special points in reciprocal space.
+            n_via: Number of points between the special points. Default is 20.
+        
+        Return
+            A tuple containing:
+                x: x-coordinates for plotting
+                eig: Eigenenergy values
+                special_x: x-coordinates of special points
+        """
         x, k, special_x = self.lattice.reciprocal_cell.path(n_via, *k_via)
-    
-        g = self.lattice.grid(n_g)
-        g = g.reshape(int(g.size/3) ,3)
-
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-
-        for i in range(len(g)):
-            eig = self.eigenenergy(k + g[i])
-            ax.plot(x, eig * Energy.EV["<-"], color="tab:blue")
+        g = self.lattice.grid(n_g).reshape(-1, 3)
+        eig = np.array([self.eigenenergy(k + gi) for gi in g])
         
-        for x0 in special_x:
-            ax.axvline(x=x0, color="black", linewidth=0.3)
-        
-        ax.set_xticks(special_x)
-        ax.set_xticklabels(k_names)
-        ax.set_ylabel("Energy ($\mathrm{eV}$)")
-        if ylim != []:
-            ax.set_ylim(ylim)
-
-        fig.savefig(file_name)
+        return x, eig, special_x
