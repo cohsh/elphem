@@ -1,4 +1,5 @@
 # Elphem
+[![Upload Python Package](https://github.com/cohsh/elphem/actions/workflows/python-publish.yml/badge.svg)](https://github.com/cohsh/elphem/actions/workflows/python-publish.yml)
 [![Python package](https://github.com/cohsh/elphem/actions/workflows/python-package.yml/badge.svg)](https://github.com/cohsh/elphem/actions/workflows/python-package.yml)
 ![Python Version](https://img.shields.io/badge/Python-3.10%2C%203.11-blue?logo=python)
 ![GitHub](https://img.shields.io/github/license/cohsh/elphem)
