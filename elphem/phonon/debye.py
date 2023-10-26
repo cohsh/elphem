@@ -17,7 +17,7 @@ class DebyeModel:
         self.speed = self.speed_of_sound()
 
     def speed_of_sound(self) -> float:
-        debye_frequency = self.debye_temperature * Energy.kelvin["->"]
+        debye_frequency = self.debye_temperature * Energy.KELVIN["->"]
         speed_of_sound = debye_frequency * (6.0 * np.pi ** 2 * self.number_density) ** (-1.0/3.0)
         return speed_of_sound
     
@@ -53,7 +53,7 @@ class DebyeModel:
         ax = fig.add_subplot(1, 1, 1)
 
         omega = self.eigenenergy(q)
-        ax.plot(x, omega * Energy.eV["<-"] / Prefix.milli, color="tab:blue")
+        ax.plot(x, omega * Energy.EV["<-"] / Prefix.MILLI, color="tab:blue")
         
         for x0 in special_x:
             ax.axvline(x=x0, color="black", linewidth=0.3)

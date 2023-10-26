@@ -58,7 +58,7 @@ class FreeElectron:
 
         for i in range(len(g)):
             eig = self.eigenenergy(k + g[i])
-            ax.plot(x, eig * Energy.eV["<-"], color="tab:blue")
+            ax.plot(x, eig * Energy.EV["<-"], color="tab:blue")
         
         for x0 in special_x:
             ax.axvline(x=x0, color="black", linewidth=0.3)

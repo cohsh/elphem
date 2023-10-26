@@ -16,7 +16,7 @@ class TestUnit(TestCase):
         lattice_constant = LatticeConstant(2.58, 2.58, 2.58, 60, 60, 60)
         lattice = EmptyLattice(lattice_constant)
 
-        phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.Dalton["->"])
+        phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
         
         nq = np.array([8]*3)
         q = phonon.grid(nq)
@@ -29,7 +29,7 @@ class TestUnit(TestCase):
         lattice_constant = LatticeConstant(2.58, 2.58, 2.58, 60, 60, 60)
         lattice = EmptyLattice(lattice_constant)
 
-        phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.Dalton["->"])
+        phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
 
         q_names = ["L", "G", "X"]
         q_via = []

@@ -2,72 +2,89 @@ import math
 import scipy.constants as constants
 
 class Prefix:
-    exa = 1.0e+18
-    peta = 1.0e+15
-    tera = 1.0e+12
-    giga = 1.0e+9
-    mega = 1.0e+6
-    kilo = 1.0e+3
-    hecto = 1.0e+2
-    deca = 1.0e+1
-    deci = 1.0e-1
-    centi = 1.0e-2
-    milli = 1.0e-3
-    micro = 1.0e-6
-    nano = 1.0e-9
-    pico = 1.0e-12
-    femto = 1.0e-15
-    atto = 1.0e-18
+    """ Metric prefixes. """
+    EXA = 1.0e+18
+    PETA = 1.0e+15
+    TERA = 1.0e+12
+    GIGA = 1.0e+9
+    MEGA = 1.0e+6
+    KILO = 1.0e+3
+    HECTO = 1.0e+2
+    DECA = 1.0e+1
+    DECI = 1.0e-1
+    CENTI = 1.0e-2
+    MILLI = 1.0e-3
+    MICRO = 1.0e-6
+    NANO = 1.0e-9
+    PICO = 1.0e-12
+    FEMTO = 1.0e-15
+    ATTO = 1.0e-18
 
 class Byte:
-    kilo = 2 ** 10
-    mega = 2 ** 20
-    giga = 2 ** 30
-    tera = 2 ** 40
-    peta = 2 ** 50
+    """ Digital information units based on powers of 2. """
+    KILO = 2 ** 10
+    MEGA = 2 ** 20
+    GIGA = 2 ** 30
+    TERA = 2 ** 40
+    PETA = 2 ** 50
+    EXA = 2 ** 60
 
     @staticmethod
     def get_str(size: int) -> str:
+        """ Returns a string representation of bytes in suitable unit. """
+        if size < 0:
+            raise ValueError("Size should be a non-negative integer.")
+        
         units = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB")
         i = math.floor(math.log(size, 1024)) if size > 0 else 0
+        
+        if i >= len(units):
+            raise ValueError("Size too large to represent in known units.")
+        
         size = round(size / 1024 ** i, 2)
-
         return f"{size} {units[i]}"
 
 class AtomicUnits:
+    """ Utility class for atomic unit conversions. """
     @staticmethod
     def convert(unit: float, value: float) -> dict:
-        converted_value = {
+        """ Converts values based on given unit. """
+        return {
             "->": value / unit,
             "<-": unit / value
         }
-        return converted_value
 
-class Length(AtomicUnits):
-    unit = 5.29177210903e-11
-    SI: dict = AtomicUnits.convert(unit, 1.0)
-    angstrom: dict = AtomicUnits.convert(unit, 1.0e-10)
+class Length:
+    """ Atomic units of length. """
+    UNIT = 5.29177210903e-11
+    SI = AtomicUnits.convert(UNIT, 1.0)
+    ANGSTROM = AtomicUnits.convert(UNIT, 1.0e-10)
 
-class Energy(AtomicUnits):
-    unit: float = 4.3597447222071e-18
-    SI: dict = AtomicUnits.convert(unit, 1.0)
-    eV: dict = AtomicUnits.convert(unit, constants.eV)
-    kelvin: dict = AtomicUnits.convert(unit, constants.k)
+class Energy:
+    """ Atomic units of energy. """
+    UNIT = 4.3597447222071e-18
+    SI = AtomicUnits.convert(UNIT, 1.0)
+    EV = AtomicUnits.convert(UNIT, constants.eV)
+    KELVIN = AtomicUnits.convert(UNIT, constants.k)
 
-class Mass(AtomicUnits):
-    unit: float = 9.1093837015e-31
-    SI: dict = AtomicUnits.convert(unit, 1.0)
-    Dalton: dict = AtomicUnits.convert(unit, 1.66053906660e-27)
-    proton: dict = AtomicUnits.convert(unit, 1.672621898e-27)
+class Mass:
+    """ Atomic units of mass. """
+    UNIT = 9.1093837015e-31
+    SI = AtomicUnits.convert(UNIT, 1.0)
+    DALTON = AtomicUnits.convert(UNIT, 1.66053906660e-27)
+    PROTON = AtomicUnits.convert(UNIT, 1.672621898e-27)
 
-class Time(AtomicUnits):
-    unit = 2.4188843265857e-17
-    SI: dict = AtomicUnits.convert(unit, 1.0)
+class Time:
+    """ Atomic units of time. """
+    UNIT = 2.4188843265857e-17
+    SI = AtomicUnits.convert(UNIT, 1.0)
 
-class Velocity(AtomicUnits):
-    unit = 2.18769126364e+6
-    SI: dict = AtomicUnits.convert(unit, 1.0)
+class Velocity:
+    """ Atomic units of velocity. """
+    UNIT = 2.18769126364e+6
+    SI = AtomicUnits.convert(UNIT, 1.0)
 
-class ElectricPotential(AtomicUnits):
-    unit = 27.211386245988
-    SI: dict = AtomicUnits.convert(unit, 1.0)
+class ElectricPotential:
+    """ Atomic units of electric potential. """
+    UNIT = 27.211386245988
+    SI = AtomicUnits.convert(UNIT, 1.0)

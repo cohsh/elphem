@@ -13,7 +13,7 @@ warnings.simplefilter("ignore", RuntimeWarning)
 def boltzmann_distribution(temperature: float, energy: float | np.ndarray) -> float | np.ndarray:
     # Calculates the occupation number of particles that follow the Blotzmann distribution.
 
-    kbt = temperature * Energy.kelvin["->"]
+    kbt = temperature * Energy.KELVIN["->"]
     n = 0.0
 
     if kbt > float_min:

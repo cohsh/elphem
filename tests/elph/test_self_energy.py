@@ -18,7 +18,7 @@ class TestUnit(TestCase):
 
         electron = FreeElectron(lattice, 4)
         
-        mass = 12 * Mass.Dalton["->"]
+        mass = 12 * Mass.DALTON["->"]
         
         debye_temperature = 2300.0
 
@@ -44,7 +44,7 @@ class TestUnit(TestCase):
 
         electron = FreeElectron(lattice, 4)
         
-        mass = 12 * Mass.Dalton["->"]
+        mass = 12 * Mass.DALTON["->"]
         
         debye_temperature = 2300.0
 
@@ -70,7 +70,7 @@ class TestUnit(TestCase):
         ax2 = fig.add_subplot(2, 1, 2)
 
         for ax in [ax1, ax2]:
-            ax.scatter(epsilon_nk * Energy.eV["<-"], selfen.imag / (Time.SI["<-"] / Prefix.pico), label="$\Sigma^\mathrm{2nd}$")
+            ax.scatter(epsilon_nk * Energy.EV["<-"], selfen.imag / (Time.SI["<-"] / Prefix.PICO), label="$\Sigma^\mathrm{2nd}$")
 
             ax.set_ylabel("Scattering rate ($\mathrm{ps}^{-1}$)")
 
@@ -78,7 +78,7 @@ class TestUnit(TestCase):
 
         ax2.set_xlabel("Electron energy ($\mathrm{eV}$)")
         ax2.set_yscale("log")
-        ax2.set_ylim([1.0e-5 / (Time.SI["<-"] / Prefix.pico), selfen.imag.max() / (Time.SI["<-"] / Prefix.pico) * 10])
+        ax2.set_ylim([1.0e-5 / (Time.SI["<-"] / Prefix.PICO), selfen.imag.max() / (Time.SI["<-"] / Prefix.PICO) * 10])
         
         file_name = "".join(random.choices(string.ascii_letters + string.digits, k=20)) + ".png"
         fig.savefig(file_name)

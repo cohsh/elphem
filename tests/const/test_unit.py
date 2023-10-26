@@ -8,9 +8,9 @@ class TestUnit(TestCase):
         self.assertEqual(size, "1.0 GB")
     
     def test_length(self):
-        self.assertEqual(Length.SI["<-"], Length.unit)
+        self.assertEqual(Length.SI["<-"], Length.UNIT)
     
     def test_energy(self):
-        self.assertEqual(Energy.SI["<-"], Energy.unit)
-        self.assertEqual(Energy.eV["->"] * Energy.SI["<-"], 1.602176634e-19)
-        self.assertEqual(Energy.kelvin["->"] * Energy.kelvin["<-"], 1.0)
+        self.assertEqual(Energy.SI["<-"], Energy.UNIT)
+        self.assertEqual(Energy.EV["->"] * Energy.SI["<-"], 1.602176634e-19)
+        self.assertEqual(Energy.KELVIN["->"] * Energy.KELVIN["<-"], 1.0)
