@@ -1,15 +1,20 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
-    
+
 class LatticeRotation:    
     @classmethod
     def optimize(cls, basis: np.ndarray, axis: np.ndarray) -> np.ndarray:
+        """Optimize the rotation of the given basis to align with the specified axis."""
         basis_rotated = cls.match(basis, axis)
         basis_rotated = cls.search_posture(basis_rotated, axis)
         return basis_rotated
 
     @classmethod
     def match(cls, basis: np.ndarray, axis: np.ndarray) -> np.ndarray:
+        """Match the given basis direction to the specified axis using quaternion rotation."""
+        if np.linalg.norm(axis) == 0.0:
+            raise ValueError("Axis vector should not be zero.")
+        
         direction = cls.normalize(basis[0] + basis[1] + basis[2])
         n = cls.normalize(axis)
 
@@ -32,6 +37,10 @@ class LatticeRotation:
 
     @classmethod
     def around_axis(cls, axis: np.ndarray, v: np.ndarray, theta: float) -> np.ndarray:
+        """Rotate vector v around the given axis by angle theta."""
+        if np.linalg.norm(axis) == 0.0:
+            raise ValueError("Axis vector should not be zero.")
+        
         axis_dot_v = np.dot(axis, v)
         cos_theta = np.cos(theta)
         v_rotated = cos_theta * v
@@ -42,6 +51,10 @@ class LatticeRotation:
 
     @classmethod
     def search_posture(cls, basis: np.ndarray, axis: np.ndarray, angle_max: float = 360.0) -> np.ndarray:
+        """Search for the best posture of the basis aligned with the given axis."""
+        if np.linalg.norm(axis) == 0.0:
+            raise ValueError("Axis vector should not be zero.")
+        
         angle = np.linspace(0.0, np.radians(angle_max), 1000)
         s_min = 1.0e+100
         basis_searched = basis
@@ -68,6 +81,7 @@ class LatticeRotation:
 
     @staticmethod
     def normalize(v: np.ndarray) -> np.ndarray:
+        """Normalize the given vector."""
         v_norm = np.linalg.norm(v)
 
         if v_norm == 0.0:
