@@ -16,11 +16,12 @@ class LatticeRotation:
         cross = cls.normalize(np.cross(direction, n))
         dot = np.dot(direction, n)
         theta = np.arccos(dot) / 2.0
+        sin_theta = np.sin(theta)
 
         quaternion = np.array([
-            cross[0] * np.sin(theta),
-            cross[1] * np.sin(theta),
-            cross[2] * np.sin(theta),
+            cross[0] * sin_theta,
+            cross[1] * sin_theta,
+            cross[2] * sin_theta,
             np.cos(theta)
         ])
 
@@ -31,9 +32,11 @@ class LatticeRotation:
 
     @classmethod
     def around_axis(cls, axis: np.ndarray, v: np.ndarray, theta: float) -> np.ndarray:
-        v_rotated = np.cos(theta) * v
+        axis_dot_v = np.dot(axis, v)
+        cos_theta = np.cos(theta)
+        v_rotated = cos_theta * v
         v_rotated += np.sin(theta) * np.cross(axis, v)
-        v_rotated += (1.0 - np.cos(theta)) * np.dot(axis, v) * axis
+        v_rotated += (1.0 - cos_theta) * axis_dot_v * axis
 
         return v_rotated
 
