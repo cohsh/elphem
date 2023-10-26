@@ -1,13 +1,12 @@
 # Elphem
 [![Upload Python Package](https://github.com/cohsh/elphem/actions/workflows/python-publish.yml/badge.svg)](https://github.com/cohsh/elphem/actions/workflows/python-publish.yml)
 [![Python package](https://github.com/cohsh/elphem/actions/workflows/python-package.yml/badge.svg)](https://github.com/cohsh/elphem/actions/workflows/python-package.yml)
-![Python Version](https://img.shields.io/badge/Python-3.10%2C%203.11-blue?logo=python)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/elphem)
+![PyPI - Version](https://img.shields.io/pypi/v/elphem)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/elphem)
 ![GitHub](https://img.shields.io/github/license/cohsh/elphem)
 
 Python Library for Calculations of **El**ectron-**Ph**onon Interactions with **Em**pty Lattice
-
-## Support
-- Python 3.10 and 3.11
 
 ## Installation
 ```shell
