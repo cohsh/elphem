@@ -1,11 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import random
-import string
-import os
 from unittest import TestCase
 
-from elphem.const.unit import Mass, Energy, Time, Prefix
+from elphem.const.unit import Mass
 from elphem.lattice.empty import EmptyLattice, LatticeConstant
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyeModel

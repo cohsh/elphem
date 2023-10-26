@@ -1,8 +1,5 @@
 from unittest import TestCase
 import numpy as np
-import os
-import random
-import string
 
 from elphem.const.brillouin import SpecialPoints
 from elphem.lattice.empty import LatticeConstant, EmptyLattice
