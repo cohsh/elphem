@@ -1,8 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from dataclasses import dataclass
 
-from elphem.const.unit import Energy, Prefix
+from elphem.const.unit import Energy
 from elphem.lattice.empty import EmptyLattice
 
 @dataclass
