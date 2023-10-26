@@ -46,20 +46,8 @@ class DebyeModel:
 
         return x @ basis
     
-    def save_dispersion(self, file_name: str, q_names: list, *q_via: list[np.ndarray], n_via=20) -> None:
-        x, q, special_x = self.lattice.reciprocal_cell.path(n_via, *q_via)
-
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-
+    def get_dispersion(self, *q_via: list[np.ndarray], n_via=20) -> tuple:
+        x, q, x_special = self.lattice.reciprocal_cell.path(n_via, *q_via)
         omega = self.eigenenergy(q)
-        ax.plot(x, omega * Energy.EV["<-"] / Prefix.MILLI, color="tab:blue")
         
-        for x0 in special_x:
-            ax.axvline(x=x0, color="black", linewidth=0.3)
-        
-        ax.set_xticks(special_x)
-        ax.set_xticklabels(q_names)
-        ax.set_ylabel("Energy ($\mathrm{meV}$)")
-
-        fig.savefig(file_name)
+        return x, omega, x_special

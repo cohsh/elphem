@@ -24,7 +24,7 @@ class TestUnit(TestCase):
         
         self.assertEqual(omega.shape, (nq[0], nq[1], nq[2]))
     
-    def test_save_figure(self):
+    def test_get_dispersion(self):
         # Example: FCC-Fe
         lattice_constant = LatticeConstant(2.58, 2.58, 2.58, 60, 60, 60)
         lattice = EmptyLattice(lattice_constant)
@@ -33,11 +33,11 @@ class TestUnit(TestCase):
 
         q_names = ["L", "G", "X"]
         q_via = []
+        
         for name in q_names:
             q_via.append(SpecialPoints.FCC[name])
         
-        file_name = "".join(random.choices(string.ascii_letters + string.digits, k=20)) + ".png"
-        phonon.save_dispersion(file_name, q_names, *q_via)
-        is_file = os.path.isfile(file_name)
-        if is_file:
-            os.remove(file_name)
+        x, omega, x_special = phonon.get_dispersion(*q_via)
+
+        self.assertEqual(len(omega), len(x))
+        self.assertEqual(len(q_names), len(x_special))
