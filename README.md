@@ -6,7 +6,9 @@
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/elphem)
 ![GitHub](https://img.shields.io/github/license/cohsh/elphem)
 
-Python Library for Calculations of **El**ectron-**Ph**onon Interactions with **Em**pty Lattice
+**El**ectron-**Ph**onon Interactions with **Em**pty Lattice
+
+- PyPI: https://pypi.org/project/elphem
 
 ## Installation
 ```shell
