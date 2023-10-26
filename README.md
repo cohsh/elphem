@@ -1,4 +1,7 @@
 # Elphem
+![GitHub top language](https://img.shields.io/github/languages/top/cohsh/elphem)
+![GitHub](https://img.shields.io/github/license/cohsh/elphem)
+
 Python Library for Calculations of **El**ectron-**Ph**onon Interactions with **Em**pty Lattice
 
 ## Installation
