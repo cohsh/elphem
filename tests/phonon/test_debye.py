@@ -5,7 +5,7 @@ import random
 import string
 
 from elphem.const.unit import Mass
-from elphem.const.brillouin import FCC
+from elphem.const.brillouin import SpecialPoints
 from elphem.const.atomic_weight import AtomicWeight
 from elphem.lattice.empty import EmptyLattice, LatticeConstant
 from elphem.phonon.debye import DebyeModel
@@ -34,7 +34,7 @@ class TestUnit(TestCase):
         q_names = ["L", "G", "X"]
         q_via = []
         for name in q_names:
-            q_via.append(FCC.points[name])
+            q_via.append(SpecialPoints.FCC[name])
         
         file_name = "".join(random.choices(string.ascii_letters + string.digits, k=20)) + ".png"
         phonon.save_dispersion(file_name, q_names, *q_via)
