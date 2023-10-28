@@ -71,6 +71,10 @@ instance/
 # Sphinx documentation
 docs/_build/
 docs/build/
+docs/.nojekyll
+docs/.buildinfo
+docs/,doctrees
+docs/_sources
 
 # PyBuilder
 .pybuilder/
