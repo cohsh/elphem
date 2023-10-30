@@ -16,7 +16,7 @@ class SelfEnergy:
 
 @dataclass
 class SelfEnergy2nd(SelfEnergy):
-    def validate_inputs(self, temperature, g, k, n_g, n_q, eta):
+    def validate_inputs(self, temperature, eta):
         if not isinstance(temperature, (int, float)) or temperature < 0:
             raise ValueError("Temperature must be a not-negative number.")
         if not isinstance(eta, (int, float)):
@@ -38,7 +38,7 @@ class SelfEnergy2nd(SelfEnergy):
         Return
             A numpy array representing Fan self-energy.
         """
-        self.validate_inputs(temperature, g, k, n_g, n_q, eta)
+        self.validate_inputs(temperature, eta)
         g_reshaped = g.reshape(-1, 3)
         k_reshaped = k.reshape(-1, 3)
         
