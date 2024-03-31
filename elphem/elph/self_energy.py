@@ -89,7 +89,7 @@ class SelfEnergy2nd(SelfEnergy):
         
         return (selfen_real + 1.0j * selfen_imag) * coeff
     
-    def coupling(self, g1: np.ndarray, g2: np.ndarray, k: np.ndarray, q: np.ndarray) -> np.ndarray:
+    def coupling(self, g1: np.ndarray, g2: np.ndarray, q: np.ndarray) -> np.ndarray:
         """
         Calculate lowest-order electron-phonon couplings.
         
