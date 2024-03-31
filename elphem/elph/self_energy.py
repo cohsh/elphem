@@ -71,7 +71,7 @@ class SelfEnergy2nd(SelfEnergy):
         bose = bose_distribution(temperature, omega)
         fermi = fermi_distribution(temperature, electron_energy_mkq)
 
-        g = self.coupling(g1, g2, k, q)
+        g = self.coupling(g1, g2, q)
         
         delta_energy = electron_energy_nk - electron_energy_mkq
         # Real Part
