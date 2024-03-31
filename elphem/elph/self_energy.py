@@ -4,7 +4,8 @@ from dataclasses import dataclass
 from elphem.lattice.empty import EmptyLattice
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyeModel
-from elphem.elph.distribution import fermi_distribution, bose_distribution, gaussian_distribution, safe_divide
+from elphem.elph.coupling import Coupling
+from elphem.elph.distribution import fermi_distribution, bose_distribution, gaussian_distribution
 
 @dataclass
 class SelfEnergy:
@@ -12,7 +13,6 @@ class SelfEnergy:
     electron: FreeElectron
     phonon: DebyeModel
     sigma: float = 0.01
-    effective_potential: float = 1 / 16
 
 @dataclass
 class SelfEnergy2nd(SelfEnergy):
@@ -71,7 +71,7 @@ class SelfEnergy2nd(SelfEnergy):
         bose = bose_distribution(temperature, omega)
         fermi = fermi_distribution(temperature, electron_energy_mkq)
 
-        g = self.coupling(g1, g2, q)
+        g = Coupling.first_order(g1, g2, q, self.phonon)
         
         delta_energy = electron_energy_nk - electron_energy_mkq
         # Real Part
@@ -88,27 +88,3 @@ class SelfEnergy2nd(SelfEnergy):
         coeff = 2.0 * np.pi / np.prod(n_q)
         
         return (selfen_real + 1.0j * selfen_imag) * coeff
-    
-    def coupling(self, g1: np.ndarray, g2: np.ndarray, q: np.ndarray) -> np.ndarray:
-        """
-        Calculate lowest-order electron-phonon couplings.
-        
-        Args
-            g1, g2: A numpy array representing G-vector
-            k: A numpy array representing k-vector
-            q: A numpy array representing k-vector
-        
-        Return
-            A value of the elctron-phonon coupling.
-        """
-        q_norm = np.linalg.norm(q, axis=-1)
-        delta_g = g1 - g2
-        q_dot = np.sum(q * delta_g, axis=-1) 
-
-        mask = q_norm > 0
-        result = np.zeros_like(q_norm)
-        
-        denominator = np.sqrt(2.0 * self.phonon.mass * self.phonon.speed) * q_norm ** 1.5
-        result[mask] = safe_divide(self.effective_potential * q_dot[mask], denominator[mask])
-        
-        return result
