@@ -12,48 +12,19 @@ class SelfEnergy:
     lattice: EmptyLattice
     electron: FreeElectron
     phonon: DebyeModel
+    temperature: float
     sigma: float = 0.01
+    eta: float = 0.01
 
 @dataclass
-class SelfEnergy2nd(SelfEnergy):
-    def validate_inputs(self, temperature, eta):
-        if not isinstance(temperature, (int, float)) or temperature < 0:
-            raise ValueError("Temperature must be a not-negative number.")
-        if not isinstance(eta, (int, float)):
-            raise ValueError("eta must be a number.")
-
-    def calculate(self, temperature: float, g: np.ndarray, k: np.ndarray,
-                    n_g: np.ndarray, n_q: np.ndarray, eta=0.01) -> np.ndarray:
-        """
-        Calculate 2nd-order Fan self-energies.
-        
-        Args
-            temperature: A temperature in Kelvin.
-            g: A numpy array (meshgrid-type) representing G-vector
-            k: A numpy array (meshgrid-type) representing k-vector
-            n_g: A numpy array representing the dense of intermediate G-vectors
-            n_q: A numpy array representing the dense of intermediate q-vectors
-            eta: A value of the convergence factor. The default value is 0.01 Hartree.
-            
-        Return
-            A numpy array representing Fan self-energy.
-        """
-        self.validate_inputs(temperature, eta)
-        g_reshaped = g.reshape(-1, 3)
-        k_reshaped = k.reshape(-1, 3)
-        
-        value = np.array([self.calculate_fan(temperature, g_i, k_i, n_g, n_q, eta) for g_i, k_i in zip(g_reshaped, k_reshaped)])
-        
-        return value.reshape(k[..., 0].shape)
-    
-    def calculate_fan(self, temperature: float, g1: np.ndarray, k: np.ndarray, 
-                        n_g: np.ndarray, n_q: np.ndarray, eta=0.01) -> complex:
+class SelfEnergy2nd(SelfEnergy):    
+    def calculate_fan_term(self, g: np.ndarray, k: np.ndarray, 
+                        n_g: np.ndarray, n_q: np.ndarray) -> complex:
         """
         Calculate single values of Fan self-energy.
         
         Args
-            temperature: A temperature in Kelvin.
-            g1: A numpy array representing G-vector
+            g: A numpy array representing G-vector
             k: A numpy array representing k-vector
             n_g: A numpy array representing the dense of intermediate G-vectors
             n_q: A numpy array representing the dense of intermediate q-vectors
@@ -62,29 +33,73 @@ class SelfEnergy2nd(SelfEnergy):
         Return
             A complex value representing Fan self-energy.
         """
-        g2, q = self.electron.grid(n_g, n_q) # Generate intermediate G, q grid.
+        g_inter, q = self.electron.grid(n_g, n_q) # Generate intermediate G, q grid.
 
-        electron_energy_nk = self.electron.eigenenergy(k + g1)
-        electron_energy_mkq = self.electron.eigenenergy(k + g2 + q)
+        electron_energy_nk = self.electron.eigenenergy(k + g)
+        electron_energy_mkq = self.electron.eigenenergy(k + g_inter + q)
 
         omega = self.phonon.eigenenergy(q)
-        bose = bose_distribution(temperature, omega)
-        fermi = fermi_distribution(temperature, electron_energy_mkq)
+        bose = bose_distribution(self.temperature, omega)
+        fermi = fermi_distribution(self.temperature, electron_energy_mkq)
 
-        g = Coupling.first_order(g1, g2, q, self.phonon)
+        coupling = Coupling.first_order(g, g_inter, q, self.phonon)
         
         delta_energy = electron_energy_nk - electron_energy_mkq
         # Real Part
-        green_part_real = ((1.0 - fermi + bose) / (delta_energy - omega + eta * 1.0j)
-                           + (fermi + bose) / (delta_energy + omega + eta * 1.0j))
+        green_part_real = ((1.0 - fermi + bose) / (delta_energy - omega + self.eta * 1.0j)
+                           + (fermi + bose) / (delta_energy + omega + self.eta * 1.0j))
 
         # Imaginary Part
         green_part_imag = ((1.0 - fermi + bose) * gaussian_distribution(self.sigma, delta_energy - omega)
                            + (fermi + bose) * gaussian_distribution(self.sigma, delta_energy + omega))
 
-        selfen_real = np.nansum(np.abs(g) ** 2 * green_part_real).real
-        selfen_imag = np.nansum(np.abs(g) ** 2 * green_part_imag)
+        selfen_real = np.nansum(np.abs(coupling) ** 2 * green_part_real).real
+        selfen_imag = np.nansum(np.abs(coupling) ** 2 * green_part_imag)
         
         coeff = 2.0 * np.pi / np.prod(n_q)
         
         return (selfen_real + 1.0j * selfen_imag) * coeff
+
+    def calculate_coupling_strength(self, g: np.ndarray, k: np.ndarray,
+                            n_g: np.ndarray, n_q: np.ndarray) -> float:
+        """
+        Calculate electron-phonon coupling strengths.
+        
+        Args
+        """
+        g_inter, q = self.electron.grid(n_g, n_q) # Generate intermediate G, q grid.
+
+        electron_energy_nk = self.electron.eigenenergy(k + g)
+        electron_energy_mkq = self.electron.eigenenergy(k + g_inter + q)
+
+        omega = self.phonon.eigenenergy(q)
+        bose = bose_distribution(self.temperature, omega)
+        fermi = fermi_distribution(self.temperature, electron_energy_mkq)
+
+        coupling = Coupling.first_order(g1, g_inter, q, self.phonon)
+        
+        delta_energy = electron_energy_nk - electron_energy_mkq
+        # Real Part
+        green_part_real = - ((1.0 - fermi + bose) / (delta_energy - omega + self.eta * 1.0j) ** 2
+                           + (fermi + bose) / (delta_energy + omega + self.eta * 1.0j) ** 2)
+
+        partial_selfen_real = np.nansum(np.abs(coupling) ** 2 * green_part_real).real
+        
+        coeff = 2.0 * np.pi / np.prod(n_q)
+        
+        coupling_strength = - partial_selfen_real * coeff
+        
+        return coupling_strength
+    
+    def calculate_qp_strength(self, g: np.ndarray, k: np.ndarray,
+                            n_g: np.ndarray, n_q: np.ndarray) -> float:
+        """
+        Calculate quasiparticle strengths (z).
+        
+        Args
+        """
+        coupling_strength = self.calculate_coupling_strength(g, k, n_g, n_q)
+        
+        z = 1.0 / (1.0 + coupling_strength)
+        
+        return z
