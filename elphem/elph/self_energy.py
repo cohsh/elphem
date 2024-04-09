@@ -16,8 +16,6 @@ class SelfEnergy:
     sigma: float = 0.01
     eta: float = 0.01
 
-@dataclass
-class SelfEnergy2nd(SelfEnergy):    
     def calculate_fan_term(self, g: np.ndarray, k: np.ndarray, 
                         n_g: np.ndarray, n_q: np.ndarray) -> complex:
         """

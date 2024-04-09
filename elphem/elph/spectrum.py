@@ -1,19 +1,13 @@
 from dataclasses import dataclass
 
-from elphem.elph.self_energy import SelfEnergy2nd
+from elphem.elph.self_energy import SelfEnergy
 
 @dataclass
 class Spectrum:
-    self_energy: SelfEnergy2nd
-    
-    def validate_inputs(self, temperature, eta):
-        if not isinstance(temperature, (int, float)) or temperature < 0:
-            raise ValueError("Temperature must be a not-negative number.")
-        if not isinstance(eta, (int, float)):
-            raise ValueError("eta must be a number.")
+    self_energy: SelfEnergy
 
-    def calculate(self, temperature: float, g: np.ndarray, k: np.ndarray,
-                    n_g: np.ndarray, n_q: np.ndarray, eta=0.01) -> np.ndarray:
+    def calculate(self, g: np.ndarray, k: np.ndarray,
+                    n_g: np.ndarray, n_q: np.ndarray) -> np.ndarray:
         """
         Calculate 2nd-order Fan self-energies.
         
@@ -28,10 +22,11 @@ class Spectrum:
         Return
             A numpy array representing Fan self-energy.
         """
-        self.validate_inputs(temperature, eta)
+        
         g_reshaped = g.reshape(-1, 3)
         k_reshaped = k.reshape(-1, 3)
         
-        value = np.array([self.calculate_fan(temperature, g_i, k_i, n_g, n_q, eta) for g_i, k_i in zip(g_reshaped, k_reshaped)])
+        fan_term = np.array([self.self_energy.calculate_fan_term(g_i, k_i, n_g, n_q) for g_i, k_i in zip(g_reshaped, k_reshaped)])
+        z = np.array([self.self_energy.calculate_qp_strength(g_i, k_i, n_g, n_q) for g_i, k_i in zip(g_reshaped, k_reshaped)])
         
-        return value.reshape(k[..., 0].shape)
+        # return value.reshape(k[..., 0].shape)
