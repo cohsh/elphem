@@ -8,7 +8,6 @@ from elphem.phonon.debye import DebyeModel
 from elphem.elph.self_energy import SelfEnergy
 from elphem.elph.spectrum import Spectrum
 
-"""
 class TestUnit(TestCase):
     def test_calculate(self):
         mass = 12 * Mass.DALTON["->"]        
@@ -26,9 +25,9 @@ class TestUnit(TestCase):
         n_k = np.array([5]*3)        
         n_g_inter = np.array([1]*3)
         n_q = np.array([5]*3)
+        n_omega = 100
         
-        a = Spectrum(self_energy).calculate(n_g, n_k, n_g_inter, n_q)
+        a = Spectrum(self_energy).calculate(n_g, n_k, n_g_inter, n_q, n_omega)
         # print(a)
         
-        self.assertEqual(a.shape, (n_g[0]*2, n_g[1]*2, n_g[2]*2) + (n_k[0], n_k[1], n_k[2]))
-"""
+        self.assertEqual(a.shape, (n_g[0]*2, n_g[1]*2, n_g[2]*2) + (n_omega,))

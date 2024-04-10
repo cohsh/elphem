@@ -113,7 +113,7 @@ class SelfEnergy:
         omega = self.phonon.eigenenergy(q)
         bose = bose_distribution(self.temperature, omega)
         
-        coupling_strength = np.zeros(g[..., 0].shape, dtype=np.complex128)
+        coupling_strength = np.zeros(g[..., 0].shape)
         coeff = 2.0 * np.pi / np.prod(n_q)
 
         count = 0
