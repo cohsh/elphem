@@ -30,5 +30,9 @@ class TestUnit(TestCase):
         n_q = np.array([5]*3)
         
         fan_term = self_energy.calculate_fan_term(n_g, n_k, n_g_inter, n_q)
+        qp_strength = self_energy.calculate_qp_strength(n_g, n_k, n_g_inter, n_q)
         
-        self.assertEqual(fan_term.shape, (n_g[0]*2, n_g[1]*2, n_g[2]*2) + (n_k[0], n_k[1], n_k[2]))
+        correct_shape = (n_g[0]*2, n_g[1]*2, n_g[2]*2) + (n_k[0], n_k[1], n_k[2])
+        
+        for v in [fan_term, qp_strength]:
+            self.assertEqual(v.shape, correct_shape)
