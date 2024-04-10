@@ -35,7 +35,7 @@ class Spectrum:
         omegas = np.linspace(0.0, 10.0, n_omega)
 
         spectrum = np.zeros(fan_term.shape[0:3] + omegas.shape)
-        
+                
         count = 0
         for omega in omegas:
             denominator = (

@@ -27,7 +27,6 @@ class TestUnit(TestCase):
         n_q = np.array([5]*3)
         n_omega = 100
         
-        a = Spectrum(self_energy).calculate(n_g, n_k, n_g_inter, n_q, n_omega)
-        # print(a)
+        spectrum = Spectrum(self_energy).calculate(n_g, n_k, n_g_inter, n_q, n_omega)
         
-        self.assertEqual(a.shape, (n_g[0]*2, n_g[1]*2, n_g[2]*2) + (n_omega,))
+        self.assertEqual(spectrum.shape, (n_g[0]*2, n_g[1]*2, n_g[2]*2) + (n_omega,))
