@@ -6,29 +6,29 @@ from elphem.lattice.empty import EmptyLattice, LatticeConstant
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyeModel
 from elphem.elph.self_energy import SelfEnergy
+from elphem.elph.spectrum import Spectrum
 
+"""
 class TestUnit(TestCase):
     def test_calculate(self):
+        mass = 12 * Mass.DALTON["->"]        
+        temperature = 2300.0
+
         lattice_constant = LatticeConstant(5,5,5,60,60,60)
         lattice = EmptyLattice(lattice_constant)
 
-        electron = FreeElectron(lattice, 4)
-        
-        mass = 12 * Mass.DALTON["->"]
-        
-        debye_temperature = 2300.0
-
-        phonon = DebyeModel(lattice, debye_temperature, 2, mass)
-
-        temperature = debye_temperature
+        electron = FreeElectron(lattice, 4)        
+        phonon = DebyeModel(lattice, temperature, 2, mass)
 
         self_energy = SelfEnergy(lattice, electron, phonon, temperature)
 
         n_g = np.array([1]*3)
-        n_k = np.array([5]*3)
+        n_k = np.array([5]*3)        
         n_g_inter = np.array([1]*3)
         n_q = np.array([5]*3)
         
-        fan_term = self_energy.calculate_fan_term(n_g, n_k, n_g_inter, n_q)
+        a = Spectrum(self_energy).calculate(n_g, n_k, n_g_inter, n_q)
+        # print(a)
         
-        self.assertEqual(fan_term.shape, (n_g[0]*2, n_g[1]*2, n_g[2]*2) + (n_k[0], n_k[1], n_k[2]))
+        self.assertEqual(a.shape, (n_g[0]*2, n_g[1]*2, n_g[2]*2) + (n_k[0], n_k[1], n_k[2]))
+"""

@@ -1,3 +1,4 @@
+import numpy as np
 from dataclasses import dataclass
 
 from elphem.elph.self_energy import SelfEnergy
@@ -6,8 +7,8 @@ from elphem.elph.self_energy import SelfEnergy
 class Spectrum:
     self_energy: SelfEnergy
 
-    def calculate(self, g: np.ndarray, k: np.ndarray,
-                    n_g: np.ndarray, n_q: np.ndarray) -> np.ndarray:
+    def calculate(self, n_g: np.ndarray, n_k: np.ndarray,
+                    n_g_inter: np.ndarray, n_q: np.ndarray) -> np.ndarray:
         """
         Calculate 2nd-order Fan self-energies.
         
@@ -23,10 +24,10 @@ class Spectrum:
             A numpy array representing Fan self-energy.
         """
         
-        g_reshaped = g.reshape(-1, 3)
-        k_reshaped = k.reshape(-1, 3)
+        fan_term = self.self_energy.calculate_fan_term(n_g, n_k, n_g_inter, n_q)
+        z = self.self_energy.calculate_qp_strength(n_g, n_k, n_g_inter, n_q)
         
-        fan_term = np.array([self.self_energy.calculate_fan_term(g_i, k_i, n_g, n_q) for g_i, k_i in zip(g_reshaped, k_reshaped)])
-        z = np.array([self.self_energy.calculate_qp_strength(g_i, k_i, n_g, n_q) for g_i, k_i in zip(g_reshaped, k_reshaped)])
+        print(fan_term.shape)
+        print(z.shape)
         
         # return value.reshape(k[..., 0].shape)
