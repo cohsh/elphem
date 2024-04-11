@@ -53,7 +53,7 @@ class Spectrum:
         
         return spectrum
     
-    def calculate_with_path(self, n_g: np.ndarray, *k_via: list[np.ndarray], n_via,
+    def calculate_with_path(self, n_g: np.ndarray, k_via: list[np.ndarray], n_via: np.ndarray,
                     n_g_inter: np.ndarray, n_q: np.ndarray, n_omega: int) -> tuple:
         """
         Calculate 2nd-order Fan self-energies.
@@ -69,27 +69,31 @@ class Spectrum:
             A numpy array representing Fan self-energy.
         """
         
-        x, k, special_x = self.lattice.reciprocal_cell.path(n_via, *k_via)
-        g = self.lattice.grid(n_g).reshape(-1, 3)
+        x, k, special_x = self.self_energy.lattice.reciprocal_cell.path(n_via, *k_via)
+        g = self.self_energy.lattice.grid(n_g).reshape(-1, 3)
 
-        epsilon = np.array([self.self_energy.eigenenergy(k + g_i) for g_i in g])
-        fan_term = np.array([self.self_energy.calculate_fan_term(g_i, k_i, n_g_inter, n_q) for g_i in g for k_i in k])
-        qp_strength = np.array([self.self_energy.calculate_qp_strength(g_i, k_i, n_g_inter, n_q) for g_i in g for k_i in k])
+        epsilon = np.array([self.self_energy.electron.eigenenergy(k + g_i) for g_i in g])
+        shape_return = epsilon.shape
+
+        fan_term = np.zeros(shape_return, dtype='complex128')
+        qp_strength = np.zeros(shape_return)
+
+        for i in range(len(g)):
+            fan_term[i] = np.array([self.self_energy.calculate_fan_term(g[i], k_i, n_g_inter, n_q) for k_i in k])
+            qp_strength[i] = np.array([self.self_energy.calculate_qp_strength(g[i], k_i, n_g_inter, n_q) for k_i in k])
 
         coeff = - qp_strength / np.pi
         numerator = qp_strength * fan_term.imag
         
         omegas = np.linspace(0.0, 10.0, n_omega)
 
-        spectrum = np.zeros(fan_term.shape[0:3] + omegas.shape)
+        spectrum = np.zeros(fan_term[0].shape + omegas.shape)
                 
         count = 0
         for omega in omegas:
-            denominator = (
-                (omega - epsilon - fan_term.real) ** 2
-                + (qp_strength * fan_term.imag) ** 2
-                )
-            spectrum[..., count] = np.nansum(coeff * numerator / denominator, axis=(3,4,5))
+            denominator = (omega - epsilon - fan_term.real) ** 2 + (qp_strength * fan_term.imag) ** 2
+
+            spectrum[..., count] = np.nansum(coeff * numerator / denominator, axis=0)
             
             count += 1
         

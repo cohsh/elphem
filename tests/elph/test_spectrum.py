@@ -2,6 +2,7 @@ import numpy as np
 from unittest import TestCase
 
 from elphem.const.unit import Mass
+from elphem.const.brillouin import SpecialPoints
 from elphem.lattice.empty import EmptyLattice, LatticeConstant
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyeModel
@@ -51,8 +52,6 @@ class TestUnit(TestCase):
 
         n_g_inter = np.array([1]*3)
         n_q = np.array([5]*3)
-        n_omega = 100
+        n_omega = 200
         
-        spectrum = Spectrum(self_energy).calculate_with_path(n_g, *k_via, n_via, n_g_inter, n_q, n_omega)
-        
-#        self.assertEqual(spectrum.shape, (n_g[0]*2, n_g[1]*2, n_g[2]*2) + (n_omega,))
+        x, spectrum, special_x = Spectrum(self_energy).calculate_with_path(n_g, k_via, n_via, n_g_inter, n_q, n_omega)
