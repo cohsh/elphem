@@ -1,0 +1,57 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+from elphem import LatticeConstant, EmptyLattice, FreeElectron, DebyeModel, SelfEnergy, Spectrum
+from elphem.const import Mass, Energy, Length, AtomicWeight, SpecialPoints
+
+def main():
+    # Example: Li (BCC)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+
+    a = 2.98 * Length.ANGSTROM["->"]
+    alpha = 109.47
+    lattice_constant = LatticeConstant(a,a,a,alpha,alpha,alpha)
+    lattice = EmptyLattice(lattice_constant)
+
+    electron = FreeElectron(lattice, 1)
+    
+    mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
+    
+    debye_temperature = 344.0
+    temperature = 300.0
+
+    phonon = DebyeModel(lattice, debye_temperature, 1, mass)
+
+    temperature = 2 * debye_temperature
+    
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature)
+
+    n_g = np.array([1]*3)
+    n_g_inter = np.array([1]*3)
+    n_q = np.array([5]*3)
+    n_omega = 200
+    range_omega = [-1.0, 2.0]
+    
+    k_names = ["G", "H", "N", "G", "P", "H"]
+    k_via = [SpecialPoints.BCC[name] for name in k_names]
+    n_via = 20
+    
+    x, y, spectrum, special_x = Spectrum(self_energy).calculate_with_path(n_g, k_via, n_via, n_g_inter, n_q, n_omega, range_omega)
+    y_mesh, x_mesh = np.meshgrid(y, x)
+
+    ax.pcolormesh(x_mesh, y_mesh * Energy.EV["<-"], spectrum / Energy.EV["<-"])
+    
+    for x0 in special_x:
+        ax.axvline(x=x0, color="black", linewidth=0.3)
+    
+    ax.set_xticks(special_x)
+    ax.set_xticklabels(k_names)
+    ax.set_ylabel("Energy ($\mathrm{eV}$)")
+    ax.set_title("Example: Band structure of bcc-Li")
+
+    fig.savefig("test_spectrum.png")
+
+if __name__ == "__main__":
+    main()

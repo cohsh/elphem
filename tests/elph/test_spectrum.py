@@ -53,5 +53,6 @@ class TestUnit(TestCase):
         n_g_inter = np.array([1]*3)
         n_q = np.array([5]*3)
         n_omega = 200
+        range_omega = [-1.0, 2.0]
         
-        x, spectrum, special_x = Spectrum(self_energy).calculate_with_path(n_g, k_via, n_via, n_g_inter, n_q, n_omega)
+        x, omegas, spectrum, special_x = Spectrum(self_energy).calculate_with_path(n_g, k_via, n_via, n_g_inter, n_q, n_omega, range_omega)

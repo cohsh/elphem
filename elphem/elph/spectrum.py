@@ -54,7 +54,7 @@ class Spectrum:
         return spectrum
     
     def calculate_with_path(self, n_g: np.ndarray, k_via: list[np.ndarray], n_via: np.ndarray,
-                    n_g_inter: np.ndarray, n_q: np.ndarray, n_omega: int) -> tuple:
+                    n_g_inter: np.ndarray, n_q: np.ndarray, n_omega: int, range_omega: list) -> tuple:
         """
         Calculate 2nd-order Fan self-energies.
         
@@ -85,7 +85,7 @@ class Spectrum:
         coeff = - qp_strength / np.pi
         numerator = qp_strength * fan_term.imag
         
-        omegas = np.linspace(0.0, 10.0, n_omega)
+        omegas = np.linspace(range_omega[0], range_omega[1], n_omega)
 
         spectrum = np.zeros(fan_term[0].shape + omegas.shape)
                 
@@ -97,4 +97,4 @@ class Spectrum:
             
             count += 1
         
-        return x, spectrum, special_x
+        return x, omegas, spectrum, special_x
