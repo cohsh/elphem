@@ -40,14 +40,14 @@ class SelfEnergy:
         
         return result
 
-    def calculate_fan_term(self, n_g: np.ndarray, n_k: np.ndarray, 
+    def calculate_fan_term(self, g: np.ndarray, k: np.ndarray, 
                         n_g_inter: np.ndarray, n_q: np.ndarray) -> complex:
         """
         Calculate single values of Fan self-energy.
         
         Args
-            g: A numpy array representing G-vector
-            k: A numpy array representing k-vector
+            g: A numpy array representing a single G-vector
+            k: A numpy array representing a single k-vector
             n_g: A numpy array representing the dense of intermediate G-vectors
             n_q: A numpy array representing the dense of intermediate q-vectors
             eta: A value of the convergence factor. The default value is 0.01 Hartree.
@@ -55,46 +55,35 @@ class SelfEnergy:
         Return
             A complex value representing Fan self-energy.
         """
-        
-        g_mesh, k_mesh = self.electron.grid(n_g, n_k)
-        
-        shape_return = g_mesh[..., 0].shape
-        
-        g = g_mesh.reshape(-1, 3)
-        k = k_mesh.reshape(-1, 3)
-        
+            
         g_inter, q = self.electron.grid(n_g_inter, n_q) # Generate intermediate G, q grid.
         omega = self.phonon.eigenenergy(q)
         bose = bose_distribution(self.temperature, omega)
         
-        selfen = np.zeros(g[..., 0].shape, dtype=np.complex128)
         coeff = 2.0 * np.pi / np.prod(n_q)
 
-        count = 0
-        for g_i, k_i in zip(g, k):
-            electron_energy_nk = self.electron.eigenenergy(k_i + g_i)
-            electron_energy_mkq = self.electron.eigenenergy(k_i + q + g_inter)
+        electron_energy_nk = self.electron.eigenenergy(k + g)
+        electron_energy_mkq = self.electron.eigenenergy(k + q + g_inter)
 
-            fermi = fermi_distribution(self.temperature, electron_energy_mkq)
+        fermi = fermi_distribution(self.temperature, electron_energy_mkq)
 
-            coupling = self.coupling(g_i, g_inter, q)
+        coupling = self.coupling(g, g_inter, q)
+    
+        delta_energy = electron_energy_nk - electron_energy_mkq
+        # Real Part
+        green_part_real = ((1.0 - fermi + bose) / (delta_energy - omega + self.eta * 1.0j)
+                        + (fermi + bose) / (delta_energy + omega + self.eta * 1.0j)).real
+
+        # Imaginary Part
+        green_part_imag = ((1.0 - fermi + bose) * gaussian_distribution(self.sigma, delta_energy - omega)
+                        + (fermi + bose) * gaussian_distribution(self.sigma, delta_energy + omega))
+
+        selfen = (np.nansum(np.abs(coupling) ** 2 * green_part_real) 
+                        + 1.0j * np.nansum(np.abs(coupling) ** 2 * green_part_imag))
         
-            delta_energy = electron_energy_nk - electron_energy_mkq
-            # Real Part
-            green_part_real = ((1.0 - fermi + bose) / (delta_energy - omega + self.eta * 1.0j)
-                            + (fermi + bose) / (delta_energy + omega + self.eta * 1.0j)).real
+        return selfen * coeff
 
-            # Imaginary Part
-            green_part_imag = ((1.0 - fermi + bose) * gaussian_distribution(self.sigma, delta_energy - omega)
-                            + (fermi + bose) * gaussian_distribution(self.sigma, delta_energy + omega))
-
-            selfen[count] = (np.nansum(np.abs(coupling) ** 2 * green_part_real) 
-                             + 1.0j * np.nansum(np.abs(coupling) ** 2 * green_part_imag))
-            count += 1
-        
-        return selfen.reshape(shape_return) * coeff
-
-    def calculate_coupling_strength(self, n_g: np.ndarray, n_k: np.ndarray,
+    def calculate_coupling_strength(self, g: np.ndarray, k: np.ndarray,
                             n_g_inter: np.ndarray, n_q: np.ndarray) -> float:
         """
         Calculate electron-phonon coupling strengths.
@@ -102,48 +91,37 @@ class SelfEnergy:
         Args
         """
         
-        g_mesh, k_mesh = self.electron.grid(n_g, n_k)
-        
-        shape_return = g_mesh[..., 0].shape
-        
-        g = g_mesh.reshape(-1, 3)
-        k = k_mesh.reshape(-1, 3)
-        
         g_inter, q = self.electron.grid(n_g_inter, n_q) # Generate intermediate G, q grid.
         omega = self.phonon.eigenenergy(q)
         bose = bose_distribution(self.temperature, omega)
         
-        coupling_strength = np.zeros(g[..., 0].shape)
         coeff = 2.0 * np.pi / np.prod(n_q)
 
-        count = 0
-        for g_i, k_i in zip(g, k):
-            electron_energy_nk = self.electron.eigenenergy(k_i + g_i)
-            electron_energy_mkq = self.electron.eigenenergy(k_i + q + g_inter)
+        electron_energy_nk = self.electron.eigenenergy(k + g)
+        electron_energy_mkq = self.electron.eigenenergy(k + q + g_inter)
 
-            fermi = fermi_distribution(self.temperature, electron_energy_mkq)
+        fermi = fermi_distribution(self.temperature, electron_energy_mkq)
 
-            coupling = self.coupling(g_i, g_inter, q)
-        
-            delta_energy = electron_energy_nk - electron_energy_mkq
-            # Real Part
-            partial_green_part_real = - ((1.0 - fermi + bose) / (delta_energy - omega + self.eta * 1.0j) ** 2
-                            + (fermi + bose) / (delta_energy + omega + self.eta * 1.0j) ** 2).real
-
-            coupling_strength[count] = - np.nansum(np.abs(coupling) ** 2 * partial_green_part_real)
-            count += 1
-        
-        return coupling_strength.reshape(shape_return) * coeff
+        coupling = self.coupling(g, g_inter, q)
     
-    def calculate_qp_strength(self, n_g: np.ndarray, n_k: np.ndarray,
+        delta_energy = electron_energy_nk - electron_energy_mkq
+        # Real Part
+        partial_green_part_real = - ((1.0 - fermi + bose) / (delta_energy - omega + self.eta * 1.0j) ** 2
+                        + (fermi + bose) / (delta_energy + omega + self.eta * 1.0j) ** 2).real
+
+        coupling_strength = - np.nansum(np.abs(coupling) ** 2 * partial_green_part_real)
+        
+        return coupling_strength * coeff
+    
+    def calculate_qp_strength(self, g: np.ndarray, k: np.ndarray,
                             n_g_inter: np.ndarray, n_q: np.ndarray) -> float:
         """
         Calculate quasiparticle strengths (z).
         
         Args
         """
-        coupling_strength = self.calculate_coupling_strength(n_g, n_k, n_g_inter, n_q)
+        coupling_strength = self.calculate_coupling_strength(g, k, n_g_inter, n_q)
         
-        z = 1.0 / (1.0 + coupling_strength)
+        qp_strength = 1.0 / (1.0 + coupling_strength)
         
-        return z
+        return qp_strength

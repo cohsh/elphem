@@ -29,8 +29,15 @@ class TestUnit(TestCase):
         n_g_inter = np.array([1]*3)
         n_q = np.array([5]*3)
         
-        fan_term = self_energy.calculate_fan_term(n_g, n_k, n_g_inter, n_q)
-        qp_strength = self_energy.calculate_qp_strength(n_g, n_k, n_g_inter, n_q)
+        g_mesh, k_mesh = electron.grid(n_g, n_k)
+        
+        g = g_mesh.reshape(-1, 3)
+        k = k_mesh.reshape(-1, 3)
+
+        shape_mesh = g_mesh[..., 0].shape
+
+        fan_term = np.array([self_energy.calculate_fan_term(g_i, k_i, n_g_inter, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
+        qp_strength = np.array([self_energy.calculate_qp_strength(g_i, k_i, n_g_inter, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
         
         correct_shape = (n_g[0]*2, n_g[1]*2, n_g[2]*2) + (n_k[0], n_k[1], n_k[2])
         

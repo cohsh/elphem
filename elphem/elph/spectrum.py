@@ -23,11 +23,16 @@ class Spectrum:
             A numpy array representing Fan self-energy.
         """
         
-        fan_term = self.self_energy.calculate_fan_term(n_g, n_k, n_g_inter, n_q)
-        qp_strength = self.self_energy.calculate_qp_strength(n_g, n_k, n_g_inter, n_q)
+        g_mesh, k_mesh = self.self_energy.electron.grid(n_g, n_k)
+
+        shape_mesh = g_mesh[..., 0].shape
         
-        g, k = self.self_energy.electron.grid(n_g, n_k)
-        epsilon = self.self_energy.electron.eigenenergy(k + g)
+        g = g_mesh.reshape(-1, 3)
+        k = k_mesh.reshape(-1, 3)
+
+        epsilon = self.self_energy.electron.eigenenergy(k_mesh + g_mesh)
+        fan_term = np.array([self.self_energy.calculate_fan_term(g_i, k_i, n_g_inter, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
+        qp_strength = np.array([self.self_energy.calculate_qp_strength(g_i, k_i, n_g_inter, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
 
         coeff = - qp_strength / np.pi
         numerator = qp_strength * fan_term.imag
