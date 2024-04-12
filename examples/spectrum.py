@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from elphem import LatticeConstant, EmptyLattice, FreeElectron, DebyeModel, SelfEnergy, Spectrum
+from elphem import EmptyLattice, FreeElectron, DebyeModel, SelfEnergy, Spectrum
 from elphem.const import Mass, Energy, Length, AtomicWeight, SpecialPoints
 
 def main():
@@ -12,20 +12,15 @@ def main():
 
     a = 2.98 * Length.ANGSTROM["->"]
     alpha = 109.47
-    lattice_constant = LatticeConstant(a,a,a,alpha,alpha,alpha)
-    lattice = EmptyLattice(lattice_constant)
-
-    electron = FreeElectron(lattice, 1)
-    
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
-    
     debye_temperature = 344.0
     temperature = 1000.0
 
+    lattice = EmptyLattice(a,a,a,alpha,alpha,alpha)
+    electron = FreeElectron(lattice, 1)
     phonon = DebyeModel(lattice, debye_temperature, 1, mass)
 
     temperature = 2 * debye_temperature
-    
     self_energy = SelfEnergy(lattice, electron, phonon, temperature, sigma=0.01, eta=0.05)
 
     n_g = np.array([1]*3)
