@@ -2,13 +2,12 @@ from unittest import TestCase
 import numpy as np
 
 from elphem.const.brillouin import SpecialPoints
-from elphem.lattice.empty import LatticeConstant, EmptyLattice
+from elphem.lattice.empty import EmptyLattice
 from elphem.electron.free import FreeElectron
 
 class TestUnit(TestCase):
     def test_band_structure(self):
-        lattice_constant = LatticeConstant(5,5,5,60,60,60)
-        lattice = EmptyLattice(lattice_constant)
+        lattice = EmptyLattice(5,5,5,60,60,60)
         n_cut = np.array([2]*3)
         electron = FreeElectron(lattice, 4)
             

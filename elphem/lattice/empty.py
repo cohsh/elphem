@@ -116,10 +116,19 @@ class ReciprocalCell(Cell):
 
         return total_length, k, special_length
 
+@dataclass
 class EmptyLattice:
-    def __init__(self, lattice_constant: LatticeConstant):
-        self.primitive_cell = PrimitiveCell(lattice_constant)
-        self.reciprocal_cell = ReciprocalCell(lattice_constant)
+    a: float
+    b: float
+    c: float
+    alpha: float
+    beta: float
+    gamma: float
+
+    def __post_init__(self):
+        self.constants = LatticeConstant(self.a, self.b, self.c, self.alpha, self.beta, self.gamma)
+        self.primitive_cell = PrimitiveCell(self.constants)
+        self.reciprocal_cell = ReciprocalCell(self.constants)
 
         self.volume = {
             "primitive": self.primitive_cell.volume(),

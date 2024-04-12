@@ -4,14 +4,13 @@ import numpy as np
 from elphem.const.unit import Mass
 from elphem.const.brillouin import SpecialPoints
 from elphem.const.atomic_weight import AtomicWeight
-from elphem.lattice.empty import EmptyLattice, LatticeConstant
+from elphem.lattice.empty import EmptyLattice
 from elphem.phonon.debye import DebyeModel
 
 class TestUnit(TestCase):
     def test_debye(self):
         # Example: FCC-Fe
-        lattice_constant = LatticeConstant(2.58, 2.58, 2.58, 60, 60, 60)
-        lattice = EmptyLattice(lattice_constant)
+        lattice = EmptyLattice(2.58, 2.58, 2.58, 60, 60, 60)
 
         phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
         
@@ -23,8 +22,7 @@ class TestUnit(TestCase):
     
     def test_get_dispersion(self):
         # Example: FCC-Fe
-        lattice_constant = LatticeConstant(2.58, 2.58, 2.58, 60, 60, 60)
-        lattice = EmptyLattice(lattice_constant)
+        lattice = EmptyLattice(2.58, 2.58, 2.58, 60, 60, 60)
 
         phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
 

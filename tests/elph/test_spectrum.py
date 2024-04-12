@@ -14,8 +14,7 @@ class TestUnit(TestCase):
         mass = 12 * Mass.DALTON["->"]        
         temperature = 2300.0
 
-        lattice_constant = LatticeConstant(5,5,5,60,60,60)
-        lattice = EmptyLattice(lattice_constant)
+        lattice = EmptyLattice(5,5,5,60,60,60)
 
         electron = FreeElectron(lattice, 4)        
         phonon = DebyeModel(lattice, temperature, 2, mass)
@@ -36,8 +35,7 @@ class TestUnit(TestCase):
         mass = 12 * Mass.DALTON["->"]        
         temperature = 2300.0
 
-        lattice_constant = LatticeConstant(5,5,5,60,60,60)
-        lattice = EmptyLattice(lattice_constant)
+        lattice = EmptyLattice(5,5,5,60,60,60)
 
         electron = FreeElectron(lattice, 4)        
         phonon = DebyeModel(lattice, temperature, 2, mass)
