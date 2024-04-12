@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from elphem.const.unit import Mass
 from elphem.const.brillouin import SpecialPoints
-from elphem.lattice.empty import EmptyLattice, LatticeConstant
+from elphem.lattice.empty import EmptyLattice
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyeModel
 from elphem.elph.self_energy import SelfEnergy
