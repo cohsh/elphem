@@ -7,9 +7,6 @@ from elphem.const import Mass, Energy, Length, AtomicWeight, SpecialPoints
 def main():
     # Example: Li (BCC)
 
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
-
     a = 2.98 * Length.ANGSTROM["->"]
     alpha = 109.47
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
@@ -36,6 +33,9 @@ def main():
     x, y, spectrum, special_x = Spectrum(self_energy).calculate_with_path(n_g, k_via, n_via, n_g_inter, n_q, n_omega, range_omega)
     y_mesh, x_mesh = np.meshgrid(y, x)
 
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    
     mappable = ax.pcolormesh(x_mesh, y_mesh * Energy.EV["<-"], spectrum / Energy.EV["<-"])
     
     for x0 in special_x:
