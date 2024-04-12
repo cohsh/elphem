@@ -113,8 +113,7 @@ class SelfEnergy:
         
         return coupling_strength * coeff
     
-    def calculate_qp_strength(self, g: np.ndarray, k: np.ndarray,
-                            n_g_inter: np.ndarray, n_q: np.ndarray) -> float:
+    def calculate_qp_strength(self, g: np.ndarray, k: np.ndarray, n_g_inter: np.ndarray, n_q: np.ndarray) -> float:
         """
         Calculate quasiparticle strengths (z).
         
@@ -122,6 +121,6 @@ class SelfEnergy:
         """
         coupling_strength = self.calculate_coupling_strength(g, k, n_g_inter, n_q)
         
-        qp_strength = 1.0 / (1.0 + coupling_strength)
-        
+        qp_strength = safe_divide(1.0, 1.0 + coupling_strength)
+
         return qp_strength

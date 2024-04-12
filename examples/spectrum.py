@@ -51,8 +51,8 @@ def main():
     ax.set_ylabel("Energy ($\mathrm{eV}$)")
     ax.set_title("Spectral function of bcc-Li")
     
-    # fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(-2.0, 0.0)
+    fig.colorbar(mappable, ax=ax)
+    mappable.set_clim(-5.0, 0.0)
 
     fig.savefig("test_spectrum.png")
 

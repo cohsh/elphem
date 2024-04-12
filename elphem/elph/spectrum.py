@@ -2,6 +2,7 @@ import numpy as np
 from dataclasses import dataclass
 
 from elphem.elph.self_energy import SelfEnergy
+from elphem.elph.distribution import safe_divide
 
 @dataclass
 class Spectrum:
@@ -47,7 +48,8 @@ class Spectrum:
                 (omega - epsilon - fan_term.real) ** 2
                 + (qp_strength * fan_term.imag) ** 2
                 )
-            spectrum[..., count] = np.nansum(coeff * numerator / denominator, axis=(3,4,5))
+            fraction = safe_divide(coeff * numerator, denominator)
+            spectrum[..., count] = np.nansum(fraction, axis=(3,4,5))
             
             count += 1
         
@@ -92,8 +94,9 @@ class Spectrum:
         count = 0
         for omega in omegas:
             denominator = (omega - epsilon - fan_term.real) ** 2 + (qp_strength * fan_term.imag) ** 2
+            fraction = safe_divide(coeff * numerator, denominator)
 
-            spectrum[..., count] = np.nansum(coeff * numerator / denominator, axis=0)
+            spectrum[..., count] = np.nansum(fraction, axis=0)
             
             count += 1
         
