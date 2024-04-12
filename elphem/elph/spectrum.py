@@ -86,9 +86,8 @@ class Spectrum:
 
         coeff = - qp_strength / np.pi
         numerator = qp_strength * fan_term.imag
-        
-        omegas = np.linspace(range_omega[0], range_omega[1], n_omega)
 
+        omegas = np.linspace(range_omega[0], range_omega[1], n_omega)
         spectrum = np.zeros(fan_term[0].shape + omegas.shape)
                 
         count = 0

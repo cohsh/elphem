@@ -26,7 +26,7 @@ def main():
 
     temperature = 2 * debye_temperature
     
-    self_energy = SelfEnergy(lattice, electron, phonon, temperature)
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature, sigma=0.01, eta=0.05)
 
     n_g = np.array([1]*3)
     n_g_inter = np.array([1]*3)
@@ -52,7 +52,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(-5.0, 0.0)
+    mappable.set_clim(-7.0, 0.0)
 
     fig.savefig("test_spectrum.png")
 
