@@ -24,7 +24,7 @@ class Spectrum:
         """
         
         g_grid, k_grid = self.self_energy.electron.grid(n_k)
-
+        
         shape_mesh = g_grid[..., 0].shape
         
         g = g_grid.reshape(-1, 3)
@@ -39,7 +39,7 @@ class Spectrum:
         
         omegas = np.linspace(0.0, 10.0, n_omega)
 
-        spectrum = np.zeros(fan_term.shape[0:3] + omegas.shape)
+        spectrum = np.zeros((np.prod(n_k), n_omega))
                 
         count = 0
         for omega in omegas:
@@ -48,7 +48,7 @@ class Spectrum:
                 + (qp_strength * fan_term.imag) ** 2
                 )
             fraction = safe_divide(coeff * numerator, denominator)
-            spectrum[..., count] = np.nansum(fraction, axis=(3,4,5))
+            spectrum[..., count] = np.nansum(fraction, axis=0)
             
             count += 1
         

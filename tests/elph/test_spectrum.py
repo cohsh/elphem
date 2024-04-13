@@ -28,8 +28,8 @@ class TestUnit(TestCase):
         n_omega = 100
         
         spectrum = Spectrum(self_energy).calculate_with_grid(n_k, n_q, n_omega)
-        
-#        self.assertEqual(spectrum.shape, (n_g[0]*2, n_g[1]*2, n_g[2]*2) + (n_omega,))
+                
+        self.assertEqual(spectrum.shape, (np.prod(n_k), n_omega))
     
     def test_calculate_with_path(self):
         mass = 12 * Mass.DALTON["->"]        

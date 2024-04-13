@@ -69,7 +69,7 @@ class FreeElectron:
                 g_grid[n,i] = self.g[n]
                 k_grid[n,i] = k[i]
 
-        return np.meshgrid(self.g, k_grid)
+        return g_grid, k_grid
     
     def get_band_structure(self, *k_via: list[np.ndarray], n_via=20) -> tuple:
         """
