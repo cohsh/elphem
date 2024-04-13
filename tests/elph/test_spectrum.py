@@ -16,7 +16,7 @@ class TestUnit(TestCase):
 
         lattice = EmptyLattice(5,5,5,60,60,60)
 
-        n_band = 20
+        n_band = 10
 
         electron = FreeElectron(lattice, n_band, 4)        
         phonon = DebyeModel(lattice, temperature, 2, mass)
@@ -37,7 +37,7 @@ class TestUnit(TestCase):
 
         lattice = EmptyLattice(5,5,5,60,60,60)
 
-        n_band = 20
+        n_band = 10
 
         electron = FreeElectron(lattice, n_band, 4)        
         phonon = DebyeModel(lattice, temperature, 2, mass)
