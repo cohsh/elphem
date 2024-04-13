@@ -23,14 +23,14 @@ class Spectrum:
             A numpy array representing Fan self-energy.
         """
         
-        g_mesh, k_mesh = self.self_energy.electron.grid(n_k)
+        g_grid, k_grid = self.self_energy.electron.grid(n_k)
 
-        shape_mesh = g_mesh[..., 0].shape
+        shape_mesh = g_grid[..., 0].shape
         
-        g = g_mesh.reshape(-1, 3)
-        k = k_mesh.reshape(-1, 3)
+        g = g_grid.reshape(-1, 3)
+        k = k_grid.reshape(-1, 3)
 
-        epsilon = self.self_energy.electron.eigenenergy(k_mesh + g_mesh)
+        epsilon = self.self_energy.electron.eigenenergy(k_grid)
         fan_term = np.array([self.self_energy.calculate_fan_term(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
         qp_strength = np.array([self.self_energy.calculate_qp_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
 
@@ -70,8 +70,10 @@ class Spectrum:
             A numpy array representing Fan self-energy.
         """
         
+        g = self.self_energy.electron.g
+        
         x, k, special_x = self.self_energy.lattice.reciprocal_cell.path(n_via, *k_via)
-        epsilon = self.self_energy.electron.eigenenergy(k)
+        epsilon = np.array([self.self_energy.electron.eigenenergy(k + g_i) for g_i in g])
 
         shape_return = epsilon.shape
 
@@ -79,8 +81,8 @@ class Spectrum:
         qp_strength = np.zeros(shape_return)
 
         for i in range(self.self_energy.electron.n_band):
-            fan_term[i] = np.array([self.self_energy.calculate_fan_term(g[i], k_i, n_g_inter, n_q) for k_i in k])
-            qp_strength[i] = np.array([self.self_energy.calculate_qp_strength(g[i], k_i, n_g_inter, n_q) for k_i in k])
+            fan_term[i] = np.array([self.self_energy.calculate_fan_term(g[i], k_i, n_q) for k_i in k])
+            qp_strength[i] = np.array([self.self_energy.calculate_qp_strength(g[i], k_i, n_q) for k_i in k])
 
         coeff = - qp_strength / np.pi
         numerator = qp_strength * fan_term.imag

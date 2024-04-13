@@ -36,9 +36,8 @@ class FreeElectron:
         Return
             Electron eigenenergies
         """
-        g_grid, k_grid = np.meshgrid(self.g, k)
 
-        return 0.5 * np.linalg.norm(g_grid + k_grid, axis=-1) ** 2 - self.fermi_energy()
+        return 0.5 * np.linalg.norm(k, axis=-1) ** 2 - self.fermi_energy()
     
     def grid(self, n_k: np.ndarray) -> tuple:
         """
@@ -55,16 +54,22 @@ class FreeElectron:
         """
         basis = self.lattice.basis["reciprocal"]
         
-        g = self.get_reciprocal_vector()
         k_x = np.linspace(-0.5, 0.5, n_k[0])
         k_y = np.linspace(-0.5, 0.5, n_k[1])
         k_z = np.linspace(-0.5, 0.5, n_k[2])
+        k = np.array(np.meshgrid(k_x, k_y, k_z)).T.reshape(-1, 3) @ basis
+        
+        shape_return = (self.n_band, len(k), 3)
+        
+        g_grid = np.zeros(shape_return)
+        k_grid = np.zeros(shape_return)
+        
+        for n in range(self.n_band):
+            for i in range(len(k)):
+                g_grid[n,i] = self.g[n]
+                k_grid[n,i] = k[i]
 
-        k_grid = np.array(np.meshgrid(k_x, k_y, k_z)).T.reshape(-1, 3)
-
-        gk_grid = np.array(np.meshgrid(g, k_grid)).T
-
-        return gk_grid
+        return np.meshgrid(self.g, k_grid)
     
     def get_band_structure(self, *k_via: list[np.ndarray], n_via=20) -> tuple:
         """
@@ -82,7 +87,8 @@ class FreeElectron:
                 special_x: x-coordinates of special points
         """
         x, k, special_x = self.lattice.reciprocal_cell.path(n_via, *k_via)
-        eigenenergy = self.eigenenergy(k)
+        
+        eigenenergy = np.array([self.eigenenergy(k + g_i) for g_i in self.g])
         
         return x, eigenenergy, special_x
     
