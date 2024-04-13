@@ -40,8 +40,7 @@ class SelfEnergy:
         
         return result
 
-    def calculate_fan_term(self, g: np.ndarray, k: np.ndarray, 
-                        n_g_inter: np.ndarray, n_q: np.ndarray) -> complex:
+    def calculate_fan_term(self, g: np.ndarray, k: np.ndarray, n_g_inter: np.ndarray, n_q: np.ndarray) -> complex:
         """
         Calculate single values of Fan self-energy.
         
@@ -57,6 +56,7 @@ class SelfEnergy:
         """
             
         g_inter, q = self.electron.grid(n_g_inter, n_q) # Generate intermediate G, q grid.
+
         omega = self.phonon.eigenenergy(q)
         bose = bose_distribution(self.temperature, omega)
         
@@ -83,8 +83,7 @@ class SelfEnergy:
         
         return selfen * coeff
 
-    def calculate_coupling_strength(self, g: np.ndarray, k: np.ndarray,
-                            n_g_inter: np.ndarray, n_q: np.ndarray) -> float:
+    def calculate_coupling_strength(self, g: np.ndarray, k: np.ndarray, n_g_inter: np.ndarray, n_q: np.ndarray) -> float:
         """
         Calculate electron-phonon coupling strengths.
         
@@ -92,6 +91,7 @@ class SelfEnergy:
         """
         
         g_inter, q = self.electron.grid(n_g_inter, n_q) # Generate intermediate G, q grid.
+
         omega = self.phonon.eigenenergy(q)
         bose = bose_distribution(self.temperature, omega)
         
@@ -115,7 +115,7 @@ class SelfEnergy:
     
     def calculate_qp_strength(self, g: np.ndarray, k: np.ndarray, n_g_inter: np.ndarray, n_q: np.ndarray) -> float:
         """
-        Calculate quasiparticle strengths (z).
+        Calculate quasiparticle strengths
         
         Args
         """
