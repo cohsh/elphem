@@ -94,3 +94,6 @@ class FreeElectron:
         eig = np.array([self.eigenenergy(k + gi) for gi in g])
         
         return x, eig, special_x
+    
+    def get_reciprocal_vector(self, n_band) -> np.ndarray:
+        pass
