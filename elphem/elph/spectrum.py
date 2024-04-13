@@ -23,7 +23,7 @@ class Spectrum:
             A numpy array representing Fan self-energy.
         """
         
-        g_mesh, k_mesh = self.self_energy.electron.grid(n_g, n_k)
+        g_mesh, k_mesh = self.self_energy.electron.grid(n_k)
 
         shape_mesh = g_mesh[..., 0].shape
         
@@ -31,8 +31,8 @@ class Spectrum:
         k = k_mesh.reshape(-1, 3)
 
         epsilon = self.self_energy.electron.eigenenergy(k_mesh + g_mesh)
-        fan_term = np.array([self.self_energy.calculate_fan_term(g_i, k_i, n_g_inter, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
-        qp_strength = np.array([self.self_energy.calculate_qp_strength(g_i, k_i, n_g_inter, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
+        fan_term = np.array([self.self_energy.calculate_fan_term(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
+        qp_strength = np.array([self.self_energy.calculate_qp_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
 
         coeff = - qp_strength / np.pi
         numerator = qp_strength * fan_term.imag
@@ -54,8 +54,8 @@ class Spectrum:
         
         return spectrum
     
-    def calculate_with_path(self, n_g: np.ndarray, k_via: list[np.ndarray], n_via: np.ndarray,
-                    n_g_inter: np.ndarray, n_q: np.ndarray, n_omega: int, range_omega: list) -> tuple:
+    def calculate_with_path(self, k_via: list[np.ndarray], n_via: np.ndarray,
+                    n_q: np.ndarray, n_omega: int, range_omega: list) -> tuple:
         """
         Calculate 2nd-order Fan self-energies.
         
@@ -71,15 +71,14 @@ class Spectrum:
         """
         
         x, k, special_x = self.self_energy.lattice.reciprocal_cell.path(n_via, *k_via)
-        g = self.self_energy.lattice.grid(n_g).reshape(-1, 3)
+        epsilon = self.self_energy.electron.eigenenergy(k)
 
-        epsilon = np.array([self.self_energy.electron.eigenenergy(k + g_i) for g_i in g])
         shape_return = epsilon.shape
 
         fan_term = np.zeros(shape_return, dtype='complex128')
         qp_strength = np.zeros(shape_return)
 
-        for i in range(len(g)):
+        for i in range(self.self_energy.electron.n_band):
             fan_term[i] = np.array([self.self_energy.calculate_fan_term(g[i], k_i, n_g_inter, n_q) for k_i in k])
             qp_strength[i] = np.array([self.self_energy.calculate_qp_strength(g[i], k_i, n_g_inter, n_q) for k_i in k])
 

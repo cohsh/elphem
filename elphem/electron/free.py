@@ -15,6 +15,7 @@ class FreeElectron:
             raise ValueError("Second variable (number of electrons per unit cell) should be a positive value.")
         
         self.electron_density = self.electron_per_cell / self.lattice.volume["primitive"]
+        self.g = self.get_reciprocal_vector()
 
     def fermi_energy(self) -> float:
         """
@@ -35,7 +36,9 @@ class FreeElectron:
         Return
             Electron eigenenergies
         """
-        return 0.5 * np.linalg.norm(k, axis=k.ndim-1) ** 2 - self.fermi_energy()
+        g_grid, k_grid = np.meshgrid(self.g, k)
+
+        return 0.5 * np.linalg.norm(g_grid + k_grid, axis=-1) ** 2 - self.fermi_energy()
     
     def grid(self, n_k: np.ndarray) -> tuple:
         """
@@ -57,25 +60,11 @@ class FreeElectron:
         k_y = np.linspace(-0.5, 0.5, n_k[1])
         k_z = np.linspace(-0.5, 0.5, n_k[2])
 
-        k_grid = np.array(np.meshgrid(g, k_x, k_y, k_z)).T
-        print(k_grid)
+        k_grid = np.array(np.meshgrid(k_x, k_y, k_z)).T.reshape(-1, 3)
 
-        # Combining the grid generation for G and k
-        grid_points = [np.arange(-i, i) for i in n_g] + [np.linspace(-0.5, 0.5, i) for i in n_k]
-        grid = np.meshgrid(*grid_points)
-        
-        grid_set = []
-        j = 0
-        for i in range(2):
-            x = grid[j:j+3]
-            y = np.empty(x[0].shape + (3,))
-            for k in range(3):
-                y[..., k] = x[k]
+        gk_grid = np.array(np.meshgrid(g, k_grid)).T
 
-            grid_set.append(y @ basis)
-            j += 3
-
-        return tuple(grid_set)
+        return gk_grid
     
     def get_band_structure(self, *k_via: list[np.ndarray], n_via=20) -> tuple:
         """
@@ -92,16 +81,10 @@ class FreeElectron:
                 eig: Eigenenergy values
                 special_x: x-coordinates of special points
         """
-        if not hasattr(self.lattice, 'reciprocal_cell') or not callable(self.lattice.reciprocal_cell.path):
-            raise AttributeError("The lattice object must have a 'reciprocal_cell' attribute with a 'path' method.")
-        if not hasattr(self.lattice, 'grid') or not callable(self.lattice.grid):
-            raise AttributeError("The lattice object must have a 'grid' method.")
-
         x, k, special_x = self.lattice.reciprocal_cell.path(n_via, *k_via)
-        g = self.get_reciprocal_vector()
-        eig = np.array([self.eigenenergy(k + gi) for gi in g])
+        eigenenergy = self.eigenenergy(k)
         
-        return x, eig, special_x
+        return x, eigenenergy, special_x
     
     def get_reciprocal_vector(self) -> np.ndarray:
         basis = self.lattice.basis["reciprocal"]

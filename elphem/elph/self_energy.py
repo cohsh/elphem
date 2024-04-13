@@ -62,14 +62,14 @@ class SelfEnergy:
         
         coeff = 2.0 * np.pi / np.prod(n_q)
 
-        electron_energy_nk = self.electron.eigenenergy(k + g)
-        electron_energy_mkq = self.electron.eigenenergy(k + q + g_inter)
+        epsilon = self.electron.eigenenergy(k)
+        epsilon_inter = self.electron.eigenenergy(k + q)
 
-        fermi = fermi_distribution(self.temperature, electron_energy_mkq)
+        fermi = fermi_distribution(self.temperature, epsilon_inter)
 
         coupling = self.coupling(g, g_inter, q)
     
-        delta_energy = electron_energy_nk - electron_energy_mkq
+        delta_energy = epsilon - epsilon_inter
         # Real Part
         green_part_real = ((1.0 - fermi + bose) / (delta_energy - omega + self.eta * 1.0j)
                         + (fermi + bose) / (delta_energy + omega + self.eta * 1.0j)).real
@@ -83,28 +83,28 @@ class SelfEnergy:
         
         return selfen * coeff
 
-    def calculate_coupling_strength(self, g: np.ndarray, k: np.ndarray, n_g_inter: np.ndarray, n_q: np.ndarray) -> float:
+    def calculate_coupling_strength(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> float:
         """
         Calculate electron-phonon coupling strengths.
         
         Args
         """
         
-        g_inter, q = self.electron.grid(n_g_inter, n_q) # Generate intermediate G, q grid.
+        g_inter, q = self.electron.grid(n_q) # Generate intermediate G, q grid.
 
         omega = self.phonon.eigenenergy(q)
         bose = bose_distribution(self.temperature, omega)
         
         coeff = 2.0 * np.pi / np.prod(n_q)
 
-        electron_energy_nk = self.electron.eigenenergy(k + g)
-        electron_energy_mkq = self.electron.eigenenergy(k + q + g_inter)
+        epsilon = self.electron.eigenenergy(k)
+        epsilon_inter = self.electron.eigenenergy(k + q)
 
-        fermi = fermi_distribution(self.temperature, electron_energy_mkq)
+        fermi = fermi_distribution(self.temperature, epsilon_inter)
 
         coupling = self.coupling(g, g_inter, q)
     
-        delta_energy = electron_energy_nk - electron_energy_mkq
+        delta_energy = epsilon - epsilon_inter
         # Real Part
         partial_green_part_real = - ((1.0 - fermi + bose) / (delta_energy - omega + self.eta * 1.0j) ** 2
                         + (fermi + bose) / (delta_energy + omega + self.eta * 1.0j) ** 2).real
@@ -113,14 +113,13 @@ class SelfEnergy:
         
         return coupling_strength * coeff
     
-    def calculate_qp_strength(self, g: np.ndarray, k: np.ndarray, n_g_inter: np.ndarray, n_q: np.ndarray) -> float:
+    def calculate_qp_strength(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> float:
         """
         Calculate quasiparticle strengths
         
         Args
         """
-        coupling_strength = self.calculate_coupling_strength(g, k, n_g_inter, n_q)
-        
+        coupling_strength = self.calculate_coupling_strength(g, k, n_q)
         qp_strength = safe_divide(1.0, 1.0 + coupling_strength)
 
         return qp_strength
