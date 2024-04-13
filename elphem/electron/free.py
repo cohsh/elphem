@@ -96,4 +96,21 @@ class FreeElectron:
         return x, eig, special_x
     
     def get_reciprocal_vector(self, n_band) -> np.ndarray:
-        pass
+        basis = self.lattice.basis["reciprocal"]
+
+        n_1d = np.arange(0, n_band)
+        n_3d = np.array(np.meshgrid(n_1d, n_1d, n_1d)).T
+
+        g_norm = np.linalg.norm(n_3d @ basis, axis=-1).round(decimals=5).reshape(-1)
+        g_norm_unique = np.unique(g_norm)
+
+        print(g_norm.shape)
+
+        g_dict = {}
+
+        for g_ref in g_norm_unique:
+            degeneracy = 0
+            for g in g_norm:
+                if g == g_ref:
+                    degeneracy += 1
+            g_dict[g] = degeneracy
