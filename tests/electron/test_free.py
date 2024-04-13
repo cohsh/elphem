@@ -26,7 +26,10 @@ class TestUnit(TestCase):
     
     def test_get_reciprocal_vector(self):
         lattice = EmptyLattice(5,5,5,60,60,60)
-        n_band = 10
+        n_band = 20
         electron = FreeElectron(lattice, 4)
 
         g = electron.get_reciprocal_vector(n_band)
+        
+        self.assertEqual(len(g), n_band)
+        self.assertEqual(len(g[0]), 3)
