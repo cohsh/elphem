@@ -11,7 +11,8 @@ class TestUnit(TestCase):
     def test_calculate(self):
         lattice = EmptyLattice(5,5,5,60,60,60)
 
-        electron = FreeElectron(lattice, 4)
+        n_band = 20
+        electron = FreeElectron(lattice, n_band, 4)
         
         mass = 12 * Mass.DALTON["->"]
         
@@ -23,12 +24,10 @@ class TestUnit(TestCase):
 
         self_energy = SelfEnergy(lattice, electron, phonon, temperature)
 
-        n_g = np.array([1]*3)
-        n_k = np.array([5]*3)
-        n_g_inter = np.array([1]*3)
-        n_q = np.array([5]*3)
+        n_k = np.array([5,5,5])
+        n_q = np.array([5,5,5])
         
-        g_mesh, k_mesh = electron.grid(n_g, n_k)
+        g_mesh, k_mesh = electron.grid(n_band, n_k)
         
         g = g_mesh.reshape(-1, 3)
         k = k_mesh.reshape(-1, 3)

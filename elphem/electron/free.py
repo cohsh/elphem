@@ -5,6 +5,7 @@ from elphem.lattice.empty import EmptyLattice
 @dataclass
 class FreeElectron:
     lattice: EmptyLattice
+    n_band: int
     electron_per_cell: int
     
     def __post_init__(self):
@@ -36,7 +37,7 @@ class FreeElectron:
         """
         return 0.5 * np.linalg.norm(k, axis=k.ndim-1) ** 2 - self.fermi_energy()
     
-    def grid(self, n_g: np.ndarray, n_k: np.ndarray) -> tuple:
+    def grid(self, n_k: np.ndarray) -> tuple:
         """
         Get (G, k)-grid.
         
@@ -51,6 +52,14 @@ class FreeElectron:
         """
         basis = self.lattice.basis["reciprocal"]
         
+        g = self.get_reciprocal_vector()
+        k_x = np.linspace(-0.5, 0.5, n_k[0])
+        k_y = np.linspace(-0.5, 0.5, n_k[1])
+        k_z = np.linspace(-0.5, 0.5, n_k[2])
+
+        k_grid = np.array(np.meshgrid(g, k_x, k_y, k_z)).T
+        print(k_grid)
+
         # Combining the grid generation for G and k
         grid_points = [np.arange(-i, i) for i in n_g] + [np.linspace(-0.5, 0.5, i) for i in n_k]
         grid = np.meshgrid(*grid_points)
@@ -68,7 +77,7 @@ class FreeElectron:
 
         return tuple(grid_set)
     
-    def get_band_structure(self, n_g: np.ndarray, *k_via: list[np.ndarray], n_via=20) -> tuple:
+    def get_band_structure(self, *k_via: list[np.ndarray], n_via=20) -> tuple:
         """
         Calculate the electronic band structures.
 
@@ -89,15 +98,15 @@ class FreeElectron:
             raise AttributeError("The lattice object must have a 'grid' method.")
 
         x, k, special_x = self.lattice.reciprocal_cell.path(n_via, *k_via)
-        g = self.lattice.grid(n_g).reshape(-1, 3)
+        g = self.get_reciprocal_vector()
         eig = np.array([self.eigenenergy(k + gi) for gi in g])
         
         return x, eig, special_x
     
-    def get_reciprocal_vector(self, n_band) -> np.ndarray:
+    def get_reciprocal_vector(self) -> np.ndarray:
         basis = self.lattice.basis["reciprocal"]
 
-        n_1d = np.arange(0, np.cbrt(n_band))
+        n_1d = np.arange(0, np.cbrt(self.n_band))
         n_3d = np.array(np.meshgrid(n_1d, n_1d, n_1d)).T.reshape(-1, 3)
 
         g = n_3d @ basis
@@ -113,4 +122,4 @@ class FreeElectron:
                     g_list.append(g[count])
                 count += 1
 
-        return np.array(g_list[0:n_band])
+        return np.array(g_list[0:self.n_band])

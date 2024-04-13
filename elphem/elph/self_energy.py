@@ -40,7 +40,7 @@ class SelfEnergy:
         
         return result
 
-    def calculate_fan_term(self, g: np.ndarray, k: np.ndarray, n_g_inter: np.ndarray, n_q: np.ndarray) -> complex:
+    def calculate_fan_term(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> complex:
         """
         Calculate single values of Fan self-energy.
         
@@ -55,7 +55,7 @@ class SelfEnergy:
             A complex value representing Fan self-energy.
         """
             
-        g_inter, q = self.electron.grid(n_g_inter, n_q) # Generate intermediate G, q grid.
+        g_inter, q = self.electron.grid(n_q) # Generate intermediate G, q grid.
 
         omega = self.phonon.eigenenergy(q)
         bose = bose_distribution(self.temperature, omega)

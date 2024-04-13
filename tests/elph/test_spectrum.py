@@ -16,14 +16,14 @@ class TestUnit(TestCase):
 
         lattice = EmptyLattice(5,5,5,60,60,60)
 
-        electron = FreeElectron(lattice, 4)        
+        n_band = 20
+
+        electron = FreeElectron(lattice, n_band, 4)        
         phonon = DebyeModel(lattice, temperature, 2, mass)
 
         self_energy = SelfEnergy(lattice, electron, phonon, temperature)
 
-        n_g = np.array([1]*3)
         n_k = np.array([5]*3)        
-        n_g_inter = np.array([1]*3)
         n_q = np.array([5]*3)
         n_omega = 100
         

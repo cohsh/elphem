@@ -8,8 +8,7 @@ from elphem.elph.distribution import safe_divide
 class Spectrum:
     self_energy: SelfEnergy
 
-    def calculate_with_grid(self, n_g: np.ndarray, n_k: np.ndarray,
-                    n_g_inter: np.ndarray, n_q: np.ndarray, n_omega: int) -> np.ndarray:
+    def calculate_with_grid(self, n_k: np.ndarray, n_q: np.ndarray, n_omega: int) -> np.ndarray:
         """
         Calculate 2nd-order Fan self-energies.
         
