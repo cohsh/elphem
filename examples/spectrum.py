@@ -21,7 +21,7 @@ def main():
     self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.1)
 
     n_q = np.array([10]*3)
-    n_omega = 50
+    n_omega = 1000
     range_omega = [-0.2, 0.5]
     
     k_names = ["G", "H", "N", "G", "P", "H"]
@@ -45,7 +45,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-#    mappable.set_clim(-3.0, 0.0)
+    mappable.set_clim(-5.0, 0.0)
 
     fig.savefig("test_spectrum.png")
 
