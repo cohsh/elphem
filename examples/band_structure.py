@@ -6,18 +6,17 @@ from elphem import SpecialPoints, Energy, Length, LatticeConstant, EmptyLattice,
 def main():
     # Example: Li (BCC)
     a = 2.98 * Length.ANGSTROM["->"]
-    alpha = 109.47
+    alpha = 109.47    
+    n_band = 10
 
-    lattice_constant = LatticeConstant(a,a,a,alpha,alpha,alpha)
-    lattice = EmptyLattice(lattice_constant)
-    
-    n_cut = np.array([2] * 3)
-    electron = FreeElectron(lattice, 1)
+    lattice = EmptyLattice(a,a,a,alpha,alpha,alpha)
+
+    electron = FreeElectron(lattice, n_band, 1)
         
     k_names = ["G", "H", "N", "G", "P", "H"]
     k_via = [SpecialPoints.BCC[name] for name in k_names]
 
-    x, eig, x_special = electron.get_band_structure(n_cut, *k_via)
+    x, eig, x_special = electron.get_band_structure(*k_via)
 
     fig, ax = plt.subplots()
     for band in eig:

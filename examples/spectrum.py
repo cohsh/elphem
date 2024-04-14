@@ -18,10 +18,10 @@ def main():
     electron = FreeElectron(lattice, n_band, 1)
     phonon = DebyeModel(lattice, debye_temperature, 1, mass)
 
-    temperature = 2 * debye_temperature
+    temperature = 0.5 * debye_temperature
     self_energy = SelfEnergy(lattice, electron, phonon, temperature, sigma=0.01, eta=0.01)
 
-    n_q = np.array([10]*3)
+    n_q = np.array([8]*3)
     n_omega = 100
     range_omega = [-0.5, 1.5]
     

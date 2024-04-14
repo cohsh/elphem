@@ -57,17 +57,10 @@ class FreeElectron:
         k_x = np.linspace(-0.5, 0.5, n_k[0])
         k_y = np.linspace(-0.5, 0.5, n_k[1])
         k_z = np.linspace(-0.5, 0.5, n_k[2])
-        k = np.array(np.meshgrid(k_x, k_y, k_z)).T.reshape(-1, 3) @ basis
-        
-        shape_return = (self.n_band, len(k), 3)
-        
-        g_grid = np.zeros(shape_return)
-        k_grid = np.zeros(shape_return)
-        
-        for n in range(self.n_band):
-            for i in range(len(k)):
-                g_grid[n,i] = self.g[n]
-                k_grid[n,i] = k[i]
+        k = np.array(np.meshgrid(k_x, k_y, k_z, indexing='ij')).T.reshape(-1, 3) @ basis
+
+        k_grid = np.tile(k, (self.n_band, 1, 1))
+        g_grid = np.repeat(self.g[:, np.newaxis, :], len(k), axis=1)
 
         return g_grid, k_grid
     
@@ -95,7 +88,9 @@ class FreeElectron:
     def get_reciprocal_vector(self) -> np.ndarray:
         basis = self.lattice.basis["reciprocal"]
 
-        n_1d = np.arange(0, np.cbrt(self.n_band))
+        n_cut = np.ceil(np.cbrt(self.n_band))
+
+        n_1d = np.arange(-n_cut, n_cut + 1)
         n_3d = np.array(np.meshgrid(n_1d, n_1d, n_1d)).T.reshape(-1, 3)
 
         g = n_3d @ basis
