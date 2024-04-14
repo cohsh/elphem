@@ -7,7 +7,7 @@ def main():
     # Example: Li (BCC)
     a = 2.98 * Length.ANGSTROM["->"]
     alpha = 109.47    
-    n_band = 10
+    n_band = 20
 
     lattice = EmptyLattice(a,a,a,alpha,alpha,alpha)
 
