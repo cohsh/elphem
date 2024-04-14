@@ -54,7 +54,7 @@ class SelfEnergy:
         Return
             A complex value representing Fan self-energy.
         """
-            
+        
         g_inter, q = self.electron.grid(n_q) # Generate intermediate G, q grid.
 
         omega = self.phonon.eigenenergy(q)
@@ -62,8 +62,8 @@ class SelfEnergy:
         
         coeff = 2.0 * np.pi / np.prod(n_q)
 
-        epsilon = self.electron.eigenenergy(k)
-        epsilon_inter = self.electron.eigenenergy(k + q)
+        epsilon = self.electron.eigenenergy(k + g)
+        epsilon_inter = self.electron.eigenenergy(k + g_inter + q)
 
         fermi = fermi_distribution(self.temperature, epsilon_inter)
 
@@ -97,8 +97,8 @@ class SelfEnergy:
         
         coeff = 2.0 * np.pi / np.prod(n_q)
 
-        epsilon = self.electron.eigenenergy(k)
-        epsilon_inter = self.electron.eigenenergy(k + q)
+        epsilon = self.electron.eigenenergy(k + g)
+        epsilon_inter = self.electron.eigenenergy(k + g_inter + q)
 
         fermi = fermi_distribution(self.temperature, epsilon_inter)
 

@@ -92,7 +92,7 @@ class FreeElectron:
 
         n_1d = np.arange(-n_cut, n_cut + 1)
         n_3d = np.array(np.meshgrid(n_1d, n_1d, n_1d)).T.reshape(-1, 3)
-
+        
         g = n_3d @ basis
         g_norm = np.linalg.norm(g, axis=-1).round(decimals=5)
         g_norm_unique = np.unique(g_norm)

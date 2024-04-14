@@ -10,14 +10,14 @@ def main():
     alpha = 109.47
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
     debye_temperature = 344.0
-    temperature = 0.5 * debye_temperature
+    temperature = debye_temperature
     n_band = 20
 
     lattice = EmptyLattice(a,a,a,alpha,alpha,alpha)
     electron = FreeElectron(lattice, n_band, 1)        
     phonon = DebyeModel(lattice, temperature, 1, mass)
 
-    self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.1)
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.01)
 
     k_names = ["G", "H", "N", "G", "P", "H"]
     k_via = [SpecialPoints.BCC[name] for name in k_names]
