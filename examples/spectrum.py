@@ -12,22 +12,22 @@ def main():
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
     debye_temperature = 344.0
     temperature = 1000.0
-    n_band = 20
+    n_band = 10
 
     lattice = EmptyLattice(a,a,a,alpha,alpha,alpha)
     electron = FreeElectron(lattice, n_band, 1)
     phonon = DebyeModel(lattice, debye_temperature, 1, mass)
 
     temperature = 2 * debye_temperature
-    self_energy = SelfEnergy(lattice, electron, phonon, temperature, sigma=0.01, eta=0.05)
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature, sigma=0.01, eta=0.02)
 
-    n_q = np.array([10]*3)
+    n_q = np.array([8]*3)
     n_omega = 100
     range_omega = [-0.5, 1.5]
     
     k_names = ["G", "H", "N", "G", "P", "H"]
     k_via = [SpecialPoints.BCC[name] for name in k_names]
-    n_via = 50
+    n_via = 20
     
     x, y, spectrum, special_x = Spectrum(self_energy).calculate_with_path(k_via, n_via, n_q, n_omega, range_omega)
     y_mesh, x_mesh = np.meshgrid(y, x)

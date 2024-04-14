@@ -6,8 +6,7 @@ from elphem import LatticeConstant, EmptyLattice, DebyeModel, AtomicWeight, Ener
 def main():
     # Example: \gamma-Fe (FCC)
     a = 2.58 * Length.ANGSTROM["->"]
-    lattice_constant = LatticeConstant(a, a, a, 60, 60, 60)
-    lattice = EmptyLattice(lattice_constant)
+    lattice = EmptyLattice(a, a, a, 60, 60, 60)
     
     debye_temperature = 470.0
 
