@@ -11,19 +11,18 @@ def main():
     alpha = 109.47
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
     debye_temperature = 344.0
-    temperature = 1 * debye_temperature
-    n_band = 10
+    n_band = 8
 
     lattice = EmptyLattice(a,a,a,alpha,alpha,alpha)
     electron = FreeElectron(lattice, n_band, 1)
     phonon = DebyeModel(lattice, debye_temperature, 1, mass)
 
-    temperature = 2 * debye_temperature
-    self_energy = SelfEnergy(lattice, electron, phonon, temperature, sigma=0.01, eta=0.05)
+    temperature =  2 * debye_temperature
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.1)
 
     n_q = np.array([10]*3)
-    n_omega = 100
-    range_omega = [-0.5, 1.5]
+    n_omega = 50
+    range_omega = [-0.2, 0.5]
     
     k_names = ["G", "H", "N", "G", "P", "H"]
     k_via = [SpecialPoints.BCC[name] for name in k_names]
@@ -46,7 +45,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(-3.0, 0.0)
+#    mappable.set_clim(-3.0, 0.0)
 
     fig.savefig("test_spectrum.png")
 
