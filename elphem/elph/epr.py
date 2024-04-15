@@ -54,7 +54,7 @@ class EPR:
         
         g = self.self_energy.electron.g
         
-        x, k, special_x = self.self_energy.lattice.reciprocal_cell.path(*k_names, n_split)
+        x, k, special_x = self.self_energy.lattice.reciprocal_cell.path(k_names, n_split)
         eig = np.array([self.self_energy.electron.eigenenergy(k + g_i) for g_i in g])
 
         shape_return = eig.shape

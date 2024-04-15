@@ -6,16 +6,15 @@ from elphem import LatticeConstant, EmptyLattice, DebyeModel, AtomicWeight, Ener
 def main():
     # Example: \gamma-Fe (FCC)
     a = 2.58 * Length.ANGSTROM["->"]
-    lattice = EmptyLattice(a, a, a, 60, 60, 60)
-    
+    lattice = EmptyLattice('fcc', a)
+
     debye_temperature = 470.0
 
     phonon = DebyeModel(lattice, debye_temperature, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
 
     q_names = ["G", "X", "G", "L"]
-    q_via = [SpecialPoints.FCC[name] for name in q_names]
     
-    x, omega, x_special = phonon.get_dispersion(*q_via)
+    x, omega, x_special = phonon.get_dispersion(q_names, n_split=20)
     
     fig, ax = plt.subplots()
 

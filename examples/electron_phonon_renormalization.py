@@ -7,25 +7,23 @@ from elphem.const import Mass, Energy, Length, AtomicWeight, SpecialPoints
 def main():
     # Example: Li (BCC)
     a = 2.98 * Length.ANGSTROM["->"]
-    alpha = 109.47
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
     debye_temperature = 344.0
     temperature = debye_temperature
     n_band = 20
 
-    lattice = EmptyLattice(a,a,a,alpha,alpha,alpha)
+    lattice = EmptyLattice('bcc', a)
     electron = FreeElectron(lattice, n_band, 1)        
     phonon = DebyeModel(lattice, temperature, 1, mass)
 
     self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.01)
 
     k_names = ["G", "H", "N", "G", "P", "H"]
-    k_via = [SpecialPoints.BCC[name] for name in k_names]
-    n_via = 20
 
     n_q = np.array([8]*3)
+    n_split = 20
     
-    x, eig, epr, special_x = EPR(self_energy).calculate_with_path(k_via, n_via, n_q)
+    x, eig, epr, special_x = EPR(self_energy).calculate_with_path(k_names, n_split, n_q)
     
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)

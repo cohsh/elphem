@@ -8,12 +8,12 @@ def main():
     # Example: Li (BCC)
 
     a = 2.98 * Length.ANGSTROM["->"]
-    alpha = 109.47
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
+
     debye_temperature = 344.0
     n_band = 8
 
-    lattice = EmptyLattice(a,a,a,alpha,alpha,alpha)
+    lattice = EmptyLattice('bcc', a)
     electron = FreeElectron(lattice, n_band, 1)
     phonon = DebyeModel(lattice, debye_temperature, 1, mass)
 
@@ -25,10 +25,9 @@ def main():
     range_omega = [-0.2, 0.5]
     
     k_names = ["G", "H", "N", "G", "P", "H"]
-    k_via = [SpecialPoints.BCC[name] for name in k_names]
-    n_via = 20
+    n_split = 20
     
-    x, y, spectrum, special_x = Spectrum(self_energy).calculate_with_path(k_via, n_via, n_q, n_omega, range_omega)
+    x, y, spectrum, special_x = Spectrum(self_energy).calculate_with_path(k_names, n_split, n_q, n_omega, range_omega)
     y_mesh, x_mesh = np.meshgrid(y, x)
 
     fig = plt.figure()
