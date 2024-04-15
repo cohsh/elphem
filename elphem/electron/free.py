@@ -6,15 +6,15 @@ from elphem.lattice.empty import EmptyLattice
 class FreeElectron:
     lattice: EmptyLattice
     n_band: int
-    electron_per_cell: int
+    n_electron: int
     
     def __post_init__(self):
         if not isinstance(self.lattice, EmptyLattice):
             raise TypeError("The type of first variable must be EmptyLattice.")
-        if self.electron_per_cell <= 0:
+        if self.n_electron <= 0:
             raise ValueError("Second variable (number of electrons per unit cell) should be a positive value.")
         
-        self.electron_density = self.electron_per_cell / self.lattice.volume["primitive"]
+        self.electron_density = self.n_electron / self.lattice.volume["primitive"]
         self.g = self.get_reciprocal_vector()
 
     def fermi_energy(self) -> float:
