@@ -19,7 +19,7 @@ def main():
     temperature =  3 * debye_temperature
     self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.1)
 
-    n_q = np.array([10]*3)
+    n_q = np.array([20]*3)
     n_omega = 100
     range_omega = [-0.2, 0.5]
     
