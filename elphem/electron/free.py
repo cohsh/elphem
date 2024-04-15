@@ -64,7 +64,7 @@ class FreeElectron:
 
         return g_grid, k_grid
     
-    def get_band_structure(self, *k_via: list[np.ndarray], n_via=20) -> tuple:
+    def get_band_structure(self, k_names: list[np.ndarray], n_split: int) -> tuple:
         """
         Calculate the electronic band structures.
 
@@ -79,7 +79,7 @@ class FreeElectron:
                 eig: Eigenenergy values
                 special_x: x-coordinates of special points
         """
-        x, k, special_x = self.lattice.reciprocal_cell.path(n_via, *k_via)
+        x, k, special_x = self.lattice.reciprocal_cell.path(k_names, n_split)
         
         eigenenergy = np.array([self.eigenenergy(k + g_i) for g_i in self.g])
         

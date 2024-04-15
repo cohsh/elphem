@@ -2,6 +2,7 @@ import numpy as np
 from dataclasses import dataclass
 
 from elphem.lattice.rotation import LatticeRotation
+from elphem.const.brillouin import SpecialPoints
 
 @dataclass
 class LatticeConstant:
@@ -11,6 +12,7 @@ class LatticeConstant:
     alpha: float
     beta: float
     gamma: float
+    crystal_structure: str
     
     def __post_init__(self):
         self.length = np.array([self.a, self.b, self.c])
@@ -89,7 +91,10 @@ class ReciprocalCell(Cell):
         
         return basis
 
-    def path(self, n: int, *k_via: list[np.ndarray]) -> np.ndarray:
+    def path(self, k_names: list[str], n: int) -> np.ndarray:
+        # k_names = ["G", "H", "N", "G", "P", "H"]
+        k_via = [self.get_special_k(s) for s in k_names]
+
         n_via = len(k_via) - 1
 
         total_length = np.empty((n_via * n,))
@@ -116,54 +121,15 @@ class ReciprocalCell(Cell):
 
         return total_length, k, special_length
 
-@dataclass
-class EmptyLatticeFull:
-    a: float
-    b: float
-    c: float
-    alpha: float
-    beta: float
-    gamma: float
-
-    def __post_init__(self):
-        self.constants = LatticeConstant(self.a, self.b, self.c, self.alpha, self.beta, self.gamma)
-        self.primitive_cell = PrimitiveCell(self.constants)
-        self.reciprocal_cell = ReciprocalCell(self.constants)
-
-        self.volume = {
-            "primitive": self.primitive_cell.volume(),
-            "reciprocal": self.reciprocal_cell.volume()
-        }
-        self.basis = {
-            "primitive": self.primitive_cell.basis,
-            "reciprocal": self.reciprocal_cell.basis
-        }
-        
-    def grid(self, *n: list[np.ndarray], space="reciprocal") -> np.ndarray:
-        basis = self.basis[space]
-        
-        n_array = np.array(n)
-        n_point = len(n_array)
-        n_array = n_array.reshape(n_array.size,)
-
-        grid = np.meshgrid(*[np.arange(-i, i) for i in n_array])
-        grid = np.array(grid)
-
-        grid_set = []
-        j = 0
-        for i in range(n_point):
-            x = grid[j:j+3]
-            y = np.empty(x[0].shape + (3,))
-            for k in range(3):
-                y[...,k] = x[k]
-
-            grid_set.append(y @ basis)
-            j += 3
-
-        if len(grid_set) == 1:
-            return grid_set[0]
+    def get_special_k(self, k_name: str) -> np.ndarray:
+        if self.lattice_constant.crystal_structure == 'bcc':
+            return SpecialPoints.BCC[k_name]
+        elif self.lattice_constant.crystal_structure == 'fcc':
+            return SpecialPoints.FCC[k_name]
+        elif self.lattice_constant.crystal_structure == 'sc':
+            return SpecialPoints.SC[k_name]
         else:
-            return tuple(grid_set)
+            raise ValueError("Invalid name specified.")
 
 @dataclass
 class EmptyLattice:
@@ -196,7 +162,7 @@ class EmptyLattice:
         alpha = alpha_values.get(crystal_structure_lower)
 
         if alpha is not None:
-            return LatticeConstant(self.a, self.a, self.a, alpha, alpha, alpha)
+            return LatticeConstant(self.a, self.a, self.a, alpha, alpha, alpha, crystal_structure_lower)
         else:
             raise ValueError("Invalid crystal structure specified.")
         

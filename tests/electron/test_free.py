@@ -13,12 +13,9 @@ class TestUnit(TestCase):
         electron = FreeElectron(lattice, n_band, n_electron)
             
         k_names = ["L", "G", "X"]
-        k_via = []
-
-        for name in k_names:
-            k_via.append(SpecialPoints.FCC[name])
+        n_split = 20
         
-        x, eig, x_special = electron.get_band_structure(*k_via)
+        x, eig, x_special = electron.get_band_structure(k_names, n_split)
         
         self.assertEqual(len(eig), n_band)
         self.assertEqual(len(eig[0]), len(x))

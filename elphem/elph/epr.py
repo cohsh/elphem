@@ -37,7 +37,7 @@ class EPR:
         
         return eig, epr
     
-    def calculate_with_path(self, k_via: list[np.ndarray], n_via: np.ndarray, n_q: np.ndarray) -> tuple:
+    def calculate_with_path(self, k_names: list[np.ndarray], n_split: int, n_q: np.ndarray) -> tuple:
         """
         Calculate 2nd-order Fan self-energies.
         
@@ -54,7 +54,7 @@ class EPR:
         
         g = self.self_energy.electron.g
         
-        x, k, special_x = self.self_energy.lattice.reciprocal_cell.path(n_via, *k_via)
+        x, k, special_x = self.self_energy.lattice.reciprocal_cell.path(*k_names, n_split)
         eig = np.array([self.self_energy.electron.eigenenergy(k + g_i) for g_i in g])
 
         shape_return = eig.shape

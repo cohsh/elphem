@@ -86,7 +86,7 @@ class DebyeModel:
 
         return x @ basis
     
-    def get_dispersion(self, *q_via: list[np.ndarray], n_via=20) -> tuple:
+    def get_dispersion(self, q_names: list[np.ndarray], n_split) -> tuple:
         """
         Get phonon dispersions.
         
@@ -94,7 +94,7 @@ class DebyeModel:
             q_via: Numpy arrays representing special points in the first Brillouin zone.
             n_via: Number of points between special points. The default value is 20.
         """
-        x, q, x_special = self.lattice.reciprocal_cell.path(n_via, *q_via)
+        x, q, x_special = self.lattice.reciprocal_cell.path(q_names, n_split)
         omega = self.eigenenergy(q)
         
         return x, omega, x_special

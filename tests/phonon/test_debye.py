@@ -25,12 +25,9 @@ class TestUnit(TestCase):
         phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
 
         q_names = ["L", "G", "X"]
-        q_via = []
+        n_split = 20
         
-        for name in q_names:
-            q_via.append(SpecialPoints.FCC[name])
-        
-        x, omega, x_special = phonon.get_dispersion(*q_via)
+        x, omega, x_special = phonon.get_dispersion(q_names, n_split)
 
         self.assertEqual(len(omega), len(x))
         self.assertEqual(len(q_names), len(x_special))

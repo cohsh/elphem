@@ -54,7 +54,7 @@ class Spectrum:
         
         return spectrum
     
-    def calculate_with_path(self, k_via: list[np.ndarray], n_via: np.ndarray,
+    def calculate_with_path(self, k_names: list[np.ndarray], n_split: int,
                     n_q: np.ndarray, n_omega: int, range_omega: list) -> tuple:
         """
         Calculate 2nd-order Fan self-energies.
@@ -72,7 +72,7 @@ class Spectrum:
         
         g = self.self_energy.electron.g
         
-        x, k, special_x = self.self_energy.lattice.reciprocal_cell.path(n_via, *k_via)
+        x, k, special_x = self.self_energy.lattice.reciprocal_cell.path(k_names, n_split)
         epsilon = np.array([self.self_energy.electron.eigenenergy(k + g_i) for g_i in g])
 
         shape_return = epsilon.shape
