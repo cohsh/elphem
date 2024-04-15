@@ -11,17 +11,16 @@ def main():
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
 
     debye_temperature = 344.0
-    n_band = 8
 
     lattice = EmptyLattice('bcc', a)
-    electron = FreeElectron(lattice, n_band, 1)
+    electron = FreeElectron(lattice, n_band=8, n_electron=1)
     phonon = DebyeModel(lattice, debye_temperature, 1, mass)
 
     temperature =  2 * debye_temperature
-    self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.1)
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.01)
 
     n_q = np.array([10]*3)
-    n_omega = 1000
+    n_omega = 100
     range_omega = [-0.2, 0.5]
     
     k_names = ["G", "H", "N", "G", "P", "H"]
