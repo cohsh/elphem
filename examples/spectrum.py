@@ -16,8 +16,8 @@ def main():
     electron = FreeElectron(lattice, n_band=8, n_electron=1)
     phonon = DebyeModel(lattice, debye_temperature, 1, mass)
 
-    temperature =  2 * debye_temperature
-    self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.01)
+    temperature =  3 * debye_temperature
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.1)
 
     n_q = np.array([10]*3)
     n_omega = 100
