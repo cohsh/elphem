@@ -58,7 +58,6 @@ class SelfEnergy:
         g_inter, q = self.electron.grid(n_q) # Generate intermediate G, q grid.
 
         omega = self.phonon.eigenenergy(q)
-        bose = bose_distribution(self.temperature, omega)
         
         coeff = 2.0 * np.pi / np.prod(n_q)
 
@@ -66,6 +65,7 @@ class SelfEnergy:
         epsilon_inter = self.electron.eigenenergy(k + g_inter + q)
 
         fermi = fermi_distribution(self.temperature, epsilon_inter)
+        bose = bose_distribution(self.temperature, omega)
 
         coupling = self.coupling(g, g_inter, q)
     
