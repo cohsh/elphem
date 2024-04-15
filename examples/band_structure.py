@@ -7,10 +7,9 @@ def main():
     # Example: Li (BCC)
     a = 2.98 * Length.ANGSTROM["->"]
     alpha = 109.47    
-    n_band = 20
+    n_band = 10
 
     lattice = EmptyLattice(a,a,a,alpha,alpha,alpha)
-
     electron = FreeElectron(lattice, n_band, 1)
         
     k_names = ["G", "H", "N", "G", "P", "H"]
