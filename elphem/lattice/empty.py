@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from elphem.lattice.rotation import LatticeRotation
 
 @dataclass
-class LatticeConstant:
+class LatticeConstantFull:
     a: float
     b: float
     c: float
@@ -18,6 +18,28 @@ class LatticeConstant:
         
     def rescale(self, factor: float) -> None:
         self.length *= factor
+
+@dataclass
+class LatticeConstant:
+    a: float
+    crystal_structure: str
+
+    def __post_init__(self):
+        crystal_structure_lower = self.crystal_structure.lower()
+
+    def get_lattice_constant_full(self, crystal_structure_lower: str) -> LatticeConstantFull:
+        alpha_values = {
+            'bcc': 109.47,
+            'fcc': 60.0,
+            'sc': 90.0
+        }
+
+        alpha = alpha_values.get(crystal_structure_lower)
+
+        if alpha is not None:
+            return LatticeConstantFull(a, a, a, alpha, alpha, alpha)
+        else:
+            raise ValueError("Invalid crystal structure specified.")
 
 class Cell:
     def __init__(self):
