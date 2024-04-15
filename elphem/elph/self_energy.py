@@ -71,8 +71,8 @@ class SelfEnergy:
     
         delta_energy = epsilon - epsilon_inter
         # Real Part
-        green_part_real = ((1.0 - fermi + bose) / (delta_energy - omega + self.eta * 1.0j)
-                        + (fermi + bose) / (delta_energy + omega + self.eta * 1.0j)).real
+        green_part_real = (safe_divide(1.0 - fermi + bose, delta_energy - omega + self.eta * 1.0j)
+                            + safe_divide(fermi + bose, delta_energy + omega + self.eta * 1.0j)).real
 
         # Imaginary Part
         green_part_imag = ((1.0 - fermi + bose) * gaussian_distribution(self.sigma, delta_energy - omega)
@@ -106,8 +106,8 @@ class SelfEnergy:
     
         delta_energy = epsilon - epsilon_inter
         # Real Part
-        partial_green_part_real = - ((1.0 - fermi + bose) / (delta_energy - omega + self.eta * 1.0j) ** 2
-                        + (fermi + bose) / (delta_energy + omega + self.eta * 1.0j) ** 2).real
+        partial_green_part_real = - (safe_divide(1.0 - fermi + bose, (delta_energy - omega + self.eta * 1.0j) ** 2)
+                                    + safe_divide(fermi + bose, (delta_energy + omega + self.eta * 1.0j) ** 2)).real
 
         coupling_strength = - np.nansum(np.abs(coupling) ** 2 * partial_green_part_real)
         

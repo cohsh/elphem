@@ -17,7 +17,7 @@ def main():
     phonon = DebyeModel(lattice, debye_temperature, 1, mass)
 
     temperature =  3 * debye_temperature
-    self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.1)
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.01)
 
     n_q = np.array([20]*3)
     n_omega = 100
