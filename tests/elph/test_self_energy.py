@@ -9,7 +9,7 @@ from elphem.elph.self_energy import SelfEnergy
 
 class TestUnit(TestCase):
     def test_calculate(self):
-        lattice = EmptyLattice(5,5,5,60,60,60)
+        lattice = EmptyLattice('fcc', 5.0)
 
         n_band = 10
         electron = FreeElectron(lattice, n_band, 4)

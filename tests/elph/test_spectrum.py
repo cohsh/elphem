@@ -14,7 +14,7 @@ class TestUnit(TestCase):
         mass = 12 * Mass.DALTON["->"]        
         temperature = 2300.0
 
-        lattice = EmptyLattice(5,5,5,60,60,60)
+        lattice = EmptyLattice('fcc', 5.0)
 
         n_band = 10
 
@@ -35,7 +35,7 @@ class TestUnit(TestCase):
         mass = 12 * Mass.DALTON["->"]        
         temperature = 2300.0
 
-        lattice = EmptyLattice(5,5,5,60,60,60)
+        lattice = EmptyLattice('fcc', 5)
 
         n_band = 10
 

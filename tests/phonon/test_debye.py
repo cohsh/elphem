@@ -10,8 +10,7 @@ from elphem.phonon.debye import DebyeModel
 class TestUnit(TestCase):
     def test_debye(self):
         # Example: FCC-Fe
-        lattice = EmptyLattice(2.58, 2.58, 2.58, 60, 60, 60)
-
+        lattice = EmptyLattice('fcc', 2.58)
         phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
         
         nq = np.array([8]*3)
@@ -22,8 +21,7 @@ class TestUnit(TestCase):
     
     def test_get_dispersion(self):
         # Example: FCC-Fe
-        lattice = EmptyLattice(2.58, 2.58, 2.58, 60, 60, 60)
-
+        lattice = EmptyLattice('fcc', 2.58)
         phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
 
         q_names = ["L", "G", "X"]

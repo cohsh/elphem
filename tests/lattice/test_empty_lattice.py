@@ -5,7 +5,7 @@ from elphem.lattice.empty import EmptyLattice
 
 class TestUnit(TestCase):
     def test_vector(self):
-        lattice = EmptyLattice(5, 5, 5, 60, 60, 60)
+        lattice = EmptyLattice('fcc', 5.0)
         basis_primitive = lattice.basis["primitive"]
         basis_reciprocal = lattice.basis["reciprocal"]
 
@@ -13,6 +13,6 @@ class TestUnit(TestCase):
         self.assertEqual(basis_reciprocal.shape, (3,3))
     
     def test_volume(self):
-        lattice = EmptyLattice(4.65, 4.65, 4.65, 90, 90, 90)
+        lattice = EmptyLattice('sc', 4.65)
         volume = lattice.volume["primitive"]
         self.assertTrue(abs(volume - np.prod(lattice.constants.length)) < 1e-10)

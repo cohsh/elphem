@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from elphem.lattice.rotation import LatticeRotation
 
 @dataclass
-class LatticeConstantFull:
+class LatticeConstant:
     a: float
     b: float
     c: float
@@ -18,28 +18,6 @@ class LatticeConstantFull:
         
     def rescale(self, factor: float) -> None:
         self.length *= factor
-
-@dataclass
-class LatticeConstant:
-    a: float
-    crystal_structure: str
-
-    def __post_init__(self):
-        crystal_structure_lower = self.crystal_structure.lower()
-
-    def get_lattice_constant_full(self, crystal_structure_lower: str) -> LatticeConstantFull:
-        alpha_values = {
-            'bcc': 109.47,
-            'fcc': 60.0,
-            'sc': 90.0
-        }
-
-        alpha = alpha_values.get(crystal_structure_lower)
-
-        if alpha is not None:
-            return LatticeConstantFull(a, a, a, alpha, alpha, alpha)
-        else:
-            raise ValueError("Invalid crystal structure specified.")
 
 class Cell:
     def __init__(self):
@@ -139,7 +117,7 @@ class ReciprocalCell(Cell):
         return total_length, k, special_length
 
 @dataclass
-class EmptyLattice:
+class EmptyLatticeFull:
     a: float
     b: float
     c: float
@@ -160,6 +138,67 @@ class EmptyLattice:
             "primitive": self.primitive_cell.basis,
             "reciprocal": self.reciprocal_cell.basis
         }
+        
+    def grid(self, *n: list[np.ndarray], space="reciprocal") -> np.ndarray:
+        basis = self.basis[space]
+        
+        n_array = np.array(n)
+        n_point = len(n_array)
+        n_array = n_array.reshape(n_array.size,)
+
+        grid = np.meshgrid(*[np.arange(-i, i) for i in n_array])
+        grid = np.array(grid)
+
+        grid_set = []
+        j = 0
+        for i in range(n_point):
+            x = grid[j:j+3]
+            y = np.empty(x[0].shape + (3,))
+            for k in range(3):
+                y[...,k] = x[k]
+
+            grid_set.append(y @ basis)
+            j += 3
+
+        if len(grid_set) == 1:
+            return grid_set[0]
+        else:
+            return tuple(grid_set)
+
+@dataclass
+class EmptyLattice:
+    crystal_structure: str
+    a: float
+
+    def __post_init__(self):
+        self.constants = self.get_lattice_constant()
+        self.primitive_cell = PrimitiveCell(self.constants)
+        self.reciprocal_cell = ReciprocalCell(self.constants)
+
+        self.volume = {
+            "primitive": self.primitive_cell.volume(),
+            "reciprocal": self.reciprocal_cell.volume()
+        }
+        self.basis = {
+            "primitive": self.primitive_cell.basis,
+            "reciprocal": self.reciprocal_cell.basis
+        }
+
+    def get_lattice_constant(self) -> LatticeConstant:
+        crystal_structure_lower = self.crystal_structure.lower()
+
+        alpha_values = {
+            'bcc': 109.47,
+            'fcc': 60.0,
+            'sc': 90.0
+        }
+
+        alpha = alpha_values.get(crystal_structure_lower)
+
+        if alpha is not None:
+            return LatticeConstant(self.a, self.a, self.a, alpha, alpha, alpha)
+        else:
+            raise ValueError("Invalid crystal structure specified.")
         
     def grid(self, *n: list[np.ndarray], space="reciprocal") -> np.ndarray:
         basis = self.basis[space]

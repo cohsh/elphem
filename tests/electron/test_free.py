@@ -7,7 +7,7 @@ from elphem.electron.free import FreeElectron
 
 class TestUnit(TestCase):
     def test_band_structure(self):
-        lattice = EmptyLattice(5,5,5,60,60,60)
+        lattice = EmptyLattice('fcc', 5.0)
         n_band = 20
         n_electron = 4
         electron = FreeElectron(lattice, n_band, n_electron)
@@ -25,7 +25,7 @@ class TestUnit(TestCase):
         self.assertEqual(len(k_names), len(x_special))
     
     def test_get_reciprocal_vector(self):
-        lattice = EmptyLattice(5,5,5,60,60,60)
+        lattice = EmptyLattice('fcc', 5.0)
         n_band = 20
         n_electron = 4
         electron = FreeElectron(lattice, n_band, n_electron)
