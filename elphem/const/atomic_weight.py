@@ -1,4 +1,10 @@
 class AtomicWeight:
+    """Provides a table of atomic weights and a method to retrieve the atomic masses based on a list of atomic symbols.
+
+    Attributes:
+        table (dict): Dictionary mapping atomic symbols to their average atomic masses.
+    """
+    
     table = {
     "H": 1.008,
     "He": 4.002602,
@@ -85,6 +91,22 @@ class AtomicWeight:
     
     @classmethod
     def get_from_list(cls, atomic_names: list) -> list:
+        """Returns a list of atomic masses corresponding to the given list of atomic symbols.
+
+        Args:
+            atomic_names (list of str): A list of atomic symbols.
+
+        Returns:
+            list of float: A list of atomic masses corresponding to the atomic symbols.
+
+        Raises:
+            TypeError: If the input is not a list or if the elements of the list are not strings.
+            ValueError: If one or more atomic symbols in the list are invalid.
+
+        Examples:
+            >>> AtomicWeight.get_from_list(['H', 'He', 'Li'])
+            [1.008, 4.002602, 6.94]
+        """
         if not isinstance(atomic_names, list):
             raise TypeError("Input must be a list of atomic symbols.")
             
