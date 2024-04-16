@@ -4,15 +4,15 @@ import matplotlib.pyplot as plt
 from elphem import LatticeConstant, EmptyLattice, DebyeModel, AtomicWeight, Energy, Mass, Length, SpecialPoints, Prefix
 
 def main():
-    # Example: \gamma-Fe (FCC)
-    a = 2.58 * Length.ANGSTROM["->"]
-    lattice = EmptyLattice('fcc', a)
+    # Example: bcc-Li
+    a = 2.98 * Length.ANGSTROM["->"]
+    mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
+    debye_temperature = 344.0
+    lattice = EmptyLattice('bcc', a)
 
-    debye_temperature = 470.0
+    phonon = DebyeModel(lattice, debye_temperature, 1, mass)
 
-    phonon = DebyeModel(lattice, debye_temperature, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
-
-    q_names = ["G", "X", "G", "L"]
+    q_names = ["G", "H", "N", "G", "P", "H"]
     
     x, omega, x_special = phonon.get_dispersion(q_names, n_split=20)
     
