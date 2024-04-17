@@ -9,8 +9,8 @@ class TestUnit(TestCase):
         basis_primitive = lattice.basis["primitive"]
         basis_reciprocal = lattice.basis["reciprocal"]
 
-        self.assertEqual(basis_primitive.shape, (3,3))        
-        self.assertEqual(basis_reciprocal.shape, (3,3))
+        for b in [basis_primitive, basis_reciprocal]:
+            self.assertEqual(b.shape, (3,3))
     
     def test_volume(self):
         lattice = EmptyLattice('sc', 4.65)

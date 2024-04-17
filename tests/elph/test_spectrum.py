@@ -10,34 +10,13 @@ from elphem.elph.self_energy import SelfEnergy
 from elphem.elph.spectrum import Spectrum
 
 class TestUnit(TestCase):
-    def test_calculate_with_grid(self):
-        mass = 12 * Mass.DALTON["->"]        
-        temperature = 2300.0
-
-        lattice = EmptyLattice('fcc', 5.0)
-
-        n_band = 10
-
-        electron = FreeElectron(lattice, n_band, 4)        
-        phonon = DebyeModel(lattice, temperature, 2, mass)
-
-        self_energy = SelfEnergy(lattice, electron, phonon, temperature)
-
-        n_k = np.array([5]*3)        
-        n_q = np.array([5]*3)
-        n_omega = 100
-        
-        spectrum = Spectrum(self_energy).calculate_with_grid(n_k, n_q, n_omega)
-                
-        self.assertEqual(spectrum.shape, (np.prod(n_k), n_omega))
-    
-    def test_calculate_with_path(self):
+    def setUp(self) -> None:
         a = 2.98 * Length.ANGSTROM["->"]
         mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
         debye_temperature = 344.0
         n_band = 8
 
-        temperature = debye_temperature
+        temperature = 0.3 * debye_temperature
 
         lattice = EmptyLattice('bcc', a)
 
@@ -45,7 +24,18 @@ class TestUnit(TestCase):
         phonon = DebyeModel(lattice, temperature, 1, mass)
 
         self_energy = SelfEnergy(lattice, electron, phonon, temperature)
+        self.spectrum = Spectrum(self_energy)
 
+    def test_calculate_with_grid(self):
+        n_k = np.full(3, 5)        
+        n_q = np.full(3, 5)
+        n_omega = 100
+        
+        a = self.spectrum.calculate_with_grid(n_k, n_q, n_omega)
+
+        self.assertEqual(a.shape, (np.prod(n_k), n_omega))
+    
+    def test_calculate_with_path(self):
         k_names = ["G", "H", "N", "G", "P", "H"]
         n_split = 20
         
@@ -53,4 +43,7 @@ class TestUnit(TestCase):
         n_omega = 200
         range_omega = [-1.0, 2.0]
         
-        x, omegas, spectrum, special_x = Spectrum(self_energy).calculate_with_path(k_names, n_split, n_q, n_omega, range_omega)
+        k, omegas, a, special_k = self.spectrum.calculate_with_path(k_names, n_split, n_q, n_omega, range_omega)
+        
+        self.assertEqual(a.shape, (len(k), len(omegas)))
+        self.assertEqual(len(k_names), len(special_k))

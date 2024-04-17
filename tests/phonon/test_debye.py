@@ -1,33 +1,26 @@
 from unittest import TestCase
 import numpy as np
-
 from elphem.const.unit import Mass
-from elphem.const.brillouin import SpecialPoints
 from elphem.const.atomic_weight import AtomicWeight
 from elphem.lattice.empty import EmptyLattice
 from elphem.phonon.debye import DebyeModel
 
 class TestUnit(TestCase):
-    def test_debye(self):
+    def setUp(self) -> None:
         # Example: FCC-Fe
         lattice = EmptyLattice('fcc', 2.58)
-        phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
-        
-        nq = np.array([8]*3)
-        q = phonon.grid(nq)
-        omega = phonon.eigenenergy(q)
+        self.phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
+
+    def test_grid(self):
+        nq = np.array([8,8,8])
+        q = self.phonon.grid(nq)
+        omega = self.phonon.eigenenergy(q)
         
         self.assertEqual(omega.shape, (nq[0], nq[1], nq[2]))
     
-    def test_get_dispersion(self):
-        # Example: FCC-Fe
-        lattice = EmptyLattice('fcc', 2.58)
-        phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
-
+    def test_dispersion(self):
         q_names = ["L", "G", "X"]
-        n_split = 20
-        
-        x, omega, x_special = phonon.get_dispersion(q_names, n_split)
+        x, omega, x_special = self.phonon.get_dispersion(q_names, n_split=20)
 
         self.assertEqual(len(omega), len(x))
         self.assertEqual(len(q_names), len(x_special))
