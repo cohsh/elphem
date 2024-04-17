@@ -8,6 +8,17 @@ from elphem.elph.distribution import fermi_distribution, bose_distribution, gaus
 
 @dataclass
 class SelfEnergy:
+    """Calculate the self-energy components for electronic states in a lattice.
+
+    Attributes:
+        lattice (EmptyLattice): The crystal lattice being studied.
+        electron (FreeElectron): Free electron model for the lattice.
+        phonon (DebyeModel): Phonon model using Debye approximation.
+        temperature (float): Temperature of the system in Kelvin.
+        sigma (float): Smearing parameter for the Gaussian distribution, defaults to 0.01.
+        eta (float): Small positive constant to ensure numerical stability, defaults to 0.01.
+        effective_potential (float): Effective potential used in electron-phonon coupling calculation, defaults to 1.0 / 16.0.
+    """
     lattice: EmptyLattice
     electron: FreeElectron
     phonon: DebyeModel
@@ -17,16 +28,15 @@ class SelfEnergy:
     effective_potential: float = 1.0 / 16.0
     
     def coupling(self, g1: np.ndarray, g2: np.ndarray, q: np.ndarray) -> np.ndarray:
-        """
-        Calculate lowest-order electron-phonon couplings.
-        
-        Args
-            g1, g2: A numpy array representing G-vector
-            k: A numpy array representing k-vector
-            q: A numpy array representing k-vector
-        
-        Return
-            A value of the elctron-phonon coupling.
+        """Calculate the lowest-order electron-phonon coupling between states.
+
+        Args:
+            g1 (np.ndarray): Initial G-vector in reciprocal space.
+            g2 (np.ndarray): Final G-vector in reciprocal space.
+            q (np.ndarray): Phonon wave vector in reciprocal space.
+
+        Returns:
+            np.ndarray: The electron-phonon coupling strength for the given vectors.
         """
         q_norm = np.linalg.norm(q, axis=-1)
         delta_g = g1 - g2
@@ -41,20 +51,16 @@ class SelfEnergy:
         return result
 
     def calculate_fan_term(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> complex:
-        """
-        Calculate single values of Fan self-energy.
-        
-        Args
-            g: A numpy array representing a single G-vector
-            k: A numpy array representing a single k-vector
-            n_g: A numpy array representing the dense of intermediate G-vectors
-            n_q: A numpy array representing the dense of intermediate q-vectors
-            eta: A value of the convergence factor. The default value is 0.01 Hartree.
-            
-        Return
-            A complex value representing Fan self-energy.
-        """
-        
+        """Calculate a single value of Fan self-energy for given wave vectors.
+
+        Args:
+            g (np.ndarray): G-vector in reciprocal space.
+            k (np.ndarray): k-vector of the electron state.
+            n_q (np.ndarray): Density of intermediate q-vectors for integration.
+
+        Returns:
+            complex: The Fan self-energy term as a complex number.
+        """        
         g_inter, q = self.electron.grid(n_q) # Generate intermediate G, q grid.
 
         omega = self.phonon.eigenenergy(q)
@@ -84,10 +90,15 @@ class SelfEnergy:
         return selfen * coeff
 
     def calculate_coupling_strength(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> float:
-        """
-        Calculate electron-phonon coupling strengths.
-        
-        Args
+        """Calculate the electron-phonon coupling strength for given wave vectors.
+
+        Args:
+            g (np.ndarray): G-vector in reciprocal space.
+            k (np.ndarray): k-vector of the electron state.
+            n_q (np.ndarray): Density of q-vectors for the integration.
+
+        Returns:
+            float: The calculated electron-phonon coupling strength.
         """
         
         g_inter, q = self.electron.grid(n_q) # Generate intermediate G, q grid.
@@ -114,10 +125,15 @@ class SelfEnergy:
         return coupling_strength * coeff
     
     def calculate_qp_strength(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> float:
-        """
-        Calculate quasiparticle strengths
-        
-        Args
+        """Calculate the quasiparticle strength for given wave vectors.
+
+        Args:
+            g (np.ndarray): G-vector in reciprocal space.
+            k (np.ndarray): k-vector of the electron state.
+            n_q (np.ndarray): Density of q-vectors for the integration.
+
+        Returns:
+            float: The quasiparticle strength.
         """
         coupling_strength = self.calculate_coupling_strength(g, k, n_q)
         qp_strength = safe_divide(1.0, 1.0 + coupling_strength)
