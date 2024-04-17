@@ -6,21 +6,23 @@ from elphem.elph.distribution import safe_divide
 
 @dataclass
 class EPR:
+    """A class to calculate the 2nd-order Fan self-energies using the self-energy module.
+
+    Attributes:
+        self_energy (SelfEnergy): An instance of SelfEnergy to use for calculations.
+    """
     self_energy: SelfEnergy
 
     def calculate_with_grid(self, n_k: np.ndarray, n_q: np.ndarray) -> np.ndarray:
         """
-        Calculate 2nd-order Fan self-energies.
-        
-        Args
-            temperature: A temperature in Kelvin.
-            n_g: A numpy array (meshgrid-type) representing G-vector
-            n_k: A numpy array (meshgrid-type) representing k-vector
-            n_g: A numpy array representing the dense of intermediate G-vectors
-            n_q: A numpy array representing the dense of intermediate q-vectors
-            
-        Return
-            A numpy array representing Fan self-energy.
+        Calculate 2nd-order Fan self-energies over a grid of k-points and q-points.
+
+        Args:
+            n_k (np.ndarray): A numpy array specifying the density of k-grid points in each direction.
+            n_q (np.ndarray): A numpy array specifying the density of q-grid points in each direction.
+
+        Returns:
+            tuple: A tuple containing the eigenenergies array and the Fan self-energy array calculated over the grid.
         """
         
         g_grid, k_grid = self.self_energy.electron.grid(n_k)
@@ -39,17 +41,15 @@ class EPR:
     
     def calculate_with_path(self, k_names: list[np.ndarray], n_split: int, n_q: np.ndarray) -> tuple:
         """
-        Calculate 2nd-order Fan self-energies.
-        
-        Args
-            temperature: A temperature in Kelvin.
-            n_g: A numpy array (meshgrid-type) representing G-vector
-            n_k: A numpy array (meshgrid-type) representing k-vector
-            n_g: A numpy array representing the dense of intermediate G-vectors
-            n_q: A numpy array representing the dense of intermediate q-vectors
-            
-        Return
-            A numpy array representing Fan self-energy.
+        Calculate 2nd-order Fan self-energies along a specified path in the Brillouin zone.
+
+        Args:
+            k_names (list[np.ndarray]): A list of special points names defining the path through the Brillouin zone.
+            n_split (int): Number of points between each special point to compute the dispersion.
+            n_q (np.ndarray): A numpy array specifying the density of q-grid points in each direction.
+
+        Returns:
+            tuple: A tuple containing x-coordinates for plotting, eigenenergies, Fan self-energies, and x-coordinates of special points.
         """
         
         g = self.self_energy.electron.g
