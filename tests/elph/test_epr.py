@@ -42,3 +42,4 @@ class TestUnit(TestCase):
         k, eig, delta_eig, special_k = self.epr.calculate_with_path(k_names, n_split, n_q)
         
         self.assertEqual(eig.shape, delta_eig.shape)
+        self.assertEqual(len(k_names), len(special_k))
