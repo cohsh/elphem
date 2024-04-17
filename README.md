@@ -11,10 +11,12 @@
 - PyPI: https://pypi.org/project/elphem
 
 ## Installation
+### From PyPI
 ```shell
 pip install elphem
 ```
-or
+
+### From GitHub
 ```shell
 git clone git@github.com:cohsh/elphem.git
 cd elphem
@@ -28,149 +30,45 @@ Currently, Elphem allows calculations of
 - phonon dispersion relations with Debye model.
 - first-order electron-phonon couplings.
 - one-electron self-energies.
+- spectral functions.
 
 ## Examples
-### Calculation of the electronic band structure
-
-![band structure](images/band_structure.png)
+### Calculation of spectral functions (`examples/spectrum.py`)
+![spectrum](images/spectrum.png)
 
 ```python
+"""Example: bcc-Li"""
 import numpy as np
 import matplotlib.pyplot as plt
-
-from elphem import SpecialPoints, Energy, Length, LatticeConstant, EmptyLattice, FreeElectron
+from elphem import *
 
 def main():
-    # Example: Li (BCC)
     a = 2.98 * Length.ANGSTROM["->"]
-    alpha = 109.47
-
-    lattice_constant = LatticeConstant(a,a,a,alpha,alpha,alpha)
-    lattice = EmptyLattice(lattice_constant)
-    
-    n_cut = np.array([2] * 3)
-    electron = FreeElectron(lattice, 1)
-        
-    k_names = ["G", "H", "N", "G", "P", "H"]
-    k_via = [SpecialPoints.BCC[name] for name in k_names]
-
-    x, eig, x_special = electron.get_band_structure(n_cut, *k_via)
-
-    fig, ax = plt.subplots()
-    for band in eig:
-        ax.plot(x, band * Energy.EV["<-"], color="tab:blue")
-    
-    ax.vlines(x_special, ymin=-10, ymax=50, color="black", linewidth=0.3)
-    ax.set_xticks(x_special)
-    ax.set_xticklabels(k_names)
-    ax.set_ylabel("Energy ($\mathrm{eV}$)")
-    ax.set_ylim([-10,50])
-
-    fig.savefig("test_band_structure.png")
-
-if __name__ == "__main__":
-    main()
-```
-
-### Calculation of the phonon dispersion
-
-![phonon dispersion](images/phonon_dispersion.png)
-
-```python
-import os
-import matplotlib.pyplot as plt
-
-from elphem import LatticeConstant, EmptyLattice, DebyeModel, AtomicWeight, Energy, Mass, Length, SpecialPoints, Prefix
-
-def main():
-    # Example: \gamma-Fe (FCC)
-    a = 2.58 * Length.ANGSTROM["->"]
-    lattice_constant = LatticeConstant(a, a, a, 60, 60, 60)
-    lattice = EmptyLattice(lattice_constant)
-    
-    debye_temperature = 470.0
-
-    phonon = DebyeModel(lattice, debye_temperature, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
-
-    q_names = ["G", "X", "G", "L"]
-    q_via = [SpecialPoints.FCC[name] for name in q_names]
-    
-    x, omega, x_special = phonon.get_dispersion(*q_via)
-    
-    fig, ax = plt.subplots()
-
-    ax.plot(x, omega * Energy.EV["<-"] / Prefix.MILLI, color="tab:blue")
-    
-    for x0 in x_special:
-        ax.axvline(x=x0, color="black", linewidth=0.3)
-    
-    ax.set_xticks(x_special)
-    ax.set_xticklabels(q_names)
-    ax.set_ylabel("Energy ($\mathrm{meV}$)")
-
-    fig.savefig("test_phonon_dispersion.png")
-
-if __name__ == "__main__":
-    main()
-```
-
-### Calculation of the electron-phonon renormalization (EPR)
-
-![epr](images/epr.png)
-
-```python
-import numpy as np
-import matplotlib.pyplot as plt
-
-from elphem import LatticeConstant, EmptyLattice, FreeElectron, DebyeModel, SelfEnergy2nd
-from elphem.const import Mass, Energy, Length, AtomicWeight, SpecialPoints
-
-def main():
-    # Example: Li (BCC)
-    a = 2.98 * Length.ANGSTROM["->"]
-    alpha = 109.47
-    lattice_constant = LatticeConstant(a,a,a,alpha,alpha,alpha)
-    lattice = EmptyLattice(lattice_constant)
-
-    electron = FreeElectron(lattice, 1)
-    
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
-    
+
     debye_temperature = 344.0
 
+    lattice = EmptyLattice('bcc', a)
+    electron = FreeElectron(lattice, n_band=8, n_electron=1)
     phonon = DebyeModel(lattice, debye_temperature, 1, mass)
 
-    self_energy = SelfEnergy2nd(lattice, electron, phonon)
+    temperature =  3 * debye_temperature
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature, sigma=0.5, eta=0.1)
 
-    n_g = np.array([2]*3)
-    
-    g = lattice.grid(n_g).reshape(-1, 3)
-    
-    n_g_inter = np.array([1]*3)
     n_q = np.array([10]*3)
-
-    k_names = ["G", "H", "N", "G", "P", "H"]
-
-    k_via = [SpecialPoints.BCC[name] for name in k_names]
-
-    x, k, special_x = lattice.reciprocal_cell.path(20, *k_via)
+    n_omega = 1000
+    range_omega = [-8 * Energy.EV["->"], 6 * Energy.EV["->"]]
     
-    selfen = np.empty((len(k)), dtype=complex)
+    k_names = ["G", "H", "N", "G", "P", "H"]
+    n_split = 20
+    
+    x, y, spectrum, special_x = Spectrum(self_energy).calculate_with_path(k_names, n_split, n_q, n_omega, range_omega)
+    y_mesh, x_mesh = np.meshgrid(y, x)
 
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-
-    temperature = 2 * debye_temperature
-
-    for n in range(len(g)):
-        eig = electron.eigenenergy(k + g[n])
-        for i in range(len(k)):
-            selfen[i] = self_energy.calculate(temperature, g[n], k[i], n_g_inter, n_q)
-
-        epr = selfen.real
-
-        ax.plot(x, eig * Energy.EV["<-"], color="tab:blue")
-        ax.plot(x, (eig + epr) * Energy.EV["<-"], color="tab:orange")
+    
+    mappable = ax.pcolormesh(x_mesh, y_mesh * Energy.EV["<-"], spectrum / Energy.EV["<-"])
     
     for x0 in special_x:
         ax.axvline(x=x0, color="black", linewidth=0.3)
@@ -178,72 +76,142 @@ def main():
     ax.set_xticks(special_x)
     ax.set_xticklabels(k_names)
     ax.set_ylabel("Energy ($\mathrm{eV}$)")
-    ax.set_ylim([-7,Energy.EV["<-"]])
-    ax.set_title("Example: Band structure of bcc-Li")
+    ax.set_title("Spectral function of bcc-Li")
+    
+    fig.colorbar(mappable, ax=ax)
 
-    fig.savefig("test_epr.png")
+    fig.savefig("example_spectrum.png")
 
 if __name__ == "__main__":
     main()
 ```
 
-### Calculation of scattering rate
+### Calculation of the electron-phonon renormalization (EPR) (`examples/electron_phonon_renormalization.py`)
 
-![scattering_rate](images/scattering_rate.png)
+![epr](images/epr.png)
 
 ```python
+"""Example: bcc-Li"""
 import numpy as np
 import matplotlib.pyplot as plt
-
-from elphem import LatticeConstant, EmptyLattice, FreeElectron, DebyeModel, SelfEnergy2nd
-from elphem.const import Mass, Energy, Prefix, Time, Length, AtomicWeight
+from elphem import *
 
 def main():
-    # Example: Li (BCC)
     a = 2.98 * Length.ANGSTROM["->"]
-    alpha = 109.47
-    lattice_constant = LatticeConstant(a,a,a,alpha,alpha,alpha)
-    lattice = EmptyLattice(lattice_constant)
-
-    electron = FreeElectron(lattice, 1)
-    
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
-    
     debye_temperature = 344.0
+    temperature = 3 * debye_temperature
+    n_band = 20
 
+    lattice = EmptyLattice('bcc', a)
+    electron = FreeElectron(lattice, n_band, 1)        
+    phonon = DebyeModel(lattice, temperature, 1, mass)
+
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.05)
+
+    k_names = ["G", "H", "N", "G", "P", "H"]
+
+    n_split = 20
+    n_q = np.array([8]*3)
+    
+    k, eig, epr, special_k = EPR(self_energy).calculate_with_path(k_names, n_split, n_q)
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+
+    for n in range(n_band):
+        if n == 0:
+            ax.plot(k, eig[n] * Energy.EV["<-"], color="tab:blue", label="w/o EPR")
+            ax.plot(k, (eig[n] + epr[n]) * Energy.EV["<-"], color="tab:orange", label="w/ EPR")
+        else:
+            ax.plot(k, eig[n] * Energy.EV["<-"], color="tab:blue")
+            ax.plot(k, (eig[n] + epr[n]) * Energy.EV["<-"], color="tab:orange")
+    
+    for k0 in special_k:
+        ax.axvline(x=k0, color="black", linewidth=0.3)
+    
+    ax.set_xticks(special_k)
+    ax.set_xticklabels(k_names)
+    ax.set_ylabel("Energy ($\mathrm{eV}$)")
+    ax.set_title("Example: Band structure of bcc-Li")
+    ax.set_ylim([-10,20])
+    ax.legend()
+
+
+    fig.savefig("example_epr.png")
+
+if __name__ == "__main__":
+    main()
+```
+
+### Calculation of the electronic band structure (`examples/band_structure.py`)
+
+![band structure](images/band_structure.png)
+
+```python
+"""Example: bcc-Li"""
+import matplotlib.pyplot as plt
+from elphem import *
+
+def main():
+    a = 2.98 * Length.ANGSTROM["->"]
+
+    lattice = EmptyLattice('bcc', a)
+    electron = FreeElectron(lattice, n_band=50, n_electron=1)
+
+    k_names = ["G", "H", "N", "G", "P", "H"]
+
+    k, eig, special_k = electron.get_band_structure(k_names, n_split=20)
+
+    fig, ax = plt.subplots()
+    for band in eig:
+        ax.plot(k, band * Energy.EV["<-"], color="tab:blue")
+    
+    ax.vlines(special_k, ymin=-10, ymax=50, color="black", linewidth=0.3)
+    ax.set_xticks(special_k)
+    ax.set_xticklabels(k_names)
+    ax.set_ylabel("Energy ($\mathrm{eV}$)")
+    ax.set_ylim([-10,50])
+
+    fig.savefig("example_band_structure.png")
+
+if __name__ == "__main__":
+    main()
+```
+
+### Calculation of the phonon dispersion (`examples/phonon_dispersion.py`)
+
+![phonon dispersion](images/phonon_dispersion.png)
+
+```python
+"""Example: bcc-Li"""
+import matplotlib.pyplot as plt
+from elphem import *
+
+def main():
+    a = 2.98 * Length.ANGSTROM["->"]
+    mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
+    lattice = EmptyLattice('bcc', a)
+
+    debye_temperature = 344.0
     phonon = DebyeModel(lattice, debye_temperature, 1, mass)
 
-    temperature = debye_temperature
-
-    self_energy = SelfEnergy2nd(lattice, electron, phonon)
-
-    n_g = np.array([1]*3)
-    n_k = np.array([6]*3)
-    g, k = electron.grid(n_g, n_k)
+    q_names = ["G", "H", "N", "G", "P", "H"]
     
-    n_g_inter = np.array([1]*3)
-    n_q = np.array([10]*3)
-    selfen = self_energy.calculate(temperature, g, k, n_g_inter, n_q)
-
-    epsilon_nk = electron.eigenenergy(k + g)
-
-    fig = plt.figure()
-
-    ax1 = fig.add_subplot(2, 1, 1)
-    ax2 = fig.add_subplot(2, 1, 2)
-
-    for ax in [ax1, ax2]:
-        ax.scatter(epsilon_nk * Energy.EV["<-"], selfen.imag / (Time.SI["<-"] / Prefix.PICO), label="$\mathrm{Im}\Sigma^\mathrm{Fan}$")
-
-        ax.set_ylabel("Scattering rate ($\mathrm{ps}^{-1}$)")
-        ax.legend()
-
-    ax2.set_xlabel("Electron energy ($\mathrm{eV}$)")
-    ax2.set_yscale("log")
-    ax1.set_title("Example: Scattering rate of bcc-Li")
+    q, omega, special_q = phonon.get_dispersion(q_names, n_split=20)
     
-    file_name = "test_scattering_rate.png"
-    fig.savefig(file_name)
+    fig, ax = plt.subplots()
+
+    ax.plot(q, omega * Energy.EV["<-"] * 1.0e+3, color="tab:blue")
+    
+    for q0 in special_q:
+        ax.axvline(x=q0, color="black", linewidth=0.3)
+    
+    ax.set_xticks(special_q)
+    ax.set_xticklabels(q_names)
+    ax.set_ylabel("Energy ($\mathrm{meV}$)")
+
+    fig.savefig("example_phonon_dispersion.png")
 
 if __name__ == "__main__":
     main()
@@ -251,3 +219,6 @@ if __name__ == "__main__":
 
 ## License
 MIT
+
+## Author
+Kohei Ishii

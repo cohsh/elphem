@@ -166,4 +166,4 @@ cython_debug/
 
 # Add
 *private
-test*.png
+examples/*.png

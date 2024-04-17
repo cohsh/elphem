@@ -1,9 +1,9 @@
+"""Example: bcc-Li"""
 import numpy as np
 import matplotlib.pyplot as plt
 from elphem import *
 
 def main():
-    # Example: Li (BCC)
     a = 2.98 * Length.ANGSTROM["->"]
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
 
@@ -18,7 +18,7 @@ def main():
 
     n_q = np.array([10]*3)
     n_omega = 1000
-    range_omega = [-7.0 * Energy.EV["->"], 6 * Energy.EV["->"]]
+    range_omega = [-8 * Energy.EV["->"], 6 * Energy.EV["->"]]
     
     k_names = ["G", "H", "N", "G", "P", "H"]
     n_split = 20
@@ -40,9 +40,8 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-#    mappable.set_clim(-5.0, 0.0)
 
-    fig.savefig("test_spectrum.png")
+    fig.savefig("example_spectrum.png")
 
 if __name__ == "__main__":
     main()
