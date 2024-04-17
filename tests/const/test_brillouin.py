@@ -1,5 +1,4 @@
 from unittest import TestCase
-
 from elphem.const.brillouin import SpecialPoints
 
 class TestUnit(TestCase):

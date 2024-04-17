@@ -1,5 +1,4 @@
 from unittest import TestCase
-
 from elphem.const.unit import *
 
 class TestUnit(TestCase):

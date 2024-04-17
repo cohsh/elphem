@@ -1,33 +1,22 @@
 from unittest import TestCase
-import numpy as np
-
-from elphem.const.brillouin import SpecialPoints
 from elphem.lattice.empty import EmptyLattice
 from elphem.electron.free import FreeElectron
 
 class TestUnit(TestCase):
-    def test_band_structure(self):
+    def setUp(self) -> None:
         lattice = EmptyLattice('fcc', 5.0)
         n_band = 20
         n_electron = 4
-        electron = FreeElectron(lattice, n_band, n_electron)
-            
-        k_names = ["L", "G", "X"]
-        n_split = 20
+        self.electron = FreeElectron(lattice, n_band, n_electron)
+
+    def test_band_structure(self):
+        k_names = ["L", "G", "X"]        
+        x, eig, x_special = self.electron.get_band_structure(k_names, n_split=20)
         
-        x, eig, x_special = electron.get_band_structure(k_names, n_split)
-        
-        self.assertEqual(len(eig), n_band)
-        self.assertEqual(len(eig[0]), len(x))
+        self.assertEqual(eig.shape, (self.electron.n_band, len(x)))
         self.assertEqual(len(k_names), len(x_special))
     
     def test_get_reciprocal_vector(self):
-        lattice = EmptyLattice('fcc', 5.0)
-        n_band = 20
-        n_electron = 4
-        electron = FreeElectron(lattice, n_band, n_electron)
-
-        g = electron.get_reciprocal_vector()
+        g = self.electron.get_reciprocal_vector()
         
-        self.assertEqual(len(g), n_band)
-        self.assertEqual(len(g[0]), 3)
+        self.assertEqual(g.shape, (self.electron.n_band,3))
