@@ -6,6 +6,17 @@ from elphem.const.brillouin import SpecialPoints
 
 @dataclass
 class LatticeConstant:
+    """Defines the lattice constants and angles for a crystal structure.
+
+    Attributes:
+        a (float): Length of the first lattice vector.
+        b (float): Length of the second lattice vector.
+        c (float): Length of the third lattice vector.
+        alpha (float): Angle between b and c lattice vectors.
+        beta (float): Angle between a and c lattice vectors.
+        gamma (float): Angle between a and b lattice vectors.
+        crystal_structure (str): The type of crystal structure (e.g., 'bcc', 'fcc', 'sc').
+    """
     a: float
     b: float
     c: float
@@ -15,29 +26,63 @@ class LatticeConstant:
     crystal_structure: str
     
     def __post_init__(self):
+        """Converts angles to radians and stores lengths and angles as numpy arrays."""
         self.length = np.array([self.a, self.b, self.c])
         self.angle = np.radians(np.array([self.alpha, self.beta, self.gamma]))
         
     def rescale(self, factor: float) -> None:
+        """Rescales the lattice constants by a given factor.
+
+        Args:
+            factor (float): The factor by which the lattice lengths are multiplied.
+        """
         self.length *= factor
 
 class Cell:
+    """Base class for a crystal cell, providing basic structure and methods."""
     def __init__(self):
+        """Initializes the Cell with a basis matrix."""
         self.basis = self.build()
     
     def build(self) -> np.ndarray:
+        """Builds the default identity matrix for the cell basis.
+
+        Returns:
+            np.ndarray: A 3x3 identity matrix.
+        """
         return np.identity(3)
     
     def volume(self) -> float:
+        """Calculates the volume of the cell.
+
+        Returns:
+            float: The volume calculated using the determinant of the basis vectors.
+        """
         volume = np.dot(self.basis[0], np.cross(self.basis[1], self.basis[2]))
         return volume
     
     def element(self, a: np.ndarray) -> np.ndarray:
+        """Transforms a vector a by the basis matrix.
+
+        Args:
+            a (np.ndarray): The vector to transform.
+
+        Returns:
+            np.ndarray: The transformed vector.
+        """
         x = np.dot(a, self.basis)
         return x
 
     @staticmethod
     def optimize(basis: np.ndarray) -> np.ndarray:
+        """Optimizes the cell basis using the LatticeRotation utility.
+
+        Args:
+            basis (np.ndarray): The basis matrix to optimize.
+
+        Returns:
+            np.ndarray: The optimized basis matrix.
+        """
         axis = np.array([1.0] * 3)
         
         basis = LatticeRotation.optimize(basis, axis)
