@@ -1,12 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
-from elphem import EmptyLattice, FreeElectron, DebyeModel, SelfEnergy, Spectrum
-from elphem.const import Mass, Energy, Length, AtomicWeight, SpecialPoints
+from elphem import *
 
 def main():
     # Example: Li (BCC)
-
     a = 2.98 * Length.ANGSTROM["->"]
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
 

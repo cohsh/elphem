@@ -1,15 +1,13 @@
-import os
 import matplotlib.pyplot as plt
-
-from elphem import LatticeConstant, EmptyLattice, DebyeModel, AtomicWeight, Energy, Mass, Length, SpecialPoints, Prefix
+from elphem import *
 
 def main():
     # Example: bcc-Li
     a = 2.98 * Length.ANGSTROM["->"]
     mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
-    debye_temperature = 344.0
     lattice = EmptyLattice('bcc', a)
 
+    debye_temperature = 344.0
     phonon = DebyeModel(lattice, debye_temperature, 1, mass)
 
     q_names = ["G", "H", "N", "G", "P", "H"]
@@ -18,7 +16,7 @@ def main():
     
     fig, ax = plt.subplots()
 
-    ax.plot(x, omega * Energy.EV["<-"] / Prefix.MILLI, color="tab:blue")
+    ax.plot(x, omega * Energy.EV["<-"] * 1.0e+3, color="tab:blue")
     
     for x0 in x_special:
         ax.axvline(x=x0, color="black", linewidth=0.3)
