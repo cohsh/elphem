@@ -7,7 +7,7 @@ from elphem.lattice.empty import EmptyLattice
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyeModel
 from elphem.elph.self_energy import SelfEnergy
-from elphem.elph.spectrum import Spectrum
+from elphem.elph.epr import EPR
 
 class TestUnit(TestCase):
     def setUp(self) -> None:
@@ -23,26 +23,22 @@ class TestUnit(TestCase):
         phonon = DebyeModel(lattice, temperature, 1, mass)
 
         self_energy = SelfEnergy(lattice, electron, phonon, temperature)
-        self.spectrum = Spectrum(self_energy)
+        self.epr = EPR(self_energy)
 
     def test_calculate_with_grid(self):
         n_k = np.full(3, 5)        
         n_q = np.full(3, 5)
-        n_omega = 100
         
-        a = self.spectrum.calculate_with_grid(n_k, n_q, n_omega)
+        eig, delta_eig = self.epr.calculate_with_grid(n_k, n_q)
 
-        self.assertEqual(a.shape, (np.prod(n_k), n_omega))
+        self.assertEqual(eig.shape, delta_eig.shape)
     
     def test_calculate_with_path(self):
         k_names = ["G", "H", "N", "G", "P", "H"]
         n_split = 20
         
         n_q = np.array([5]*3)
-        n_omega = 200
-        range_omega = [-1.0, 2.0]
         
-        k, omegas, a, special_k = self.spectrum.calculate_with_path(k_names, n_split, n_q, n_omega, range_omega)
+        k, eig, delta_eig, special_k = self.epr.calculate_with_path(k_names, n_split, n_q)
         
-        self.assertEqual(a.shape, (len(k), len(omegas)))
-        self.assertEqual(len(k_names), len(special_k))
+        self.assertEqual(eig.shape, delta_eig.shape)
