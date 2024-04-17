@@ -75,6 +75,7 @@ docs/.nojekyll
 docs/.buildinfo
 docs/,doctrees
 docs/_sources
+docs/*
 
 # PyBuilder
 .pybuilder/
