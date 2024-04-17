@@ -1,6 +1,15 @@
 from types import MappingProxyType
 
 class SpecialPoints:
+    """Defines immutable sets of special points in first Brillouin zone for different types of crystal lattices.
+
+    Attributes:
+        Gamma (MappingProxyType): Immutable set containing the Gamma point.
+        SC (MappingProxyType): Immutable set of special points for the simple cubic lattice.
+        FCC (MappingProxyType): Immutable set of special points for the face-centered cubic lattice.
+        BCC (MappingProxyType): Immutable set of special points for the body-centered cubic lattice.
+        Hexagonal (MappingProxyType): Immutable set of special points for the hexagonal lattice.
+    """
     # Gamma Point
     _Gamma = {
         "G": (0, 0, 0)

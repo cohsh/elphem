@@ -31,7 +31,17 @@ class Byte:
 
     @staticmethod
     def get_str(size: int) -> str:
-        """ Returns a string representation of bytes in suitable unit. """
+        """Returns a human-readable string representation of digital information sizes, scaled to appropriate unit.
+
+        Args:
+            size (int): Size in bytes.
+
+        Returns:
+            str: Formatted string representing the size in appropriate unit (e.g., KB, MB).
+
+        Raises:
+            ValueError: If size is negative or too large to be represented.
+        """
         if size < 0:
             raise ValueError("Size should be a non-negative integer.")
         
@@ -48,7 +58,15 @@ class AtomicUnits:
     """ Utility class for atomic unit conversions. """
     @staticmethod
     def convert(unit: float, value: float) -> dict:
-        """ Converts values based on given unit. """
+        """Converts a value to and from a base unit to facilitate comparisons and calculations.
+
+        Args:
+            unit (float): The unit to which the conversion is based.
+            value (float): The value to be converted.
+
+        Returns:
+            dict: A dictionary containing converted values.
+        """
         return {
             "->": value / unit,
             "<-": unit / value
