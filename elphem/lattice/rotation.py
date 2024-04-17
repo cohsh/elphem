@@ -1,17 +1,41 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-class LatticeRotation:    
+class LatticeRotation:
+    """Provides methods to optimize and adjust lattice orientations through rotation operations."""
+    
     @classmethod
     def optimize(cls, basis: np.ndarray, axis: np.ndarray) -> np.ndarray:
-        """Optimize the rotation of the given basis to align with the specified axis."""
+        """Optimize the rotation of the given basis to align with the specified axis.
+
+        Args:
+            basis (np.ndarray): The basis vectors of the lattice to be rotated.
+            axis (np.ndarray): The target axis for alignment.
+
+        Returns:
+            np.ndarray: The optimized basis vectors aligned as closely as possible to the target axis.
+
+        Raises:
+            ValueError: If the axis vector is zero.
+        """
         basis_rotated = cls.match(basis, axis)
         basis_rotated = cls.search_posture(basis_rotated, axis)
         return basis_rotated
 
     @classmethod
     def match(cls, basis: np.ndarray, axis: np.ndarray) -> np.ndarray:
-        """Match the given basis direction to the specified axis using quaternion rotation."""
+        """Match the given basis direction to the specified axis using quaternion rotation.
+
+        Args:
+            basis (np.ndarray): The initial basis vectors.
+            axis (np.ndarray): The axis to align the basis vectors to.
+
+        Returns:
+            np.ndarray: The basis vectors rotated to match the direction of the axis.
+
+        Raises:
+            ValueError: If the axis vector is zero.
+        """
         if np.linalg.norm(axis) == 0.0:
             raise ValueError("Axis vector should not be zero.")
         
@@ -37,7 +61,19 @@ class LatticeRotation:
 
     @classmethod
     def around_axis(cls, axis: np.ndarray, v: np.ndarray, theta: float) -> np.ndarray:
-        """Rotate vector v around the given axis by angle theta."""
+        """Rotate vector v around the given axis by angle theta.
+
+        Args:
+            axis (np.ndarray): The axis of rotation.
+            v (np.ndarray): The vector to rotate.
+            theta (float): The angle in radians to rotate the vector.
+
+        Returns:
+            np.ndarray: The rotated vector.
+
+        Raises:
+            ValueError: If the axis vector is zero.
+        """
         if np.linalg.norm(axis) == 0.0:
             raise ValueError("Axis vector should not be zero.")
         
@@ -51,7 +87,19 @@ class LatticeRotation:
 
     @classmethod
     def search_posture(cls, basis: np.ndarray, axis: np.ndarray, angle_max: float = 360.0) -> np.ndarray:
-        """Search for the best posture of the basis aligned with the given axis."""
+        """Search for the best posture of the basis aligned with the given axis.
+
+        Args:
+            basis (np.ndarray): The basis to be rotated.
+            axis (np.ndarray): The axis to align with.
+            angle_max (float): The maximum angle range to search in degrees.
+
+        Returns:
+            np.ndarray: The optimally aligned basis after posture search.
+
+        Raises:
+            ValueError: If the axis vector is zero.
+        """
         if np.linalg.norm(axis) == 0.0:
             raise ValueError("Axis vector should not be zero.")
         
@@ -81,7 +129,17 @@ class LatticeRotation:
 
     @staticmethod
     def normalize(v: np.ndarray) -> np.ndarray:
-        """Normalize the given vector."""
+        """Normalize the given vector.
+
+        Args:
+            v (np.ndarray): The vector to normalize.
+
+        Returns:
+            np.ndarray: The normalized vector.
+
+        Raises:
+            ValueError: If the input vector is zero.
+        """
         v_norm = np.linalg.norm(v)
 
         if v_norm == 0.0:
