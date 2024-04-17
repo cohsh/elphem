@@ -91,12 +91,19 @@ class Cell:
 
 @dataclass
 class PrimitiveCell(Cell):
+    """Defines the primitive cell for a crystal based on the lattice constants."""
     lattice_constant: LatticeConstant
     
     def __post_init__(self):
+        """Initializes and builds the basis for the primitive cell."""
         self.basis = self.build()
     
     def build(self) -> np.ndarray:
+        """Constructs the basis matrix for the primitive cell from lattice constants and angles.
+
+        Returns:
+            np.ndarray: The basis matrix of the primitive cell.
+        """
         length = self.lattice_constant.length
         angle = self.lattice_constant.angle
 
@@ -116,12 +123,19 @@ class PrimitiveCell(Cell):
 
 @dataclass
 class ReciprocalCell(Cell):
+    """Defines the reciprocal cell for a crystal based on the lattice constants of the primitive cell."""
     lattice_constant: LatticeConstant
     
     def __post_init__(self):
+        """Initializes and builds the basis for the reciprocal cell."""
         self.basis = self.build()
     
     def build(self) -> np.ndarray:
+        """Constructs the basis matrix for the reciprocal cell from the primitive cell.
+
+        Returns:
+            np.ndarray: The basis matrix of the reciprocal cell.
+        """
         primitive_cell = PrimitiveCell(self.lattice_constant)
 
         basis = np.zeros((3,3))
@@ -137,7 +151,15 @@ class ReciprocalCell(Cell):
         return basis
 
     def path(self, k_names: list[str], n: int) -> np.ndarray:
-        # k_names = ["G", "H", "N", "G", "P", "H"]
+        """Calculates a path through specified special points in the Brillouin zone.
+
+        Args:
+            k_names (list[str]): List of special point names to form the path.
+            n (int): Number of points between each special point.
+
+        Returns:
+            tuple: Returns the total length of the path, the path coordinates, and the lengths at special points.
+        """
         k_via = [self.get_special_k(s) for s in k_names]
 
         n_via = len(k_via) - 1
@@ -167,6 +189,17 @@ class ReciprocalCell(Cell):
         return total_length, k, special_length
 
     def get_special_k(self, k_name: str) -> np.ndarray:
+        """Retrieves the coordinates of special k-points based on the crystal structure.
+
+        Args:
+            k_name (str): The name of the special point.
+
+        Returns:
+            np.ndarray: The coordinates of the special point.
+
+        Raises:
+            ValueError: If an invalid crystal structure name is provided.
+        """
         if self.lattice_constant.crystal_structure == 'bcc':
             return SpecialPoints.BCC[k_name]
         elif self.lattice_constant.crystal_structure == 'fcc':
@@ -178,10 +211,12 @@ class ReciprocalCell(Cell):
 
 @dataclass
 class EmptyLattice:
+    """A class to simulate an empty lattice for a given crystal structure and lattice constant a."""
     crystal_structure: str
     a: float
 
     def __post_init__(self):
+        """Initializes the lattice constants, primitive, and reciprocal cells along with their volumes and bases."""
         self.constants = self.get_lattice_constant()
         self.primitive_cell = PrimitiveCell(self.constants)
         self.reciprocal_cell = ReciprocalCell(self.constants)
@@ -196,6 +231,14 @@ class EmptyLattice:
         }
 
     def get_lattice_constant(self) -> LatticeConstant:
+        """Determines lattice constants based on the crystal structure.
+
+        Returns:
+            LatticeConstant: The lattice constants and angles for the specified crystal structure.
+
+        Raises:
+            ValueError: If an invalid crystal structure name is specified.
+        """
         crystal_structure_lower = self.crystal_structure.lower()
 
         alpha_values = {
@@ -212,6 +255,15 @@ class EmptyLattice:
             raise ValueError("Invalid crystal structure specified.")
         
     def grid(self, *n: list[np.ndarray], space="reciprocal") -> np.ndarray:
+        """Generates a grid in the specified lattice space (either 'primitive' or 'reciprocal').
+
+        Args:
+            n (list[np.ndarray]): List of points defining the grid dimensions.
+            space (str): Specifies whether the grid is in the primitive or reciprocal space.
+
+        Returns:
+            np.ndarray: A grid generated based on the specified dimensions and space.
+        """
         basis = self.basis[space]
         
         n_array = np.array(n)
