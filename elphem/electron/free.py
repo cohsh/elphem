@@ -4,11 +4,19 @@ from elphem.lattice.empty import EmptyLattice
 
 @dataclass
 class FreeElectron:
+    """Represents a free electron model on a given crystal lattice.
+    
+    Attributes:
+        lattice (EmptyLattice): The lattice on which the free electron model is applied.
+        n_band (int): Number of energy bands considered.
+        n_electron (int): Number of electrons per unit cell.
+    """
     lattice: EmptyLattice
     n_band: int
     n_electron: int
     
     def __post_init__(self):
+        """Validate and initialize the FreeElectron model."""
         if not isinstance(self.lattice, EmptyLattice):
             raise TypeError("The type of first variable must be EmptyLattice.")
         if self.n_electron <= 0:
@@ -18,39 +26,32 @@ class FreeElectron:
         self.g = self.get_reciprocal_vector()
 
     def fermi_energy(self) -> float:
-        """
-        Get Fermi energy.
-        
-        Return
-            Fermi energy
+        """Calculate the Fermi energy of the electron system.
+
+        Returns:
+            float: The Fermi energy.
         """
         return 0.5 * (3 * np.pi ** 2 * self.electron_density) ** (2/3)
 
     def eigenenergy(self, k: np.ndarray) -> np.ndarray:
-        """
-        Get electron eigenenergies.
-        
-        Args
-            k: A numpy array representing vectors in reciprocal space.
-        
-        Return
-            Electron eigenenergies
-        """
+        """Calculate the electron eigenenergies at wave vector k.
 
+        Args:
+            k (np.ndarray): A numpy array representing vectors in reciprocal space.
+
+        Returns:
+            np.ndarray: The electron eigenenergies at each wave vector.
+        """
         return 0.5 * np.linalg.norm(k, axis=-1) ** 2 - self.fermi_energy()
     
     def grid(self, n_k: np.ndarray) -> tuple:
-        """
-        Get (G, k)-grid.
-        
-        Args
-            n_g: A numpy array representing the dense of G-grid in reciprocal space.
-            n_k: A numpy array representing the dense of k-grid in reciprocal space.
-            
-        Return
-            A tuple containing:
-                G-meshgrid
-                k-meshgrid
+        """Generate a (G, k)-grid for electron states calculation.
+
+        Args:
+            n_k (np.ndarray): A numpy array specifying the density of k-grid points in each direction of reciprocal space.
+
+        Returns:
+            tuple: A tuple containing G-meshgrid and k-meshgrid for electron state calculations.
         """
         basis = self.lattice.basis["reciprocal"]
         
@@ -65,19 +66,14 @@ class FreeElectron:
         return g_grid, k_grid
     
     def get_band_structure(self, k_names: list[np.ndarray], n_split: int) -> tuple:
-        """
-        Calculate the electronic band structures.
+        """Calculate the electronic band structures along the specified path in reciprocal space.
 
-        Args
-            n_g: A numpy array representing the grid in reciprocal space.
-            k_via: A list of numpy arrays representing the special points in reciprocal space.
-            n_via: Number of points between the special points. Default is 20.
-        
-        Return
-            A tuple containing:
-                x: x-coordinates for plotting
-                eig: Eigenenergy values
-                special_x: x-coordinates of special points
+        Args:
+            k_names (list[np.ndarray]): A list of special points names defining the path.
+            n_split (int): Number of points between each special point to compute the band structure.
+
+        Returns:
+            tuple: A tuple containing x-coordinates for plotting, eigenenergy values, and x-coordinates of special points.
         """
         x, k, special_x = self.lattice.reciprocal_cell.path(k_names, n_split)
         
@@ -86,6 +82,11 @@ class FreeElectron:
         return x, eigenenergy, special_x
     
     def get_reciprocal_vector(self) -> np.ndarray:
+        """Generate the reciprocal lattice vectors used to define the Brillouin zone boundaries.
+
+        Returns:
+            np.ndarray: An array of reciprocal lattice vectors.
+        """
         basis = self.lattice.basis["reciprocal"]
 
         n_cut = np.ceil(np.cbrt(self.n_band))
