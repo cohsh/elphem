@@ -6,21 +6,25 @@ from elphem.elph.distribution import safe_divide
 
 @dataclass
 class Spectrum:
+    """Class to calculate the spectral function for electronic states using self-energy components.
+
+    Attributes:
+        self_energy (SelfEnergy): An instance of SelfEnergy used for the spectral function calculations.
+    """
+    
     self_energy: SelfEnergy
 
     def calculate_with_grid(self, n_k: np.ndarray, n_q: np.ndarray, n_omega: int) -> np.ndarray:
         """
-        Calculate 2nd-order Fan self-energies.
-        
-        Args
-            temperature: A temperature in Kelvin.
-            n_g: A numpy array (meshgrid-type) representing G-vector
-            n_k: A numpy array (meshgrid-type) representing k-vector
-            n_g: A numpy array representing the dense of intermediate G-vectors
-            n_q: A numpy array representing the dense of intermediate q-vectors
-            
-        Return
-            A numpy array representing Fan self-energy.
+        Calculate the spectral function over a grid of k-points and a range of energies.
+
+        Args:
+            n_k (np.ndarray): A numpy array specifying the density of k-grid points in each direction.
+            n_q (np.ndarray): A numpy array specifying the density of q-grid points in each direction.
+            n_omega (int): Number of points in the energy range for the spectral calculation.
+
+        Returns:
+            np.ndarray: The calculated spectral function array over the specified grid and energy range.
         """
         
         g_grid, k_grid = self.self_energy.electron.grid(n_k)
@@ -54,20 +58,20 @@ class Spectrum:
         
         return spectrum
     
-    def calculate_with_path(self, k_names: list[np.ndarray], n_split: int,
-                    n_q: np.ndarray, n_omega: int, range_omega: list) -> tuple:
+    def calculate_with_path(self, k_names: list[str], n_split: int,
+                    n_q: np.ndarray, n_omega: int, range_omega: list[float]) -> tuple:
         """
-        Calculate 2nd-order Fan self-energies.
-        
-        Args
-            temperature: A temperature in Kelvin.
-            n_g: A numpy array (meshgrid-type) representing G-vector
-            n_k: A numpy array (meshgrid-type) representing k-vector
-            n_g: A numpy array representing the dense of intermediate G-vectors
-            n_q: A numpy array representing the dense of intermediate q-vectors
-            
-        Return
-            A numpy array representing Fan self-energy.
+        Calculate the spectral function along a specified path in the Brillouin zone.
+
+        Args:
+            k_names (list[str]): List of special points defining the path through the Brillouin zone.
+            n_split (int): Number of points between each special point.
+            n_q (np.ndarray): A numpy array specifying the density of q-grid points in each direction.
+            n_omega (int): Number of points in the energy range.
+            range_omega (list[float]): The range of energy values over which to calculate the spectrum.
+
+        Returns:
+            tuple: A tuple containing the path x-coordinates, energy values, the calculated spectrum, and x-coordinates of special points.
         """
         
         g = self.self_energy.electron.g

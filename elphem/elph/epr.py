@@ -39,12 +39,12 @@ class EPR:
         
         return eig, epr
     
-    def calculate_with_path(self, k_names: list[np.ndarray], n_split: int, n_q: np.ndarray) -> tuple:
+    def calculate_with_path(self, k_names: list[str], n_split: int, n_q: np.ndarray) -> tuple:
         """
         Calculate 2nd-order Fan self-energies along a specified path in the Brillouin zone.
 
         Args:
-            k_names (list[np.ndarray]): A list of special points names defining the path through the Brillouin zone.
+            k_names (list[str]): A list of special points names defining the path through the Brillouin zone.
             n_split (int): Number of points between each special point to compute the dispersion.
             n_q (np.ndarray): A numpy array specifying the density of q-grid points in each direction.
 
