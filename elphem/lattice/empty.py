@@ -150,48 +150,6 @@ class ReciprocalCell(Cell):
         
         return basis
     
-    def simple_grid(self, n_x: int, n_y: int, n_z: int) -> np.ndarray:
-        """Generate simple k-grid
-
-        Args:
-            n_x (int): Number of mesh
-            n_y (int): Number of mesh
-            n_z (int): Number of mesh
-        
-        Returns:
-            k (np.ndarray): k-grid
-        """
-
-        k_x = np.linspace(-0.5, 0.5, n_x)
-        k_y = np.linspace(-0.5, 0.5, n_y)
-        k_z = np.linspace(-0.5, 0.5, n_z)
-        k = np.array(np.meshgrid(k_x, k_y, k_z, indexing='ij')).T.reshape(-1, 3) @ self.basis
-
-        return k
-
-    def monkhorst_pack_grid(self, n_x: int, n_y: int, n_z: int) -> np.ndarray:
-        """Generate Monkhorst and Pack k-grid
-
-        Args:
-            n_x (int): Number of mesh
-            n_y (int): Number of mesh
-            n_z (int): Number of mesh
-        
-        Returns:
-            k (np.ndarray): k-grid
-        """
-
-        r_x = np.arange(1, n_x + 1)
-        r_y = np.arange(1, n_y + 1)
-        r_z = np.arange(1, n_z + 1)
-
-        k_x = (2 * r_x - n_x - 1) / ( 2 * n_x )
-        k_y = (2 * r_y - n_y - 1) / ( 2 * n_y )
-        k_z = (2 * r_z - n_z - 1) / ( 2 * n_z )
-        k = np.array(np.meshgrid(k_x, k_y, k_z, indexing='ij')).T.reshape(-1, 3) @ self.basis
-
-        return k
-
     def path(self, k_names: list[str], n: int) -> np.ndarray:
         """Calculates a path through specified special points in the Brillouin zone.
 
@@ -294,55 +252,3 @@ class EmptyLattice:
             return LatticeConstant(self.a, self.a, self.a, alpha, alpha, alpha, crystal_structure_lower)
         else:
             raise ValueError("Invalid crystal structure specified.")
-
-@dataclass
-class Grid:
-    basis: np.ndarray
-    mesh: np.ndarray
-
-class SimpleGrid(Grid):
-    def __init__(self):
-#        super().__init__()
-
-
-    def generate(self, n_x: int, n_y: int, n_z: int) -> np.ndarray:
-        """Generate simple k-grid
-
-        Args:
-            n_x (int): Number of mesh
-            n_y (int): Number of mesh
-            n_z (int): Number of mesh
-        
-        Returns:
-            k (np.ndarray): k-grid
-        """
-
-        k_x = np.linspace(-0.5, 0.5, n_x)
-        k_y = np.linspace(-0.5, 0.5, n_y)
-        k_z = np.linspace(-0.5, 0.5, n_z)
-        k = np.array(np.meshgrid(k_x, k_y, k_z, indexing='ij')).T.reshape(-1, 3) @ self.basis
-
-        return k
-
-    def monkhorst_pack_grid(self, n_x: int, n_y: int, n_z: int) -> np.ndarray:
-        """Generate Monkhorst and Pack k-grid
-
-        Args:
-            n_x (int): Number of mesh
-            n_y (int): Number of mesh
-            n_z (int): Number of mesh
-        
-        Returns:
-            k (np.ndarray): k-grid
-        """
-
-        r_x = np.arange(1, n_x + 1)
-        r_y = np.arange(1, n_y + 1)
-        r_z = np.arange(1, n_z + 1)
-
-        k_x = (2 * r_x - n_x - 1) / ( 2 * n_x )
-        k_y = (2 * r_y - n_y - 1) / ( 2 * n_y )
-        k_z = (2 * r_z - n_z - 1) / ( 2 * n_z )
-        k = np.array(np.meshgrid(k_x, k_y, k_z, indexing='ij')).T.reshape(-1, 3) @ self.basis
-
-        return k
