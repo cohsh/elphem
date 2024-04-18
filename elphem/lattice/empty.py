@@ -253,38 +253,3 @@ class EmptyLattice:
             return LatticeConstant(self.a, self.a, self.a, alpha, alpha, alpha, crystal_structure_lower)
         else:
             raise ValueError("Invalid crystal structure specified.")
-        
-    def grid(self, *n: list[np.ndarray], space="reciprocal") -> np.ndarray:
-        """Generates a grid in the specified lattice space (either 'primitive' or 'reciprocal').
-
-        Args:
-            n (list[np.ndarray]): List of points defining the grid dimensions.
-            space (str): Specifies whether the grid is in the primitive or reciprocal space.
-
-        Returns:
-            np.ndarray: A grid generated based on the specified dimensions and space.
-        """
-        basis = self.basis[space]
-        
-        n_array = np.array(n)
-        n_point = len(n_array)
-        n_array = n_array.reshape(n_array.size,)
-
-        grid = np.meshgrid(*[np.arange(-i, i) for i in n_array])
-        grid = np.array(grid)
-
-        grid_set = []
-        j = 0
-        for i in range(n_point):
-            x = grid[j:j+3]
-            y = np.empty(x[0].shape + (3,))
-            for k in range(3):
-                y[...,k] = x[k]
-
-            grid_set.append(y @ basis)
-            j += 3
-
-        if len(grid_set) == 1:
-            return grid_set[0]
-        else:
-            return tuple(grid_set)
