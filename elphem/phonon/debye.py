@@ -78,18 +78,12 @@ class DebyeModel:
             n_q (np.ndarray): A numpy array specifying the density of q-grid points in each direction of reciprocal space.
 
         Returns:
-            np.ndarray: A meshgrid representing the q-grid in reciprocal space.
+            q (np.ndarray): A meshgrid representing the q-grid in reciprocal space.
         """
-        basis = self.lattice.basis["reciprocal"]
-        
-        grid = np.meshgrid(*[np.linspace(-0.5, 0.5, i) for i in n_q])
-        grid = np.array(grid)
-        
-        x = np.empty(grid[0].shape + (3,))
-        for i in range(3):
-            x[..., i] = grid[i]
 
-        return x @ basis
+        q = self.lattice.reciprocal_cell.monkhorst_pack_grid(*n_q)
+
+        return q
     
     def get_dispersion(self, q_names: list[np.ndarray], n_split) -> tuple:
         """Calculate the phonon dispersion curves along specified paths in reciprocal space.

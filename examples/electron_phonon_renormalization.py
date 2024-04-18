@@ -19,7 +19,7 @@ def main():
     k_names = ["G", "H", "N", "G", "P", "H"]
 
     n_split = 20
-    n_q = np.array([8]*3)
+    n_q = np.array([12]*3)
     
     k, eig, epr, special_k = EPR(self_energy).calculate_with_path(k_names, n_split, n_q)
     

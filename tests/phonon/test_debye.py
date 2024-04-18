@@ -12,11 +12,11 @@ class TestUnit(TestCase):
         self.phonon = DebyeModel(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
 
     def test_grid(self):
-        nq = np.array([8,8,8])
+        nq = np.full(3,8)
         q = self.phonon.grid(nq)
         omega = self.phonon.eigenenergy(q)
         
-        self.assertEqual(omega.shape, (nq[0], nq[1], nq[2]))
+        self.assertEqual(omega.shape, (np.prod(nq),))
     
     def test_dispersion(self):
         q_names = ["L", "G", "X"]
