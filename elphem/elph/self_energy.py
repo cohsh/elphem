@@ -23,8 +23,8 @@ class SelfEnergy:
     electron: FreeElectron
     phonon: DebyePhonon
     temperature: float
-    sigma: float = 0.01
-    eta: float = 0.01
+    sigma: float = 0.001
+    eta: float = 0.1
     effective_potential: float = 1.0 / 16.0
     
     def coupling(self, g1: np.ndarray, g2: np.ndarray, q: np.ndarray) -> np.ndarray:

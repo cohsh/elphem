@@ -9,14 +9,14 @@ def main():
 
     debye_temperature = 344.0
 
-    lattice = EmptyLattice('bcc', a)
+    lattice = Lattice('bcc', a)
     electron = FreeElectron(lattice, n_band=8, n_electron=1)
-    phonon = DebyeModel(lattice, debye_temperature, 1, mass)
+    phonon = DebyePhonon(lattice, debye_temperature, 1, mass)
 
-    temperature =  3 * debye_temperature
-    self_energy = SelfEnergy(lattice, electron, phonon, temperature, sigma=0.5, eta=0.1)
+    temperature =  1.5 * debye_temperature
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature)
 
-    n_q = np.array([10]*3)
+    n_q = np.array([12]*3)
     n_omega = 1000
     range_omega = [-4.0 * Energy.EV["->"], 4.0 * Energy.EV["->"]]
     

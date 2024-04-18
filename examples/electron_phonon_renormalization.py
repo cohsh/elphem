@@ -10,11 +10,11 @@ def main():
     temperature = 3 * debye_temperature
     n_band = 20
 
-    lattice = EmptyLattice('bcc', a)
+    lattice = Lattice('bcc', a)
     electron = FreeElectron(lattice, n_band, 1)        
-    phonon = DebyeModel(lattice, temperature, 1, mass)
+    phonon = DebyePhonon(lattice, temperature, 1, mass)
 
-    self_energy = SelfEnergy(lattice, electron, phonon, temperature, eta=0.05)
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature)
 
     k_names = ["G", "H", "N", "G", "P", "H"]
 

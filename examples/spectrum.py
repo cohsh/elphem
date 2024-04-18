@@ -9,16 +9,16 @@ def main():
 
     debye_temperature = 344.0
 
-    lattice = EmptyLattice('bcc', a)
+    lattice = Lattice('bcc', a)
     electron = FreeElectron(lattice, n_band=8, n_electron=1)
-    phonon = DebyeModel(lattice, debye_temperature, 1, mass)
+    phonon = DebyePhonon(lattice, debye_temperature, 1, mass)
 
-    temperature =  3 * debye_temperature
-    self_energy = SelfEnergy(lattice, electron, phonon, temperature, sigma=0.5, eta=0.1)
+    temperature =  1.5 * debye_temperature
+    self_energy = SelfEnergy(lattice, electron, phonon, temperature)
 
-    n_q = np.array([10]*3)
+    n_q = np.full(3, 12)
     n_omega = 1000
-    range_omega = [-8 * Energy.EV["->"], 6 * Energy.EV["->"]]
+    range_omega = [-10 * Energy.EV["->"], 20 * Energy.EV["->"]]
     
     k_names = ["G", "H", "N", "G", "P", "H"]
     n_split = 20
@@ -40,6 +40,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
+    mappable.set_clim(-3.0, 0.0)
 
     fig.savefig("example_spectrum.png")
 
