@@ -23,15 +23,8 @@ class FreeElectron:
             raise ValueError("Second variable (number of electrons per unit cell) should be a positive value.")
         
         self.electron_density = self.n_electron / self.lattice.volume["primitive"]
+        self.fermi_energy = self.get_fermi_energy()
         self.g = self.get_reciprocal_vector()
-
-    def fermi_energy(self) -> float:
-        """Calculate the Fermi energy of the electron system.
-
-        Returns:
-            float: The Fermi energy.
-        """
-        return 0.5 * (3 * np.pi ** 2 * self.electron_density) ** (2/3)
 
     def eigenenergy(self, k: np.ndarray) -> np.ndarray:
         """Calculate the electron eigenenergies at wave vector k.
@@ -43,8 +36,8 @@ class FreeElectron:
             np.ndarray: The electron eigenenergies at each wave vector.
         """
 
-        return 0.5 * np.linalg.norm(k, axis=-1) ** 2 - self.fermi_energy()
-    
+        return 0.5 * np.linalg.norm(k, axis=-1) ** 2 - self.fermi_energy
+
     def grid(self, n_k: np.ndarray) -> tuple:
         """Generate a (G, k)-grid for electron states calculation.
 
@@ -54,14 +47,24 @@ class FreeElectron:
         Returns:
             tuple: A tuple containing G-meshgrid and k-meshgrid for electron state calculations.
         """
-                
+        if np.array(n_k).shape != (3,):
+            raise ValueError("Shape of n_k should be (3,).")
+        
         k_grid = self.lattice.get_grid(*n_k)
 
         k_return = np.tile(k_grid.mesh, (self.n_band, 1, 1))
         g_return = np.repeat(self.g[:, np.newaxis, :], len(k_grid.mesh), axis=1)
 
         return g_return, k_return
-    
+
+    def get_fermi_energy(self) -> float:
+        """Calculate the Fermi energy of the electron system.
+
+        Returns:
+            float: The Fermi energy.
+        """
+        return 0.5 * (3 * np.pi ** 2 * self.electron_density) ** (2/3)
+
     def get_band_structure(self, k_names: list[np.ndarray], n_split: int) -> tuple:
         """Calculate the electronic band structures along the specified path in reciprocal space.
 

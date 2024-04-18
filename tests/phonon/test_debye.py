@@ -10,13 +10,6 @@ class TestUnit(TestCase):
         # Example: FCC-Fe
         lattice = Lattice('fcc', 2.58)
         self.phonon = DebyePhonon(lattice, 470.0, 1, AtomicWeight.table["Fe"] * Mass.DALTON["->"])
-
-    def test_grid(self):
-        nq = np.full(3,8)
-        q = self.phonon.grid(nq)
-        omega = self.phonon.eigenenergy(q)
-        
-        self.assertEqual(omega.shape, (np.prod(nq),))
     
     def test_dispersion(self):
         q_names = ["L", "G", "X"]

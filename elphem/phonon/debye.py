@@ -70,21 +70,6 @@ class DebyePhonon:
         q_normalized = np.divide(q, q_norm[:, np.newaxis], out=np.zeros_like(q), where=q_norm[:, np.newaxis] != 0)
         return 1.0j * q_normalized
 
-    
-    def grid(self, n_q: np.ndarray) -> np.ndarray:
-        """Generate a q-grid for phonon calculations.
-
-        Args:
-            n_q (np.ndarray): A numpy array specifying the density of q-grid points in each direction of reciprocal space.
-
-        Returns:
-            q (np.ndarray): A meshgrid representing the q-grid in reciprocal space.
-        """
-
-        q = self.lattice.get_grid(*n_q).mesh
-
-        return q
-    
     def get_dispersion(self, q_names: list[np.ndarray], n_split) -> tuple:
         """Calculate the phonon dispersion curves along specified paths in reciprocal space.
 
