@@ -1,7 +1,8 @@
 import numpy as np
 from dataclasses import dataclass
 
-from elphem.lattice import *
+from elphem.lattice.rotation import LatticeRotation
+from elphem.lattice.lattice_constant import LatticeConstant
 from elphem.const.brillouin import SpecialPoints
 
 class Cell:
