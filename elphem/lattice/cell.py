@@ -127,7 +127,7 @@ class ReciprocalCell(Cell):
         Returns:
             tuple: Returns the total length of the path, the path coordinates, and the lengths at special points.
         """
-        k_via = [self.get_special_k(s) for s in k_names]
+        k_via = [self.get_special_point(s) for s in k_names]
         n_via = len(k_via) - 1
 
         total_length = np.empty((n_via * n,))
@@ -154,7 +154,7 @@ class ReciprocalCell(Cell):
 
         return total_length, k, special_length
 
-    def get_special_k(self, k_name: str) -> np.ndarray:
+    def get_special_point(self, k_name: str) -> np.ndarray:
         """Retrieves the coordinates of special k-points based on the crystal structure.
 
         Args:
