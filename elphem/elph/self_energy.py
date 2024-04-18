@@ -1,9 +1,9 @@
 import numpy as np
 from dataclasses import dataclass
 
-from elphem.lattice.empty import EmptyLattice
+from elphem.lattice.lattice import Lattice
 from elphem.electron.free import FreeElectron
-from elphem.phonon.debye import DebyeModel
+from elphem.phonon.debye import DebyePhonon
 from elphem.elph.distribution import fermi_distribution, bose_distribution, gaussian_distribution, safe_divide
 
 @dataclass
@@ -19,9 +19,9 @@ class SelfEnergy:
         eta (float): Small positive constant to ensure numerical stability, defaults to 0.01.
         effective_potential (float): Effective potential used in electron-phonon coupling calculation, defaults to 1.0 / 16.0.
     """
-    lattice: EmptyLattice
+    lattice: Lattice
     electron: FreeElectron
-    phonon: DebyeModel
+    phonon: DebyePhonon
     temperature: float
     sigma: float = 0.01
     eta: float = 0.01

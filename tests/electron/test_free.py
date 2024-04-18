@@ -1,10 +1,10 @@
 from unittest import TestCase
-from elphem.lattice.empty import EmptyLattice
+from elphem.lattice.lattice import Lattice
 from elphem.electron.free import FreeElectron
 
 class TestUnit(TestCase):
     def setUp(self) -> None:
-        lattice = EmptyLattice('fcc', 5.0)
+        lattice = Lattice('fcc', 5.0)
         n_band = 20
         n_electron = 4
         self.electron = FreeElectron(lattice, n_band, n_electron)

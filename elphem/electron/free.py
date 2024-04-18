@@ -1,6 +1,6 @@
 import numpy as np
 from dataclasses import dataclass
-from elphem.lattice.empty import EmptyLattice
+from elphem.lattice import *
 
 @dataclass
 class FreeElectron:
@@ -11,13 +11,13 @@ class FreeElectron:
         n_band (int): Number of energy bands considered.
         n_electron (int): Number of electrons per unit cell.
     """
-    lattice: EmptyLattice
+    lattice: Lattice
     n_band: int
     n_electron: int
     
     def __post_init__(self):
         """Validate and initialize the FreeElectron model."""
-        if not isinstance(self.lattice, EmptyLattice):
+        if not isinstance(self.lattice, Lattice):
             raise TypeError("The type of first variable must be EmptyLattice.")
         if self.n_electron <= 0:
             raise ValueError("Second variable (number of electrons per unit cell) should be a positive value.")
@@ -55,12 +55,12 @@ class FreeElectron:
             tuple: A tuple containing G-meshgrid and k-meshgrid for electron state calculations.
         """
                 
-        k = self.lattice.reciprocal_cell.monkhorst_pack_grid(*n_k)
+        k_grid = self.lattice.get_grid(*n_k)
 
-        k_grid = np.tile(k, (self.n_band, 1, 1))
-        g_grid = np.repeat(self.g[:, np.newaxis, :], len(k), axis=1)
+        k_return = np.tile(k_grid.mesh, (self.n_band, 1, 1))
+        g_return = np.repeat(self.g[:, np.newaxis, :], len(k_grid.mesh), axis=1)
 
-        return g_grid, k_grid
+        return g_return, k_return
     
     def get_band_structure(self, k_names: list[np.ndarray], n_split: int) -> tuple:
         """Calculate the electronic band structures along the specified path in reciprocal space.

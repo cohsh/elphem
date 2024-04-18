@@ -2,9 +2,9 @@ import numpy as np
 from unittest import TestCase
 
 from elphem.const.unit import Mass
-from elphem.lattice.empty import EmptyLattice
+from elphem.lattice.lattice import Lattice
 from elphem.electron.free import FreeElectron
-from elphem.phonon.debye import DebyeModel
+from elphem.phonon.debye import DebyePhonon
 from elphem.elph.self_energy import SelfEnergy
 
 class TestUnit(TestCase):
@@ -15,8 +15,8 @@ class TestUnit(TestCase):
         debye_temperature = 2300.0
         temperature = 0.3 * debye_temperature
         
-        lattice = EmptyLattice('fcc', 5.0)
-        phonon = DebyeModel(lattice, debye_temperature, 2, mass)
+        lattice = Lattice('fcc', 5.0)
+        phonon = DebyePhonon(lattice, debye_temperature, 2, mass)
 
         self.electron = FreeElectron(lattice, self.n_band, 4)
         self.self_energy = SelfEnergy(lattice, self.electron, phonon, temperature)

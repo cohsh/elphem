@@ -2,7 +2,6 @@ import numpy as np
 from dataclasses import dataclass
 
 from elphem.elph.self_energy import SelfEnergy
-from elphem.elph.distribution import safe_divide
 
 @dataclass
 class EPR:

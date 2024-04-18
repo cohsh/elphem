@@ -1,11 +1,12 @@
 from unittest import TestCase
 import numpy as np
 
-from elphem.lattice import *
+from elphem.lattice.lattice import *
+from elphem.lattice.grid import *
 
 class TestUnit(TestCase):
     def test_grid(self):
-        lattice = EmptyLattice('bcc', 3.0)
+        lattice = Lattice('bcc', 3.0)
         basis = lattice.basis["reciprocal"]
 
         n = [8, 8, 8]

@@ -2,10 +2,10 @@ import numpy as np
 from dataclasses import dataclass
 
 from elphem.const.unit import Energy
-from elphem.lattice.empty import EmptyLattice
+from elphem.lattice.lattice import Lattice
 
 @dataclass
-class DebyeModel:
+class DebyePhonon:
     """Models the phononic properties of a lattice using the Debye model.
 
     Attributes:
@@ -14,7 +14,7 @@ class DebyeModel:
         number_of_atom (float): The number of atoms per primitive cell.
         mass (float): The mass of the crystal's atoms.
     """
-    lattice: EmptyLattice
+    lattice: Lattice
     debye_temperature: float
     number_of_atom: float
     mass: float
@@ -54,7 +54,7 @@ class DebyeModel:
         Returns:
             np.ndarray: The phonon eigenenergies at each wave vector.
         """
-        return self.speed_of_sound() * np.linalg.norm(q, axis=q.ndim-1)
+        return self.speed_of_sound() * np.linalg.norm(q, axis=-1)
     
     def eigenvector(self, q: np.ndarray) -> np.ndarray:
         """Calculate phonon eigenvectors at wave vector q.
@@ -65,7 +65,7 @@ class DebyeModel:
         Returns:
             np.ndarray: The phonon eigenvectors at each wave vector, represented as complex numbers.
         """
-        q_norm = np.linalg.norm(q, axis=q.ndim-1)
+        q_norm = np.linalg.norm(q, axis=-1)
 
         q_normalized = np.divide(q, q_norm[:, np.newaxis], out=np.zeros_like(q), where=q_norm[:, np.newaxis] != 0)
         return 1.0j * q_normalized
@@ -81,7 +81,7 @@ class DebyeModel:
             q (np.ndarray): A meshgrid representing the q-grid in reciprocal space.
         """
 
-        q = self.lattice.reciprocal_cell.monkhorst_pack_grid(*n_q)
+        q = self.lattice.get_grid(*n_q).mesh
 
         return q
     

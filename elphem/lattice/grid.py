@@ -16,8 +16,8 @@ class Grid:
         """Generate empty k-grid"""
         self.mesh = np.empty((self.n_mesh, 3))
 
-    def align(self, k_x: np.ndarray, k_y: np.ndarray, k_z: np.ndarray) -> np.ndarray:
-        aligned_k = np.array(np.meshgrid(k_x, k_y, k_z, indexing='ij')).T.reshape(-1, 3) @ self.basis
+    def align(self, x: np.ndarray, y: np.ndarray, z: np.ndarray) -> np.ndarray:
+        aligned_k = np.array(np.meshgrid(x, y, z, indexing='ij')).T.reshape(-1, 3) @ self.basis
         
         return aligned_k
 
@@ -28,11 +28,11 @@ class SimpleGrid(Grid):
     def generate(self) -> None:
         """Generate simple k-grid"""
         
-        k_x = np.linspace(-0.5, 0.5, self.n_x)
-        k_y = np.linspace(-0.5, 0.5, self.n_y)
-        k_z = np.linspace(-0.5, 0.5, self.n_z)
+        x = np.linspace(-0.5, 0.5, self.n_x)
+        y = np.linspace(-0.5, 0.5, self.n_y)
+        z = np.linspace(-0.5, 0.5, self.n_z)
 
-        self.mesh = self.align(k_x, k_y, k_z)
+        self.mesh = self.align(x, y, z)
 
 
 class MonkhorstPackGrid(Grid):
@@ -46,8 +46,8 @@ class MonkhorstPackGrid(Grid):
         r_y = np.arange(1, self.n_y + 1)
         r_z = np.arange(1, self.n_z + 1)
 
-        k_x = (2 * r_x - self.n_x - 1) / ( 2 * self.n_x )
-        k_y = (2 * r_y - self.n_y - 1) / ( 2 * self.n_y )
-        k_z = (2 * r_z - self.n_z - 1) / ( 2 * self.n_z )
+        x = (2 * r_x - self.n_x - 1) / ( 2 * self.n_x )
+        y = (2 * r_y - self.n_y - 1) / ( 2 * self.n_y )
+        z = (2 * r_z - self.n_z - 1) / ( 2 * self.n_z )
 
-        self.mesh = self.align(k_x, k_y, k_z)
+        self.mesh = self.align(x, y, z)

@@ -3,9 +3,9 @@ from unittest import TestCase
 
 from elphem.const.unit import Mass, Length
 from elphem.const.atomic_weight import AtomicWeight
-from elphem.lattice.empty import EmptyLattice
+from elphem.lattice.lattice import Lattice
 from elphem.electron.free import FreeElectron
-from elphem.phonon.debye import DebyeModel
+from elphem.phonon.debye import DebyePhonon
 from elphem.elph.self_energy import SelfEnergy
 from elphem.elph.epr import EPR
 
@@ -18,9 +18,9 @@ class TestUnit(TestCase):
 
         temperature = 0.3 * debye_temperature
 
-        lattice = EmptyLattice('bcc', a)
+        lattice = Lattice('bcc', a)
         electron = FreeElectron(lattice, n_band, 1)
-        phonon = DebyeModel(lattice, temperature, 1, mass)
+        phonon = DebyePhonon(lattice, temperature, 1, mass)
 
         self_energy = SelfEnergy(lattice, electron, phonon, temperature)
         self.epr = EPR(self_energy)
