@@ -22,11 +22,10 @@ class FreeElectron:
         if self.n_electron <= 0:
             raise ValueError("Second variable (number of electrons per unit cell) should be a positive value.")
         
-        self.electron_density = self.n_electron / self.lattice.volume["primitive"]
-        self.fermi_energy = self.get_fermi_energy()
-        self.g = self.get_reciprocal_vector()
+        self.set_fermi_energy()
+        self.reciprocal_vectors = self.lattice.get_reciprocal_vectors(self.n_band)
 
-    def eigenenergy(self, k: np.ndarray) -> np.ndarray:
+    def get_eigenenergy(self, k: np.ndarray) -> np.ndarray:
         """Calculate the electron eigenenergies at wave vector k.
 
         Args:
@@ -36,9 +35,11 @@ class FreeElectron:
             np.ndarray: The electron eigenenergies at each wave vector.
         """
 
-        return 0.5 * np.linalg.norm(k, axis=-1) ** 2 - self.fermi_energy
+        eigenenergy = 0.5 * np.linalg.norm(k, axis=-1) ** 2 - self.fermi_energy
 
-    def grid(self, n_k: np.ndarray) -> tuple:
+        return eigenenergy
+
+    def get_gk_grid(self, n_k: np.ndarray) -> tuple:
         """Generate a (G, k)-grid for electron states calculation.
 
         Args:
@@ -53,17 +54,9 @@ class FreeElectron:
         k_grid = self.lattice.get_grid(*n_k)
 
         k_return = np.tile(k_grid.mesh, (self.n_band, 1, 1))
-        g_return = np.repeat(self.g[:, np.newaxis, :], len(k_grid.mesh), axis=1)
+        g_return = np.repeat(self.reciprocal_vectors[:, np.newaxis, :], len(k_grid.mesh), axis=1)
 
         return g_return, k_return
-
-    def get_fermi_energy(self) -> float:
-        """Calculate the Fermi energy of the electron system.
-
-        Returns:
-            float: The Fermi energy.
-        """
-        return 0.5 * (3 * np.pi ** 2 * self.electron_density) ** (2/3)
 
     def get_band_structure(self, k_names: list[np.ndarray], n_split: int) -> tuple:
         """Calculate the electronic band structures along the specified path in reciprocal space.
@@ -75,36 +68,18 @@ class FreeElectron:
         Returns:
             tuple: A tuple containing x-coordinates for plotting, eigenenergy values, and x-coordinates of special points.
         """
-        x, k, special_x = self.lattice.reciprocal_cell.path(k_names, n_split)
+        x, k, special_x = self.lattice.reciprocal_cell.get_path(k_names, n_split)
         
-        eigenenergy = np.array([self.eigenenergy(k + g_i) for g_i in self.g])
+        eigenenergy = np.array([self.get_eigenenergy(k + g_i) for g_i in self.reciprocal_vectors])
         
         return x, eigenenergy, special_x
-    
-    def get_reciprocal_vector(self) -> np.ndarray:
-        """Generate the reciprocal lattice vectors used to define the Brillouin zone boundaries.
+
+    def set_fermi_energy(self) -> None:
+        """Calculate the Fermi energy of the electron system.
 
         Returns:
-            np.ndarray: An array of reciprocal lattice vectors.
+            float: The Fermi energy.
         """
-        basis = self.lattice.basis["reciprocal"]
-
-        n_cut = np.ceil(np.cbrt(self.n_band))
-
-        n_1d = np.arange(-n_cut, n_cut + 1)
-        n_3d = np.array(np.meshgrid(n_1d, n_1d, n_1d)).T.reshape(-1, 3)
+        electron_density = self.n_electron / self.lattice.volume["primitive"]
         
-        g = n_3d @ basis
-        g_norm = np.linalg.norm(g, axis=-1).round(decimals=5)
-        g_norm_unique = np.unique(g_norm)
-
-        g_list = []
-
-        for g_ref in g_norm_unique:
-            count = 0
-            for g_compare in g_norm:
-                if g_compare == g_ref:
-                    g_list.append(g[count])
-                count += 1
-
-        return np.array(g_list[0:self.n_band])
+        self.fermi_energy = 0.5 * (3 * np.pi ** 2 * electron_density) ** (2/3)

@@ -1,17 +1,15 @@
 import numpy as np
 from dataclasses import dataclass
 
-from elphem.lattice.lattice import Lattice
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyePhonon
 from elphem.elph.distribution import fermi_distribution, bose_distribution, gaussian_distribution, safe_divide
 
 @dataclass
-class SelfEnergy:
-    """Calculate the self-energy components for electronic states in a lattice.
+class ElectronPhonon:
+    """Calculate the electron-phonon components for electronic states in a lattice.
 
     Attributes:
-        lattice (EmptyLattice): The crystal lattice being studied.
         electron (FreeElectron): Free electron model for the lattice.
         phonon (DebyeModel): Phonon model using Debye approximation.
         temperature (float): Temperature of the system in Kelvin.
@@ -19,7 +17,6 @@ class SelfEnergy:
         eta (float): Small positive constant to ensure numerical stability, defaults to 0.01.
         effective_potential (float): Effective potential used in electron-phonon coupling calculation, defaults to 1.0 / 16.0.
     """
-    lattice: Lattice
     electron: FreeElectron
     phonon: DebyePhonon
     temperature: float
@@ -27,7 +24,7 @@ class SelfEnergy:
     eta: float = 0.1
     effective_potential: float = 1.0 / 16.0
     
-    def coupling(self, g1: np.ndarray, g2: np.ndarray, q: np.ndarray) -> np.ndarray:
+    def get_coupling(self, g1: np.ndarray, g2: np.ndarray, q: np.ndarray) -> np.ndarray:
         """Calculate the lowest-order electron-phonon coupling between states.
 
         Args:
@@ -38,19 +35,17 @@ class SelfEnergy:
         Returns:
             np.ndarray: The electron-phonon coupling strength for the given vectors.
         """
+
         q_norm = np.linalg.norm(q, axis=-1)
         delta_g = g1 - g2
         q_dot = np.sum(q * delta_g, axis=-1) 
-
-        mask = q_norm > 0
-        result = np.zeros_like(q_norm)
         
-        denominator = np.sqrt(2.0 * self.phonon.mass * self.phonon.speed) * q_norm ** 1.5
-        result[mask] = safe_divide(self.effective_potential * q_dot[mask], denominator[mask])
+        denominator = np.sqrt(2.0 * self.electron.lattice.mass * self.phonon.speed_of_sound) * q_norm ** 1.5
+        coupling = safe_divide(self.effective_potential * q_dot, denominator)
         
-        return result
+        return coupling
 
-    def calculate_fan_term(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> complex:
+    def get_self_energy(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> complex:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
         Args:
@@ -61,35 +56,36 @@ class SelfEnergy:
         Returns:
             complex: The Fan self-energy term as a complex number.
         """        
-        g_inter, q = self.electron.grid(n_q) # Generate intermediate G, q grid.
+        g_inter, q = self.electron.get_gk_grid(n_q) # Generate intermediate G, q grid.
 
-        omega = self.phonon.eigenenergy(q)
+        phonon_eigenenergy = self.phonon.get_eigenenergy(q)
         
-        coeff = 2.0 * np.pi / np.prod(n_q)
+        coefficient = 2.0 * np.pi / np.prod(n_q)
 
-        epsilon = self.electron.eigenenergy(k + g)
-        epsilon_inter = self.electron.eigenenergy(k + g_inter + q)
+        electron_eigenenergy = self.electron.get_eigenenergy(k + g)
+        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + g_inter + q)
 
-        fermi = fermi_distribution(self.temperature, epsilon_inter)
-        bose = bose_distribution(self.temperature, omega)
+        fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
+        bose = bose_distribution(self.temperature, phonon_eigenenergy)
 
-        coupling = self.coupling(g, g_inter, q)
+        coupling = self.get_coupling(g, g_inter, q)
     
-        delta_energy = epsilon - epsilon_inter
+        delta_energy = electron_eigenenergy - electron_eigenenergy_inter
+    
         # Real Part
-        green_part_real = (safe_divide(1.0 - fermi + bose, delta_energy - omega + self.eta * 1.0j)
-                            + safe_divide(fermi + bose, delta_energy + omega + self.eta * 1.0j)).real
+        green_part_real = (safe_divide(1.0 - fermi + bose, delta_energy - phonon_eigenenergy + self.eta * 1.0j)
+                            + safe_divide(fermi + bose, delta_energy + phonon_eigenenergy + self.eta * 1.0j)).real
 
         # Imaginary Part
-        green_part_imag = ((1.0 - fermi + bose) * gaussian_distribution(self.sigma, delta_energy - omega)
-                        + (fermi + bose) * gaussian_distribution(self.sigma, delta_energy + omega))
+        green_part_imag = ((1.0 - fermi + bose) * gaussian_distribution(self.sigma, delta_energy - phonon_eigenenergy)
+                        + (fermi + bose) * gaussian_distribution(self.sigma, delta_energy + phonon_eigenenergy))
 
-        selfen = (np.nansum(np.abs(coupling) ** 2 * green_part_real) 
+        self_energy = (np.nansum(np.abs(coupling) ** 2 * green_part_real) 
                         + 1.0j * np.nansum(np.abs(coupling) ** 2 * green_part_imag))
         
-        return selfen * coeff
+        return self_energy * coefficient
 
-    def calculate_coupling_strength(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> float:
+    def get_coupling_strength(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> float:
         """Calculate the electron-phonon coupling strength for given wave vectors.
 
         Args:
@@ -101,30 +97,31 @@ class SelfEnergy:
             float: The calculated electron-phonon coupling strength.
         """
         
-        g_inter, q = self.electron.grid(n_q) # Generate intermediate G, q grid.
+        g_inter, q = self.electron.get_gk_grid(n_q) # Generate intermediate G, q grid.
 
-        omega = self.phonon.eigenenergy(q)
-        bose = bose_distribution(self.temperature, omega)
+        phonon_eigenenergy = self.phonon.get_eigenenergy(q)
+        bose = bose_distribution(self.temperature, phonon_eigenenergy)
         
-        coeff = 2.0 * np.pi / np.prod(n_q)
+        coeffient = 2.0 * np.pi / np.prod(n_q)
 
-        epsilon = self.electron.eigenenergy(k + g)
-        epsilon_inter = self.electron.eigenenergy(k + g_inter + q)
+        electron_eigenenergy = self.electron.get_eigenenergy(k + g)
+        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + g_inter + q)
 
-        fermi = fermi_distribution(self.temperature, epsilon_inter)
+        fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
 
-        coupling = self.coupling(g, g_inter, q)
+        coupling = self.get_coupling(g, g_inter, q)
     
-        delta_energy = epsilon - epsilon_inter
+        delta_energy = electron_eigenenergy - electron_eigenenergy_inter
+
         # Real Part
-        partial_green_part_real = - (safe_divide(1.0 - fermi + bose, (delta_energy - omega + self.eta * 1.0j) ** 2)
-                                    + safe_divide(fermi + bose, (delta_energy + omega + self.eta * 1.0j) ** 2)).real
+        partial_green_part_real = - (safe_divide(1.0 - fermi + bose, (delta_energy - phonon_eigenenergy + self.eta * 1.0j) ** 2)
+                                    + safe_divide(fermi + bose, (delta_energy + phonon_eigenenergy + self.eta * 1.0j) ** 2)).real
 
         coupling_strength = - np.nansum(np.abs(coupling) ** 2 * partial_green_part_real)
         
-        return coupling_strength * coeff
-    
-    def calculate_qp_strength(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> float:
+        return coupling_strength * coeffient
+
+    def get_qp_strength(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> float:
         """Calculate the quasiparticle strength for given wave vectors.
 
         Args:
@@ -135,7 +132,7 @@ class SelfEnergy:
         Returns:
             float: The quasiparticle strength.
         """
-        coupling_strength = self.calculate_coupling_strength(g, k, n_q)
+        coupling_strength = self.get_coupling_strength(g, k, n_q)
         qp_strength = safe_divide(1.0, 1.0 + coupling_strength)
 
         return qp_strength

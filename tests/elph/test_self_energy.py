@@ -1,42 +1,43 @@
 import numpy as np
 from unittest import TestCase
 
-from elphem.const.unit import Mass
+from elphem.const.unit import Length
 from elphem.lattice.lattice import Lattice
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyePhonon
-from elphem.elph.self_energy import SelfEnergy
+from elphem.elph.electron_phonon import ElectronPhonon
 
 class TestUnit(TestCase):
     def setUp(self) -> None:
         self.n_band = 10
         
-        mass = 12 * Mass.DALTON["->"]
-        debye_temperature = 2300.0
+        a = 2.98 * Length.ANGSTROM["->"]
+        lattice = Lattice('bcc', a, 'Li')
+
+        debye_temperature = 344.0
         temperature = 0.3 * debye_temperature
         
-        lattice = Lattice('fcc', 5.0)
-        phonon = DebyePhonon(lattice, debye_temperature, 2, mass)
+        phonon = DebyePhonon(lattice, debye_temperature)
 
         self.electron = FreeElectron(lattice, self.n_band, 4)
-        self.self_energy = SelfEnergy(lattice, self.electron, phonon, temperature)
+        self.electron_phonon = ElectronPhonon(self.electron, phonon, temperature)
 
     def test_calc(self):
         n_k = np.array([5,5,5])
         n_q = np.array([5,5,5])
         
-        g_mesh, k_mesh = self.electron.grid(n_k)
+        g_mesh, k_mesh = self.electron.get_gk_grid(n_k)
         
         g = g_mesh.reshape(-1, 3)
         k = k_mesh.reshape(-1, 3)
         
         shape_mesh = g_mesh[..., 0].shape
 
-        fan_term = np.array([self.self_energy.calculate_fan_term(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
-        coupling_strength = np.array([self.self_energy.calculate_coupling_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
-        qp_strength = np.array([self.self_energy.calculate_qp_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
+        self_energy = np.array([self.electron_phonon.get_self_energy(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
+        coupling_strength = np.array([self.electron_phonon.get_coupling_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
+        qp_strength = np.array([self.electron_phonon.get_qp_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
         
         correct_shape = (self.n_band, np.prod(n_k))
         
-        for v in [fan_term, coupling_strength, qp_strength]:
+        for v in [self_energy, coupling_strength, qp_strength]:
             self.assertEqual(v.shape, correct_shape)

@@ -79,7 +79,6 @@ class PrimitiveCell(Cell):
         basis[0][0] = length[0]
         basis[1][0] = length[1] * np.cos(angle[2])
         basis[1][1] = length[1] * np.sin(angle[2])
-
         basis[2][0] = length[2] * np.cos(angle[1])
         basis[2][1] = length[2] * (np.cos(angle[0]) - np.cos(angle[1]) * np.cos(angle[2])) / np.sin(angle[2])
         basis[2][2] = np.sqrt(length[2] ** 2 - np.sum(basis[2]**2))
@@ -117,7 +116,7 @@ class ReciprocalCell(Cell):
         
         return basis
     
-    def path(self, k_names: list[str], n: int) -> np.ndarray:
+    def get_path(self, k_names: list[str], n: int) -> np.ndarray:
         """Calculates a path through specified special points in the Brillouin zone.
 
         Args:

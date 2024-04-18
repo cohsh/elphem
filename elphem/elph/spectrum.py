@@ -1,7 +1,7 @@
 import numpy as np
 from dataclasses import dataclass
 
-from elphem.elph.self_energy import SelfEnergy
+from elphem.elph.electron_phonon import ElectronPhonon
 from elphem.elph.distribution import safe_divide
 
 @dataclass
@@ -12,9 +12,9 @@ class Spectrum:
         self_energy (SelfEnergy): An instance of SelfEnergy used for the spectral function calculations.
     """
     
-    self_energy: SelfEnergy
+    electron_phonon: ElectronPhonon
 
-    def calculate_with_grid(self, n_k: np.ndarray, n_q: np.ndarray, n_omega: int) -> np.ndarray:
+    def get_with_grid(self, n_k: np.ndarray, n_q: np.ndarray, n_omega: int) -> np.ndarray:
         """
         Calculate the spectral function over a grid of k-points and a range of energies.
 
@@ -27,19 +27,19 @@ class Spectrum:
             np.ndarray: The calculated spectral function array over the specified grid and energy range.
         """
         
-        g_grid, k_grid = self.self_energy.electron.grid(n_k)
+        g_grid, k_grid = self.electron_phonon.electron.get_gk_grid(n_k)
         
         shape_mesh = g_grid[..., 0].shape
         
         g = g_grid.reshape(-1, 3)
         k = k_grid.reshape(-1, 3)
 
-        epsilon = self.self_energy.electron.eigenenergy(k_grid)
-        fan_term = np.array([self.self_energy.calculate_fan_term(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
-        qp_strength = np.array([self.self_energy.calculate_qp_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
+        electron_eigenenergy = self.electron_phonon.electron.get_eigenenergy(k_grid)
+        self_energy = np.array([self.electron_phonon.get_self_energy(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
+        qp_strength = np.array([self.electron_phonon.get_qp_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
 
-        coeff = - qp_strength / np.pi
-        numerator = qp_strength * fan_term.imag
+        coefficient = - qp_strength / np.pi
+        numerator = qp_strength * self_energy.imag
         
         omegas = np.linspace(0.0, 10.0, n_omega)
 
@@ -48,17 +48,17 @@ class Spectrum:
         count = 0
         for omega in omegas:
             denominator = (
-                (omega - epsilon - fan_term.real) ** 2
-                + (qp_strength * fan_term.imag) ** 2
+                (omega - electron_eigenenergy - self_energy.real) ** 2
+                + (qp_strength * self_energy.imag) ** 2
                 )
-            fraction = safe_divide(coeff * numerator, denominator)
+            fraction = safe_divide(coefficient * numerator, denominator)
             spectrum[..., count] = np.nansum(fraction, axis=0)
             
             count += 1
         
         return spectrum
     
-    def calculate_with_path(self, k_names: list[str], n_split: int,
+    def get_with_path(self, k_names: list[str], n_split: int,
                     n_q: np.ndarray, n_omega: int, range_omega: list[float]) -> tuple:
         """
         Calculate the spectral function along a specified path in the Brillouin zone.
@@ -74,30 +74,30 @@ class Spectrum:
             tuple: A tuple containing the path x-coordinates, energy values, the calculated spectrum, and x-coordinates of special points.
         """
         
-        g = self.self_energy.electron.g
+        g = self.electron_phonon.electron.reciprocal_vectors
         
-        x, k, special_x = self.self_energy.lattice.reciprocal_cell.path(k_names, n_split)
-        epsilon = np.array([self.self_energy.electron.eigenenergy(k + g_i) for g_i in g])
+        x, k, special_x = self.electron_phonon.electron.lattice.reciprocal_cell.get_path(k_names, n_split)
+        electron_eigenenergy = np.array([self.electron_phonon.electron.get_eigenenergy(k + g_i) for g_i in g])
 
-        shape_return = epsilon.shape
+        shape_return = electron_eigenenergy.shape
 
-        fan_term = np.zeros(shape_return, dtype='complex128')
+        self_energy = np.zeros(shape_return, dtype='complex128')
         qp_strength = np.zeros(shape_return)
 
-        for i in range(self.self_energy.electron.n_band):
-            fan_term[i] = np.array([self.self_energy.calculate_fan_term(g[i], k_i, n_q) for k_i in k])
-            qp_strength[i] = np.array([self.self_energy.calculate_qp_strength(g[i], k_i, n_q) for k_i in k])
+        for i in range(self.electron_phonon.electron.n_band):
+            self_energy[i] = np.array([self.electron_phonon.get_self_energy(g[i], k_i, n_q) for k_i in k])
+            qp_strength[i] = np.array([self.electron_phonon.get_qp_strength(g[i], k_i, n_q) for k_i in k])
 
-        coeff = - qp_strength / np.pi
-        numerator = qp_strength * fan_term.imag
+        coefficient = - qp_strength / np.pi
+        numerator = qp_strength * self_energy.imag
 
         omegas = np.linspace(range_omega[0], range_omega[1], n_omega)
-        spectrum = np.zeros(fan_term[0].shape + omegas.shape)
+        spectrum = np.zeros(self_energy[0].shape + omegas.shape)
                 
         count = 0
         for omega in omegas:
-            denominator = (omega - epsilon - fan_term.real) ** 2 + (qp_strength * fan_term.imag) ** 2
-            fraction = safe_divide(coeff * numerator, denominator)
+            denominator = (omega - electron_eigenenergy - self_energy.real) ** 2 + (qp_strength * self_energy.imag) ** 2
+            fraction = safe_divide(coefficient * numerator, denominator)
 
             spectrum[..., count] = np.nansum(fraction, axis=0)
             

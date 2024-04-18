@@ -6,7 +6,7 @@ from elphem.lattice.grid import *
 
 class TestUnit(TestCase):
     def test_grid(self):
-        lattice = Lattice('bcc', 3.0)
+        lattice = Lattice('bcc', 3.0, 'Li')
         basis = lattice.basis["reciprocal"]
 
         n = [8, 8, 8]
