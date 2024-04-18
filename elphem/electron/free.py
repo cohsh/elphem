@@ -42,6 +42,7 @@ class FreeElectron:
         Returns:
             np.ndarray: The electron eigenenergies at each wave vector.
         """
+
         return 0.5 * np.linalg.norm(k, axis=-1) ** 2 - self.fermi_energy()
     
     def grid(self, n_k: np.ndarray) -> tuple:
@@ -53,9 +54,8 @@ class FreeElectron:
         Returns:
             tuple: A tuple containing G-meshgrid and k-meshgrid for electron state calculations.
         """
-        basis = self.lattice.basis["reciprocal"]
-        
-        k = self.lattice.reciprocal_cell.simple_grid(*n_k)
+                
+        k = self.lattice.reciprocal_cell.monkhorst_pack_grid(*n_k)
 
         k_grid = np.tile(k, (self.n_band, 1, 1))
         g_grid = np.repeat(self.g[:, np.newaxis, :], len(k), axis=1)
