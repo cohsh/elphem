@@ -149,6 +149,25 @@ class ReciprocalCell(Cell):
         basis *= 2.0 * np.pi / primitive_cell.volume()
         
         return basis
+    
+    def simple_grid(self, n_x: int, n_y: int, n_z: int) -> np.ndarray:
+        """Generate k-grid
+
+        Args:
+            n_x (int): Number of mesh
+            n_y (int): Number of mesh
+            n_z (int): Number of mesh
+        
+        Returns:
+            k (np.ndarray): k-grid
+        """
+
+        k_x = np.linspace(-0.5, 0.5, n_x)
+        k_y = np.linspace(-0.5, 0.5, n_y)
+        k_z = np.linspace(-0.5, 0.5, n_z)
+        k = np.array(np.meshgrid(k_x, k_y, k_z, indexing='ij')).T.reshape(-1, 3) @ self.basis
+
+        return k
 
     def path(self, k_names: list[str], n: int) -> np.ndarray:
         """Calculates a path through specified special points in the Brillouin zone.

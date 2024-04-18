@@ -55,10 +55,7 @@ class FreeElectron:
         """
         basis = self.lattice.basis["reciprocal"]
         
-        k_x = np.linspace(-0.5, 0.5, n_k[0])
-        k_y = np.linspace(-0.5, 0.5, n_k[1])
-        k_z = np.linspace(-0.5, 0.5, n_k[2])
-        k = np.array(np.meshgrid(k_x, k_y, k_z, indexing='ij')).T.reshape(-1, 3) @ basis
+        k = self.lattice.reciprocal_cell.simple_grid(*n_k)
 
         k_grid = np.tile(k, (self.n_band, 1, 1))
         g_grid = np.repeat(self.g[:, np.newaxis, :], len(k), axis=1)
