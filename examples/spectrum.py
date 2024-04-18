@@ -5,12 +5,12 @@ from elphem import *
 
 def main():
     a = 2.98 * Length.ANGSTROM["->"]
-    mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
+    lattice = Lattice('bcc', a)
+
+    electron = FreeElectron(lattice, n_band=8, n_electron=1)
 
     debye_temperature = 344.0
-
-    lattice = Lattice('bcc', a)
-    electron = FreeElectron(lattice, n_band=8, n_electron=1)
+    mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
     phonon = DebyePhonon(lattice, debye_temperature, 1, mass)
 
     temperature =  1.5 * debye_temperature
