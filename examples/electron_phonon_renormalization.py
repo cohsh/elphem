@@ -5,35 +5,35 @@ from elphem import *
 
 def main():
     a = 2.98 * Length.ANGSTROM["->"]
-    mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
     debye_temperature = 344.0
     temperature = 3 * debye_temperature
     n_band = 20
+    n_electron = 1
 
-    lattice = Lattice('bcc', a)
-    electron = FreeElectron(lattice, n_band, 1)        
-    phonon = DebyePhonon(lattice, temperature, 1, mass)
+    lattice = Lattice('bcc', a, 'Li')
+    electron = FreeElectron(lattice, n_band, n_electron)        
+    phonon = DebyePhonon(lattice, temperature)
 
-    self_energy = SelfEnergy(lattice, electron, phonon, temperature)
+    electron_phonon = ElectronPhonon(electron, phonon, temperature)
 
     k_names = ["G", "H", "N", "G", "P", "H"]
 
     n_split = 20
-    n_q = np.array([12]*3)
+    n_q = np.full(3, 12)
     
-    k, eig, epr, special_k = EPR(self_energy).calculate_with_path(k_names, n_split, n_q)
+    k, eig, epr, special_k = EPR(electron_phonon).get_with_path(k_names, n_split, n_q)
     
     fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
+    ax = fig.add_subplot(111)
 
     for n in range(n_band):
         if n == 0:
-            ax.plot(k, eig[n] * Energy.EV["<-"], color="tab:blue", label="w/o EPR")
             ax.plot(k, (eig[n] + epr[n]) * Energy.EV["<-"], color="tab:orange", label="w/ EPR")
+            ax.plot(k, eig[n] * Energy.EV["<-"], color="tab:blue", label="w/o EPR")
         else:
-            ax.plot(k, eig[n] * Energy.EV["<-"], color="tab:blue")
             ax.plot(k, (eig[n] + epr[n]) * Energy.EV["<-"], color="tab:orange")
-    
+            ax.plot(k, eig[n] * Energy.EV["<-"], color="tab:blue")
+
     for k0 in special_k:
         ax.axvline(x=k0, color="black", linewidth=0.3)
     

@@ -4,17 +4,16 @@ import matplotlib.pyplot as plt
 from elphem import *
 
 def main():
-    a = 2.98 * Length.ANGSTROM["->"]
-    lattice = Lattice('bcc', a)
+    a = 2.98 * Length.ANGSTROM['->']
+    lattice = Lattice('bcc', a, 'Li')
 
     electron = FreeElectron(lattice, n_band=8, n_electron=1)
 
     debye_temperature = 344.0
-    mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
-    phonon = DebyePhonon(lattice, debye_temperature, 1, mass)
+    phonon = DebyePhonon(lattice, debye_temperature)
 
     temperature =  1.5 * debye_temperature
-    self_energy = SelfEnergy(lattice, electron, phonon, temperature)
+    electron_phonon = ElectronPhonon(electron, phonon, temperature)
 
     n_q = np.full(3, 12)
     n_omega = 1000
@@ -23,11 +22,11 @@ def main():
     k_names = ["G", "H", "N", "G", "P", "H"]
     n_split = 20
     
-    x, y, spectrum, special_x = Spectrum(self_energy).calculate_with_path(k_names, n_split, n_q, n_omega, range_omega)
+    x, y, spectrum, special_x = Spectrum(electron_phonon).get_with_path(k_names, n_split, n_q, n_omega, range_omega)
     y_mesh, x_mesh = np.meshgrid(y, x)
 
     fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
+    ax = fig.add_subplot(111)
     
     mappable = ax.pcolormesh(x_mesh, y_mesh * Energy.EV["<-"], spectrum / Energy.EV["<-"])
     

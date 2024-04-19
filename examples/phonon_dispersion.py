@@ -4,15 +4,14 @@ from elphem import *
 
 def main():
     a = 2.98 * Length.ANGSTROM["->"]
-    mass = AtomicWeight.table["Li"] * Mass.DALTON["->"]
-    lattice = Lattice('bcc', a)
+    lattice = Lattice('bcc', a, 'Li')
 
     debye_temperature = 344.0
-    phonon = DebyePhonon(lattice, debye_temperature, 1, mass)
+    phonon = DebyePhonon(lattice, debye_temperature)
 
     q_names = ["G", "H", "N", "G", "P", "H"]
     
-    q, omega, special_q = phonon.get_dispersion(q_names, n_split=20)
+    q, omega, special_q = phonon.get_dispersion(q_names, n_split=40)
     
     fig, ax = plt.subplots()
 
