@@ -9,7 +9,7 @@ class TestUnit(TestCase):
         a = 2.98 * Length.ANGSTROM["->"]
         debye_temperature = 344.0
 
-        lattice = Lattice('bcc', a, 'Li')
+        lattice = Lattice('bcc', 'Li', a)
 
         self.phonon = DebyePhonon(lattice, debye_temperature)
     

@@ -12,7 +12,7 @@ class TestUnit(TestCase):
         self.n_band = 10
         
         a = 2.98 * Length.ANGSTROM["->"]
-        lattice = Lattice('bcc', a, 'Li')
+        lattice = Lattice('bcc', 'Li', a)
 
         debye_temperature = 344.0
         temperature = 0.3 * debye_temperature

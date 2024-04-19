@@ -12,8 +12,8 @@ from elphem.lattice.grid import MonkhorstPackGrid
 class Lattice:
     """A class to simulate an empty lattice for a given crystal structure and lattice constant a."""
     crystal_structure: str
-    a: float
     atoms: str | list[str] | np.ndarray
+    a: float
 
     def __post_init__(self):
         """Initializes the lattice constants, primitive, and reciprocal cells along with their volumes and bases."""

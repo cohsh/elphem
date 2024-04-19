@@ -8,22 +8,19 @@ from elphem.lattice.grid import *
 class TestUnit(TestCase):
     def setUp(self) -> None:
         a = 2.98 * Length.ANGSTROM["->"]
-        self.lattice = Lattice('bcc', a, 'Li')
+        self.lattice = Lattice('bcc', 'Li', a)
+        self.basis_primitive = self.lattice.basis["primitive"]
+        self.basis_reciprocal = self.lattice.basis["reciprocal"]
 
     def test_vector(self):
-        basis_primitive = self.lattice.basis["primitive"]
-        basis_reciprocal = self.lattice.basis["reciprocal"]
-
-        for b in [basis_primitive, basis_reciprocal]:
+        for b in [self.basis_primitive, self.basis_reciprocal]:
             self.assertEqual(b.shape, (3,3))
 
     def test_grid(self):
-        basis = self.lattice.basis["reciprocal"]
-
         n = [8, 8, 8]
-        grid = Grid(basis, *n)
-        simple_grid = SimpleGrid(basis, *n)
-        mk_grid = MonkhorstPackGrid(basis, *n)
+        grid = Grid(self.basis_reciprocal, *n)
+        simple_grid = SimpleGrid(self.basis_reciprocal, *n)
+        mk_grid = MonkhorstPackGrid(self.basis_reciprocal, *n)
         
         correct_shape = (np.prod(n), 3)
         

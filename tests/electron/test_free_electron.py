@@ -6,7 +6,7 @@ from elphem.electron.free import FreeElectron
 class TestUnit(TestCase):
     def setUp(self) -> None:
         a = 2.98 * Length.ANGSTROM["->"]
-        lattice = Lattice('bcc', a, 'Li')
+        lattice = Lattice('bcc', 'Li', a)
 
         self.electron = FreeElectron(lattice, n_band=20, n_electron=4)
 

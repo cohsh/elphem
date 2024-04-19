@@ -16,7 +16,7 @@ class TestUnit(TestCase):
 
         temperature = 0.3 * debye_temperature
 
-        lattice = Lattice('bcc', a, 'Li')
+        lattice = Lattice('bcc', 'Li', a)
         electron = FreeElectron(lattice, n_band, 1)
         phonon = DebyePhonon(lattice, temperature)
 
