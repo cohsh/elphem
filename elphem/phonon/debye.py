@@ -34,6 +34,7 @@ class DebyePhonon:
         Returns:
             np.ndarray: The phonon eigenenergies at each wave vector.
         """
+
         eigenenergy = self.speed_of_sound * np.linalg.norm(q, axis=-1)
         
         return eigenenergy
@@ -47,10 +48,12 @@ class DebyePhonon:
         Returns:
             np.ndarray: The phonon eigenvectors at each wave vector, represented as complex numbers.
         """
+
         q_norm = np.linalg.norm(q, axis=-1)
 
-        q_normalized = np.divide(q, q_norm[:, np.newaxis], out=np.zeros_like(q), where=q_norm[:, np.newaxis] != 0)
-        return 1.0j * q_normalized
+        eigenvector = 1.0j * np.divide(q, q_norm[:, np.newaxis], out=np.zeros_like(q), where=q_norm[:, np.newaxis] != 0)
+
+        return eigenvector
 
     def get_dispersion(self, q_names: list[np.ndarray], n_split) -> tuple:
         """Calculate the phonon dispersion curves along specified paths in reciprocal space.
