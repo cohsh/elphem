@@ -4,10 +4,6 @@ import numpy as np
 from elphem.common.unit import Energy
 from elphem.common.function import safe_divide
 
-# Setting up system-related constants and warning filters
-float_min = sys.float_info.min
-float_max = sys.float_info.max
-
 def boltzmann_distribution(temperature: float, energy: float | np.ndarray) -> float | np.ndarray:
     """
     Calculates the occupation number of particles following the Boltzmann distribution.
@@ -19,11 +15,20 @@ def boltzmann_distribution(temperature: float, energy: float | np.ndarray) -> fl
     Returns:
         float | np.ndarray: Occupation number(s) based on the Boltzmann distribution.
     """
+
+    # Setting up system-related constants and warning filters
+    float_min = sys.float_info.min
+    float_max = sys.float_info.max
+
     kbt = max(temperature * Energy.KELVIN["->"], float_min)
     beta = safe_divide(1.0, kbt, default=float_max)
 
     ln = - beta * energy
-    return np.exp(ln, out=np.zeros_like(energy), where=ln > -np.log(float_max))
+    
+    safe_ln_min = np.log(float_min)
+    safe_ln_max = np.log(float_max)
+    
+    return np.exp(ln, out=np.zeros_like(energy), where=((ln > safe_ln_min) & (ln < safe_ln_max)))
 
 def fermi_distribution(temperature: float, energy: float | np.ndarray) -> float | np.ndarray:
     """
