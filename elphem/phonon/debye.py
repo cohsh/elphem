@@ -38,6 +38,20 @@ class DebyePhonon:
         
         return eigenenergy
 
+    def eigenvector(self, q: np.ndarray) -> np.ndarray:
+        """Calculate phonon eigenvectors at wave vector q.
+
+        Args:
+            q (np.ndarray): A numpy array representing vectors in reciprocal space.
+
+        Returns:
+            np.ndarray: The phonon eigenvectors at each wave vector, represented as complex numbers.
+        """
+        q_norm = np.linalg.norm(q, axis=-1)
+
+        q_normalized = np.divide(q, q_norm[:, np.newaxis], out=np.zeros_like(q), where=q_norm[:, np.newaxis] != 0)
+        return 1.0j * q_normalized
+
     def get_dispersion(self, q_names: list[np.ndarray], n_split) -> tuple:
         """Calculate the phonon dispersion curves along specified paths in reciprocal space.
 
