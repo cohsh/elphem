@@ -5,7 +5,7 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM['->']
 
-    lattice = Lattice('bcc', a, 'Li')
+    lattice = Lattice('bcc', 'Li', a)
     electron = FreeElectron(lattice, n_band=50, n_electron=1)
 
     k_names = ["G", "H", "N", "G", "P", "H"]

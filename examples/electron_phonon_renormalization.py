@@ -10,7 +10,7 @@ def main():
     n_band = 20
     n_electron = 1
 
-    lattice = Lattice('bcc', a, 'Li')
+    lattice = Lattice('bcc', 'Li', a)
     electron = FreeElectron(lattice, n_band, n_electron)        
     phonon = DebyePhonon(lattice, temperature)
 

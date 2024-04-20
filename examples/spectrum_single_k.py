@@ -7,7 +7,7 @@ def main():
     a = 2.98 * Length.ANGSTROM["->"]
     debye_temperature = 344.0
 
-    lattice = Lattice('bcc', a, 'Li')
+    lattice = Lattice('bcc', 'Li', a)
     electron = FreeElectron(lattice, n_band=8, n_electron=1)
     phonon = DebyePhonon(lattice, debye_temperature)
 

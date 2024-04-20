@@ -4,7 +4,7 @@ from elphem import *
 
 def main():
     a = 2.98 * Length.ANGSTROM["->"]
-    lattice = Lattice('bcc', a, 'Li')
+    lattice = Lattice('bcc', 'Li', a)
 
     debye_temperature = 344.0
     phonon = DebyePhonon(lattice, debye_temperature)
