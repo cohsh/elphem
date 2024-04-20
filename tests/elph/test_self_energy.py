@@ -1,7 +1,7 @@
 import numpy as np
 from unittest import TestCase
 
-from elphem.const.unit import Length
+from elphem.common.unit import Length
 from elphem.lattice.lattice import Lattice
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyePhonon

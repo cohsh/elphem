@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 import numpy as np
 
-from elphem.const.atomic_weight import AtomicWeight
-from elphem.const.unit import Mass
+from elphem.common.atomic_weight import AtomicWeight
+from elphem.common.unit import Mass
 from elphem.lattice.cell import PrimitiveCell, ReciprocalCell
 from elphem.lattice.lattice_constant import LatticeConstant
 

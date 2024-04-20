@@ -1,7 +1,8 @@
 import numpy as np
 from dataclasses import dataclass
 
-from elphem.const.unit import Energy
+from elphem.common.unit import Energy
+from elphem.common.function import safe_divide
 from elphem.lattice.lattice import Lattice
 
 @dataclass
@@ -49,9 +50,10 @@ class DebyePhonon:
             np.ndarray: The phonon eigenvectors at each wave vector, represented as complex numbers.
         """
 
-        q_norm = np.linalg.norm(q, axis=-1)
-
-        eigenvector = 1.0j * np.divide(q, q_norm[:, np.newaxis], out=np.zeros_like(q), where=q_norm[:, np.newaxis] != 0)
+        q_norm = np.linalg.norm(q, axis=-1, keepdims=True)
+        q_norm_expanded = np.repeat(q_norm, q.shape[-1], axis=-1)
+        
+        eigenvector = 1.0j * safe_divide(q, q_norm_expanded)
 
         return eigenvector
 

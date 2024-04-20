@@ -1,5 +1,5 @@
 from unittest import TestCase
-from elphem.const.atomic_weight import *
+from elphem.common.atomic_weight import *
 
 class TestUnit(TestCase):
     def test_atomic_weight(self):

@@ -1,7 +1,7 @@
 from unittest import TestCase
 import numpy as np
 
-from elphem.const.unit import Length
+from elphem.common.unit import Length
 from elphem.lattice.lattice import *
 
 class TestUnit(TestCase):

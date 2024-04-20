@@ -1,28 +1,12 @@
 import sys
 import numpy as np
 
-from elphem.const.unit import Energy
+from elphem.common.unit import Energy
+from elphem.common.function import safe_divide
 
 # Setting up system-related constants and warning filters
 float_min = sys.float_info.min
 float_max = sys.float_info.max
-
-def safe_divide(a: np.ndarray | float | int, b: np.ndarray | float | int, default=np.nan):
-    """
-    Safely divides two numbers, arrays, or a combination thereof, with optional handling of division by zero.
-
-    Args:
-        a (np.ndarray | float | int): Numerator, can be a number or an array.
-        b (np.ndarray | float | int): Denominator, can be a number or an array.
-        default (float | int, optional): Value to use when division by zero occurs. Default is NaN.
-
-    Returns:
-        np.ndarray: Result of the division, with division by zero handled gracefully.
-    """
-    a_array = np.full_like(b, a)
-    with np.errstate(divide='ignore', invalid='ignore'):
-        result = np.divide(a_array, b, out=np.full_like(b, default), where=b != 0)
-    return result
 
 def boltzmann_distribution(temperature: float, energy: float | np.ndarray) -> float | np.ndarray:
     """

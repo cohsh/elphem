@@ -1,5 +1,5 @@
 from unittest import TestCase
-from elphem.const.unit import *
+from elphem.common.unit import *
 
 class TestUnit(TestCase):
     def test_byte(self):

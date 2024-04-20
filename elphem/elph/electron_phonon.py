@@ -1,9 +1,10 @@
 import numpy as np
 from dataclasses import dataclass
 
+from elphem.common.function import safe_divide
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyePhonon
-from elphem.elph.distribution import fermi_distribution, bose_distribution, gaussian_distribution, safe_divide
+from elphem.elph.distribution import fermi_distribution, bose_distribution, gaussian_distribution
 
 @dataclass
 class ElectronPhonon:
@@ -17,6 +18,7 @@ class ElectronPhonon:
         eta (float): Small positive constant to ensure numerical stability, defaults to 0.01.
         effective_potential (float): Effective potential used in electron-phonon coupling calculation, defaults to 1.0 / 16.0.
     """
+
     electron: FreeElectron
     phonon: DebyePhonon
     temperature: float
@@ -35,13 +37,16 @@ class ElectronPhonon:
         Returns:
             np.ndarray: The electron-phonon coupling strength for the given vectors.
         """
-
-        q_norm = np.linalg.norm(q, axis=-1)
-        delta_g = g1 - g2
-        q_dot = np.sum(q * delta_g, axis=-1) 
         
-        denominator = np.sqrt(2.0 * self.electron.lattice.mass * self.phonon.speed_of_sound) * q_norm ** 1.5
-        coupling = safe_divide(self.effective_potential * q_dot, denominator)
+        eigenenergy = self.phonon.get_eigenenergy(q)
+        eigenvector = self.phonon.get_eigenvector(q)
+
+        delta_g = g1 - g2
+
+        numerator = -1.0j * self.effective_potential * np.sum((q + delta_g) * eigenvector, axis=-1)
+        denominator = np.sqrt(2.0 * self.phonon.lattice.mass * eigenenergy)
+
+        coupling = safe_divide(numerator, denominator)
         
         return coupling
 

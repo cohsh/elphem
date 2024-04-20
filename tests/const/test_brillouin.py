@@ -1,5 +1,5 @@
 from unittest import TestCase
-from elphem.const.brillouin import SpecialPoints
+from elphem.common.brillouin import SpecialPoints
 
 class TestUnit(TestCase):
     def test_points(self):

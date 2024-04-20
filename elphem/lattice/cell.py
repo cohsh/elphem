@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from elphem.lattice.rotation import LatticeRotation
 from elphem.lattice.lattice_constant import LatticeConstant
-from elphem.const.brillouin import SpecialPoints
+from elphem.common.brillouin import SpecialPoints
 
 class Cell:
     """Base class for a crystal cell, providing basic structure and methods."""
