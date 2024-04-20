@@ -48,6 +48,7 @@ class DebyePhonon:
         Returns:
             tuple: A tuple containing the x-coordinates for plotting, omega (eigenenergy values), and x-coordinates of special points.
         """
+
         x, q, x_special = self.lattice.reciprocal_cell.get_path(q_names, n_split)
         omega = self.get_eigenenergy(q)
         

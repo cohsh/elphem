@@ -1,6 +1,6 @@
 import numpy as np
 from dataclasses import dataclass
-from elphem.lattice import *
+from elphem.lattice.lattice import Lattice
 
 @dataclass
 class FreeElectron:
@@ -23,7 +23,7 @@ class FreeElectron:
             raise ValueError("Second variable (number of electrons per unit cell) should be a positive value.")
         
         self.set_fermi_energy()
-        self.reciprocal_vectors = self.lattice.get_reciprocal_vectors(self.n_band)
+        self.reciprocal_vectors = self.lattice.reciprocal_cell.get_reciprocal_vectors(self.n_band)
 
     def get_eigenenergy(self, k: np.ndarray) -> np.ndarray:
         """Calculate the electron eigenenergies at wave vector k.
@@ -51,10 +51,10 @@ class FreeElectron:
         if np.array(n_k).shape != (3,):
             raise ValueError("Shape of n_k should be (3,).")
         
-        k_grid = self.lattice.get_grid(*n_k)
+        k_grid = self.lattice.reciprocal_cell.get_monkhorst_pack_grid(*n_k)
 
-        k_return = np.tile(k_grid.mesh, (self.n_band, 1, 1))
-        g_return = np.repeat(self.reciprocal_vectors[:, np.newaxis, :], len(k_grid.mesh), axis=1)
+        k_return = np.tile(k_grid, (self.n_band, 1, 1))
+        g_return = np.repeat(self.reciprocal_vectors[:, np.newaxis, :], len(k_grid), axis=1)
 
         return g_return, k_return
 
