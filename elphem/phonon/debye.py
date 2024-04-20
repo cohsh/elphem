@@ -38,7 +38,7 @@ class DebyePhonon:
         
         return eigenenergy
 
-    def eigenvector(self, q: np.ndarray) -> np.ndarray:
+    def get_eigenvector(self, q: np.ndarray) -> np.ndarray:
         """Calculate phonon eigenvectors at wave vector q.
 
         Args:
