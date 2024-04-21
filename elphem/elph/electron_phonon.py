@@ -107,7 +107,7 @@ class ElectronPhonon:
         phonon_eigenenergy = self.phonon.get_eigenenergy(q)
         bose = bose_distribution(self.temperature, phonon_eigenenergy)
         
-        coeffient = 2.0 * np.pi / np.prod(n_q)
+        coefficient = 2.0 * np.pi / np.prod(n_q)
 
         electron_eigenenergy = self.electron.get_eigenenergy(k + g)
         electron_eigenenergy_inter = self.electron.get_eigenenergy(k + g_inter + q)
@@ -124,7 +124,7 @@ class ElectronPhonon:
 
         coupling_strength = - np.nansum(np.abs(coupling) ** 2 * partial_green_part_real)
         
-        return coupling_strength * coeffient
+        return coupling_strength * coefficient
 
     def get_qp_strength(self, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> float:
         """Calculate the quasiparticle strength for given wave vectors.
