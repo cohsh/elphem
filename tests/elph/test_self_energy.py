@@ -33,9 +33,11 @@ class TestUnit(TestCase):
         
         shape_mesh = g_mesh[..., 0].shape
 
-        self_energy = np.array([self.electron_phonon.get_self_energy(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
-        coupling_strength = np.array([self.electron_phonon.get_coupling_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
-        qp_strength = np.array([self.electron_phonon.get_qp_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
+        results = [self.electron_phonon.get_self_energy_and_coupling_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]
+
+        self_energy = np.array([result[0] for result in results]).reshape(shape_mesh)
+        coupling_strength = np.array([result[1] for result in results]).reshape(shape_mesh)
+        qp_strength = self.electron_phonon.get_qp_strength(coupling_strength)
         
         correct_shape = (self.n_band, np.prod(n_k))
         

@@ -32,7 +32,7 @@ class EPR:
         k = k_grid.reshape(-1, 3)
 
         eig = self.electron_phonon.electron.get_eigenenergy(k_grid)
-        self_energy = np.array([self.electron_phonon.get_self_energy(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
+        self_energy = np.array([self.electron_phonon.get_self_energy_and_coupling_strength(g_i, k_i, n_q)[0] for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
         
         epr = self_energy.real
         
@@ -61,7 +61,7 @@ class EPR:
         self_energy = np.zeros(shape_return, dtype='complex128')
 
         for i in range(self.electron_phonon.electron.n_band):
-            self_energy[i] = np.array([self.electron_phonon.get_self_energy(g[i], k_i, n_q) for k_i in k])
+            self_energy[i] = np.array([self.electron_phonon.get_self_energy_and_coupling_strength(g[i], k_i, n_q)[0] for k_i in k])
 
         epr = self_energy.real
         

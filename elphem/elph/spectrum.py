@@ -35,8 +35,11 @@ class Spectrum:
         k = k_grid.reshape(-1, 3)
 
         electron_eigenenergy = self.electron_phonon.electron.get_eigenenergy(k_grid)
-        self_energy = np.array([self.electron_phonon.get_self_energy(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
-        qp_strength = np.array([self.electron_phonon.get_qp_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]).reshape(shape_mesh)
+        
+        results = [self.electron_phonon.get_self_energy_and_coupling_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]
+
+        self_energy = np.array([result[0] for result in results]).reshape(shape_mesh)
+        qp_strength = self.electron_phonon.get_qp_strength(np.array([result[1] for result in results])).reshape(shape_mesh)
 
         coefficient = - qp_strength / np.pi
         numerator = qp_strength * self_energy.imag
@@ -85,8 +88,9 @@ class Spectrum:
         qp_strength = np.zeros(shape_return)
 
         for i in range(self.electron_phonon.electron.n_band):
-            self_energy[i] = np.array([self.electron_phonon.get_self_energy(g[i], k_i, n_q) for k_i in k])
-            qp_strength[i] = np.array([self.electron_phonon.get_qp_strength(g[i], k_i, n_q) for k_i in k])
+            results = [self.electron_phonon.get_self_energy_and_coupling_strength(g[i], k_i, n_q) for k_i in k]
+            self_energy[i] = np.array([result[0] for result in results])
+            qp_strength[i] = self.electron_phonon.get_qp_strength(np.array([result[1] for result in results]))
 
         coefficient = - qp_strength / np.pi
         numerator = qp_strength * self_energy.imag
