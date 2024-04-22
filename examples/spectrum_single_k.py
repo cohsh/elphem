@@ -12,9 +12,9 @@ def main():
     phonon = DebyePhonon(lattice, debye_temperature)
 
     temperature = debye_temperature
-    elph = ElectronPhonon(electron, phonon, temperature)
+    elph = ElectronPhonon(electron, phonon, temperature, sigma=0.0001)
 
-    n_q = np.full(3, 12)
+    n_q = np.full(3, 30)
     n_omega = 1000
     range_omega = [-4.0 * Energy.EV["->"], 4.0 * Energy.EV["->"]]
     

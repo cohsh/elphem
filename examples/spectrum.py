@@ -7,12 +7,12 @@ def main():
     a = 2.98 * Length.ANGSTROM['->']
     lattice = Lattice('bcc', 'Li', a)
 
-    electron = FreeElectron(lattice, n_band=8, n_electron=1)
+    electron = FreeElectron(lattice, n_band=20, n_electron=1)
 
     debye_temperature = 344.0
     phonon = DebyePhonon(lattice, debye_temperature)
 
-    temperature =  1.5 * debye_temperature
+    temperature =  debye_temperature
     electron_phonon = ElectronPhonon(electron, phonon, temperature)
 
     n_q = np.full(3, 12)

@@ -7,7 +7,7 @@ def main():
     a = 2.98 * Length.ANGSTROM["->"]
     debye_temperature = 344.0
     temperature = 3 * debye_temperature
-    n_band = 20
+    n_band = 10
     n_electron = 1
 
     lattice = Lattice('bcc', 'Li', a)

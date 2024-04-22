@@ -97,7 +97,7 @@ class ElectronPhonon:
         return self_energy, coupling_strength
 
     @staticmethod
-    def get_qp_strength(coupling_strength: np.ndarray) -> float:
+    def get_qp_strength(coupling_strength: np.ndarray) -> np.ndarray:
         """Calculate the quasiparticle strength for given wave vectors.
 
         Args:
