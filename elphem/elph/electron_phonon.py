@@ -27,7 +27,11 @@ class ElectronPhonon:
     eta: float = 0.1
     effective_potential: float = 1.0 / 16.0
     
-    def get_coupling(self, g1: np.ndarray, g2: np.ndarray, q: np.ndarray) -> np.ndarray:
+    def __post_init__(self):
+        self.coefficient = 2.0 * np.pi / np.prod(self.n_q)
+        self.set_about_q()
+
+    def get_coupling(self, g1: np.ndarray, g2: np.ndarray) -> np.ndarray:
         """Calculate the lowest-order electron-phonon coupling between states.
 
         Args:
@@ -38,18 +42,19 @@ class ElectronPhonon:
         Returns:
             np.ndarray: The electron-phonon coupling strength for the given vectors.
         """
-        
-        eigenenergy = self.phonon.get_eigenenergy(q)
-        eigenvector = self.phonon.get_eigenvector(q)
-
-        delta_g = g1 - g2
-
-        numerator = -1.0j * self.effective_potential * np.sum((q + delta_g) * eigenvector, axis=-1)
-        denominator = np.sqrt(2.0 * self.phonon.lattice.mass * eigenenergy)
-
-        coupling = safe_divide(numerator, denominator)
+        coupling = -1.0j * self.effective_potential * np.sum((self.q + g1 - g2) * self.phonon_eigenvector, axis=-1) * self.zero_point_length
         
         return coupling
+
+    def set_about_q(self) -> None:
+        self.g_inter, self.q = self.electron.get_gk_grid(self.n_q) # Generate intermediate G, q grid.
+
+        self.phonon_eigenenergy = self.phonon.get_eigenenergy(self.q)
+        self.phonon_eigenvector = self.phonon.get_eigenvector(self.q)
+        
+        self.zero_point_length = safe_divide(1.0, np.sqrt(2.0 * self.phonon.lattice.mass * self.phonon_eigenenergy))
+        
+        self.bose = bose_distribution(self.temperature, self.phonon_eigenenergy)
 
     def get_self_energy(self, omega: float, g: np.ndarray, k: np.ndarray) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
@@ -62,25 +67,18 @@ class ElectronPhonon:
         Returns:
             complex: The Fan self-energy term as a complex number.
         """
-
-        g_inter, q = self.electron.get_gk_grid(self.n_q) # Generate intermediate G, q grid.
-
-        phonon_eigenenergy = self.phonon.get_eigenenergy(q)
         
-        coefficient = 2.0 * np.pi / np.prod(self.n_q)
-
-        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + g_inter + q)
+        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + self.g_inter + self.q)
 
         fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
-        bose = bose_distribution(self.temperature, phonon_eigenenergy)
 
-        coupling = self.get_coupling(g, g_inter, q)
+        coupling = self.get_coupling(g, self.g_inter)
 
-        occupation_absorb = 1.0 - fermi + bose
-        occupation_emit = fermi + bose
+        occupation_absorb = 1.0 - fermi + self.bose
+        occupation_emit = fermi + self.bose
         
-        denominator_absorb = omega - electron_eigenenergy_inter - phonon_eigenenergy
-        denominator_emit = omega - electron_eigenenergy_inter + phonon_eigenenergy
+        denominator_absorb = omega - electron_eigenenergy_inter - self.phonon_eigenenergy
+        denominator_emit = omega - electron_eigenenergy_inter + self.phonon_eigenenergy
 
         green_function_real = (occupation_absorb * self.get_green_function_real(denominator_absorb)
                                 + occupation_emit * self.get_green_function_real(denominator_emit))
@@ -88,7 +86,7 @@ class ElectronPhonon:
         green_function_imag = (occupation_absorb * self.get_green_function_imag(denominator_absorb)
                                 + occupation_emit * self.get_green_function_imag(denominator_emit))
 
-        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag)) * coefficient
+        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag)) * self.coefficient
         
         return self_energy
 
@@ -103,30 +101,23 @@ class ElectronPhonon:
         Returns:
             complex: The Fan self-energy term as a complex number.
         """
-
-        g_inter, q = self.electron.get_gk_grid(self.n_q) # Generate intermediate G, q grid.
-
-        phonon_eigenenergy = self.phonon.get_eigenenergy(q)
         
-        coefficient = 2.0 * np.pi / np.prod(self.n_q)
-
-        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + g_inter + q)
+        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + self.g_inter + self.q)
 
         fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
-        bose = bose_distribution(self.temperature, phonon_eigenenergy)
 
-        coupling = self.get_coupling(g, g_inter, q)
+        coupling = self.get_coupling(g, self.g_inter)
 
-        occupation_absorb = 1.0 - fermi + bose
-        occupation_emit = fermi + bose
+        occupation_absorb = 1.0 - fermi + self.bose
+        occupation_emit = fermi + self.bose
         
-        denominator_absorb = omega - electron_eigenenergy_inter - phonon_eigenenergy
-        denominator_emit = omega - electron_eigenenergy_inter + phonon_eigenenergy
+        denominator_absorb = omega - electron_eigenenergy_inter - self.phonon_eigenenergy
+        denominator_emit = omega - electron_eigenenergy_inter + self.phonon_eigenenergy
 
         partial_green_function_real = (occupation_absorb * self.get_partial_green_function_real(denominator_absorb)
                                        + occupation_emit * self.get_partial_green_function_real(denominator_emit))
 
-        coupling_strength = - np.nansum(np.abs(coupling) ** 2 * partial_green_function_real) * coefficient
+        coupling_strength = - np.nansum(np.abs(coupling) ** 2 * partial_green_function_real) * self.coefficient
         
         return coupling_strength
 
