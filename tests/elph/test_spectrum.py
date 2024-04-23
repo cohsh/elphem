@@ -6,7 +6,7 @@ from elphem.lattice.lattice import Lattice
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyePhonon
 from elphem.elph.electron_phonon import ElectronPhonon
-from elphem.elph.spectrum import Spectrum
+from elphem.elph.spectrum import Spectrum, SpectrumBW
 
 class TestUnit(TestCase):
     def setUp(self) -> None:
@@ -25,6 +25,7 @@ class TestUnit(TestCase):
 
         electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
         self.spectrum = Spectrum(electron_phonon)
+        self.spectrum_bw = SpectrumBW(electron_phonon)
 
     def test_calculate_with_grid(self):
         n_k = np.full(3, 5)
@@ -38,10 +39,20 @@ class TestUnit(TestCase):
         k_names = ["G", "H", "N", "G", "P", "H"]
         n_split = 20
         
-        n_q = np.array([5]*3)
         n_omega = 200
         
         k, omegas, a, special_k = self.spectrum.get_with_path(k_names, n_split, n_omega, self.range_omega)
+        
+        self.assertEqual(a.shape, (len(k), len(omegas)))
+        self.assertEqual(len(k_names), len(special_k))
+
+    def test_bw_with_path(self):
+        k_names = ["G", "H"]
+        n_split = 20
+        
+        n_omega = 20
+        
+        k, omegas, a, special_k = self.spectrum_bw.get_with_path(k_names, n_split, n_omega, self.range_omega)
         
         self.assertEqual(a.shape, (len(k), len(omegas)))
         self.assertEqual(len(k_names), len(special_k))
