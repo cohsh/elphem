@@ -16,7 +16,9 @@ def main():
     elph = ElectronPhonon(electron, phonon, temperature, n_q, sigma=0.0001)
 
     n_omega = 1000
-    range_omega = [-1.0 * Energy.EV["->"], 3.0 * Energy.EV["->"]]
+
+    range_omega = [1.0 * Energy.EV["->"], 1.5 * Energy.EV["->"]]
+#    range_omega = [-1.0 * Energy.EV["->"], 3.0 * Energy.EV["->"]]
     
     k_names = ["N", "H"]
     n_split = 20
@@ -27,7 +29,7 @@ def main():
     ax = fig.add_subplot(111)
 
     ax.plot(omega * Energy.EV["<-"], np.abs(spectrum[0]) / Energy.EV["<-"])
-    ax.axvline(x=0.0, color="black", linewidth=0.3)
+#    ax.axvline(x=0.0, color="black", linewidth=0.3)
 
 
     ax.set_xlabel("$\omega$ ($\mathrm{eV}$)")
