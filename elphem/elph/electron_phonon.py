@@ -22,6 +22,7 @@ class ElectronPhonon:
     electron: FreeElectron
     phonon: DebyePhonon
     temperature: float
+    n_q: np.ndarray
     sigma: float = 0.001
     eta: float = 0.1
     effective_potential: float = 1.0 / 16.0
@@ -50,7 +51,7 @@ class ElectronPhonon:
         
         return coupling
 
-    def get_self_energy(self, omega: float, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> tuple:
+    def get_self_energy(self, omega: float, g: np.ndarray, k: np.ndarray) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
         Args:
@@ -62,11 +63,11 @@ class ElectronPhonon:
             complex: The Fan self-energy term as a complex number.
         """
 
-        g_inter, q = self.electron.get_gk_grid(n_q) # Generate intermediate G, q grid.
+        g_inter, q = self.electron.get_gk_grid(self.n_q) # Generate intermediate G, q grid.
 
         phonon_eigenenergy = self.phonon.get_eigenenergy(q)
         
-        coefficient = 2.0 * np.pi / np.prod(n_q)
+        coefficient = 2.0 * np.pi / np.prod(self.n_q)
 
         electron_eigenenergy_inter = self.electron.get_eigenenergy(k + g_inter + q)
 
@@ -91,7 +92,7 @@ class ElectronPhonon:
         
         return self_energy
 
-    def get_coupling_strength(self, omega: float, g: np.ndarray, k: np.ndarray, n_q: np.ndarray) -> np.ndarray:
+    def get_coupling_strength(self, omega: float, g: np.ndarray, k: np.ndarray) -> np.ndarray:
         """Calculate a single value of coupling strength for given wave vectors.
 
         Args:
@@ -103,11 +104,11 @@ class ElectronPhonon:
             complex: The Fan self-energy term as a complex number.
         """
 
-        g_inter, q = self.electron.get_gk_grid(n_q) # Generate intermediate G, q grid.
+        g_inter, q = self.electron.get_gk_grid(self.n_q) # Generate intermediate G, q grid.
 
         phonon_eigenenergy = self.phonon.get_eigenenergy(q)
         
-        coefficient = 2.0 * np.pi / np.prod(n_q)
+        coefficient = 2.0 * np.pi / np.prod(self.n_q)
 
         electron_eigenenergy_inter = self.electron.get_eigenenergy(k + g_inter + q)
 

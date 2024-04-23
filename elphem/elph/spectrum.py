@@ -14,7 +14,7 @@ class Spectrum:
     
     electron_phonon: ElectronPhonon
 
-    def get_with_grid(self, n_k: np.ndarray, n_q: np.ndarray, n_omega: int) -> np.ndarray:
+    def get_with_grid(self, n_k: np.ndarray, n_omega: int, range_omega: list[float]) -> np.ndarray:
         """
         Calculate the spectral function over a grid of k-points and a range of energies.
 
@@ -28,30 +28,30 @@ class Spectrum:
         """
         
         g_grid, k_grid = self.electron_phonon.electron.get_gk_grid(n_k)
+        eig_grid = self.electron_phonon.electron.get_eigenenergy(k_grid)
         
         shape_mesh = g_grid[..., 0].shape
-        
+
+        eig = eig_grid.reshape(-1, 3)        
         g = g_grid.reshape(-1, 3)
         k = k_grid.reshape(-1, 3)
-
-        electron_eigenenergy = self.electron_phonon.electron.get_eigenenergy(k_grid)
         
-        results = [self.electron_phonon.get_self_energy_and_coupling_strength(g_i, k_i, n_q) for g_i, k_i in zip(g, k)]
+        self_energy = np.array([self.electron_phonon.get_self_energy(eig_i, g_i, k_i) for eig_i, g_i, k_i in zip(eig, g, k)]).reshape(shape_mesh)
+        coupling_strength = np.array([self.electron_phonon.get_coupling_strength(eig_i, g_i, k_i) for eig_i, g_i, k_i in zip(eig, g, k)]).reshape(shape_mesh)
 
-        self_energy = np.array([result[0] for result in results]).reshape(shape_mesh)
-        qp_strength = self.electron_phonon.get_qp_strength(np.array([result[1] for result in results])).reshape(shape_mesh)
+        qp_strength = self.electron_phonon.get_qp_strength(coupling_strength)
 
         coefficient = - qp_strength / np.pi
         numerator = qp_strength * self_energy.imag
         
-        omegas = np.linspace(0.0, 10.0, n_omega)
+        omegas = np.linspace(range_omega[0], range_omega[1], n_omega)
 
         spectrum = np.zeros((np.prod(n_k), n_omega))
                 
         count = 0
         for omega in omegas:
             denominator = (
-                (omega - electron_eigenenergy - self_energy.real) ** 2
+                (omega - eig_grid - self_energy.real) ** 2
                 + (qp_strength * self_energy.imag) ** 2
                 )
             fraction = safe_divide(coefficient * numerator, denominator)
@@ -61,8 +61,7 @@ class Spectrum:
         
         return spectrum
     
-    def get_with_path(self, k_names: list[str], n_split: int,
-                    n_q: np.ndarray, n_omega: int, range_omega: list[float]) -> tuple:
+    def get_with_path(self, k_names: list[str], n_split: int, n_omega: int, range_omega: list[float]) -> tuple:
         """
         Calculate the spectral function along a specified path in the Brillouin zone.
 
