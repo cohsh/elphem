@@ -79,17 +79,17 @@ class Spectrum:
         g = self.electron_phonon.electron.reciprocal_vectors
         
         x, k, special_x = self.electron_phonon.electron.lattice.reciprocal_cell.get_path(k_names, n_split)
-        electron_eigenenergy = np.array([self.electron_phonon.electron.get_eigenenergy(k + g_i) for g_i in g])
+        eig = np.array([self.electron_phonon.electron.get_eigenenergy(k + g_i) for g_i in g])
 
-        shape_return = electron_eigenenergy.shape
+        shape_return = eig.shape
 
         self_energy = np.zeros(shape_return, dtype='complex128')
         qp_strength = np.zeros(shape_return)
 
         for i in range(self.electron_phonon.electron.n_band):
-            results = [self.electron_phonon.get_self_energy_and_coupling_strength(g[i], k_i, n_q) for k_i in k]
-            self_energy[i] = np.array([result[0] for result in results])
-            qp_strength[i] = self.electron_phonon.get_qp_strength(np.array([result[1] for result in results]))
+            self_energy[i] = np.array([self.electron_phonon.get_self_energy(eig_i, g[i], k_i) for eig_i, k_i in zip(eig[i], k)])
+            coupling_strength = np.array([self.electron_phonon.get_coupling_strength(eig_i, g[i], k_i) for eig_i, k_i in zip(eig[i], k)])
+            qp_strength[i] = self.electron_phonon.get_qp_strength(coupling_strength)
 
         coefficient = - qp_strength / np.pi
         numerator = qp_strength * self_energy.imag
@@ -99,7 +99,7 @@ class Spectrum:
                 
         count = 0
         for omega in omegas:
-            denominator = (omega - electron_eigenenergy - self_energy.real) ** 2 + (qp_strength * self_energy.imag) ** 2
+            denominator = (omega - eig - self_energy.real) ** 2 + (qp_strength * self_energy.imag) ** 2
             fraction = safe_divide(coefficient * numerator, denominator)
 
             spectrum[..., count] = np.nansum(fraction, axis=0)
