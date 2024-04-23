@@ -12,17 +12,17 @@ def main():
     debye_temperature = 344.0
     phonon = DebyePhonon(lattice, debye_temperature)
 
-    temperature =  debye_temperature
-    electron_phonon = ElectronPhonon(electron, phonon, temperature)
-
     n_q = np.full(3, 12)
+    temperature =  debye_temperature
+    electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
+
     n_omega = 1000
     range_omega = [-10 * Energy.EV["->"], 20 * Energy.EV["->"]]
     
     k_names = ["G", "H", "N", "G", "P", "H"]
     n_split = 20
     
-    x, y, spectrum, special_x = Spectrum(electron_phonon).get_with_path(k_names, n_split, n_q, n_omega, range_omega)
+    x, y, spectrum, special_x = Spectrum(electron_phonon).get_with_path(k_names, n_split, n_omega, range_omega)
     y_mesh, x_mesh = np.meshgrid(y, x)
 
     fig = plt.figure()

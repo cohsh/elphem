@@ -7,21 +7,21 @@ def main():
     a = 2.98 * Length.ANGSTROM["->"]
     debye_temperature = 344.0
     temperature = 3 * debye_temperature
-    n_band = 10
+    n_band = 12
     n_electron = 1
 
     lattice = Lattice('bcc', 'Li', a)
     electron = FreeElectron(lattice, n_band, n_electron)        
     phonon = DebyePhonon(lattice, temperature)
 
-    electron_phonon = ElectronPhonon(electron, phonon, temperature)
+    n_q = np.full(3, 12)
+    electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
 
     k_names = ["G", "H", "N", "G", "P", "H"]
 
     n_split = 20
-    n_q = np.full(3, 12)
     
-    k, eig, epr, special_k = EPR(electron_phonon).get_with_path(k_names, n_split, n_q)
+    k, eig, epr, special_k = EPR(electron_phonon).get_with_path(k_names, n_split)
     
     fig = plt.figure()
     ax = fig.add_subplot(111)

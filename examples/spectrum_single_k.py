@@ -11,17 +11,17 @@ def main():
     electron = FreeElectron(lattice, n_band=8, n_electron=1)
     phonon = DebyePhonon(lattice, debye_temperature)
 
-    temperature = debye_temperature
-    elph = ElectronPhonon(electron, phonon, temperature, sigma=0.0001)
-
     n_q = np.full(3, 30)
+    temperature = debye_temperature
+    elph = ElectronPhonon(electron, phonon, temperature, n_q)
+
     n_omega = 1000
     range_omega = [-4.0 * Energy.EV["->"], 4.0 * Energy.EV["->"]]
     
     k_names = ["N", "H"]
     n_split = 100
     
-    x, omega, spectrum, special_x = Spectrum(elph).get_with_path(k_names, n_split, n_q, n_omega, range_omega)
+    x, omega, spectrum, special_x = Spectrum(elph).get_with_path(k_names, n_split, n_omega, range_omega)
  
     fig = plt.figure()
     ax = fig.add_subplot(111)
