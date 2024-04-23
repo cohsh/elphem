@@ -28,10 +28,17 @@ class ElectronPhonon:
     effective_potential: float = 1.0 / 16.0
     
     def __post_init__(self):
-        self.coefficient = 2.0 * np.pi / np.prod(self.n_q)
         self.set_about_q()
 
-    def get_coupling(self, g1: np.ndarray, g2: np.ndarray) -> np.ndarray:
+    def set_about_q(self) -> None:
+        self.coefficient = 2.0 * np.pi / np.prod(self.n_q)
+        self.g_inter, self.q = self.electron.get_gk_grid(self.n_q) # Generate intermediate G, q grid.
+
+        self.phonon_eigenenergy = self.phonon.get_eigenenergy(self.q)
+        
+        self.bose = bose_distribution(self.temperature, self.phonon_eigenenergy)
+
+    def get_coupling(self, g1: np.ndarray, g2: np.ndarray, q: np.ndarray) -> np.ndarray:
         """Calculate the lowest-order electron-phonon coupling between states.
 
         Args:
@@ -42,19 +49,14 @@ class ElectronPhonon:
         Returns:
             np.ndarray: The electron-phonon coupling strength for the given vectors.
         """
-        coupling = -1.0j * self.effective_potential * np.sum((self.q + g1 - g2) * self.phonon_eigenvector, axis=-1) * self.zero_point_length
+        
+        phonon_eigenenergy = self.phonon.get_eigenenergy(q)
+        phonon_eigenvector = self.phonon.get_eigenvector(q)
+        zero_point_length = safe_divide(1.0, np.sqrt(2.0 * self.phonon.lattice.mass * phonon_eigenenergy))
+        
+        coupling = -1.0j * self.effective_potential * np.sum((q + g1 - g2) * phonon_eigenvector, axis=-1) * zero_point_length
         
         return coupling
-
-    def set_about_q(self) -> None:
-        self.g_inter, self.q = self.electron.get_gk_grid(self.n_q) # Generate intermediate G, q grid.
-
-        self.phonon_eigenenergy = self.phonon.get_eigenenergy(self.q)
-        self.phonon_eigenvector = self.phonon.get_eigenvector(self.q)
-        
-        self.zero_point_length = safe_divide(1.0, np.sqrt(2.0 * self.phonon.lattice.mass * self.phonon_eigenenergy))
-        
-        self.bose = bose_distribution(self.temperature, self.phonon_eigenenergy)
 
     def get_self_energy(self, omega: float, g: np.ndarray, k: np.ndarray) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
@@ -72,7 +74,7 @@ class ElectronPhonon:
 
         fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
 
-        coupling = self.get_coupling(g, self.g_inter)
+        coupling = self.get_coupling(g, self.g_inter, self.q)
 
         occupation_absorb = 1.0 - fermi + self.bose
         occupation_emit = fermi + self.bose
@@ -106,7 +108,7 @@ class ElectronPhonon:
 
         fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
 
-        coupling = self.get_coupling(g, self.g_inter)
+        coupling = self.get_coupling(g, self.g_inter, self.q)
 
         occupation_absorb = 1.0 - fermi + self.bose
         occupation_emit = fermi + self.bose
