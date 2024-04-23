@@ -8,15 +8,15 @@ def main():
     debye_temperature = 344.0
 
     lattice = Lattice('bcc', 'Li', a)
-    electron = FreeElectron(lattice, n_band=4, n_electron=1)
+    electron = FreeElectron(lattice, n_band=2, n_electron=1)
     phonon = DebyePhonon(lattice, debye_temperature)
 
-    n_q = np.full(3, 8)
+    n_q = np.full(3, 20)
     temperature = debye_temperature
-    elph = ElectronPhonon(electron, phonon, temperature, n_q)
+    elph = ElectronPhonon(electron, phonon, temperature, n_q, sigma=0.0001)
 
     n_omega = 1000
-    range_omega = [-3.0 * Energy.EV["->"], 3.0 * Energy.EV["->"]]
+    range_omega = [-1.0 * Energy.EV["->"], 3.0 * Energy.EV["->"]]
     
     k_names = ["N", "H"]
     n_split = 20
