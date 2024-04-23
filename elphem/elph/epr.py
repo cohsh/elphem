@@ -26,19 +26,17 @@ class EPR:
         
         g_grid, k_grid = self.electron_phonon.electron.get_gk_grid(n_k)
 
-        eig_grid = self.electron_phonon.electron.get_eigenenergy(k_grid)
-        
         shape_mesh = g_grid[..., 0].shape
         
         g = g_grid.reshape(-1, 3)
         k = k_grid.reshape(-1, 3)
-        eig = eig_grid.reshape(-1, 3)
 
+        eig = self.electron_phonon.electron.get_eigenenergy(g + k)
         self_energy = np.array([self.electron_phonon.get_self_energy(eig_i, g_i, k_i) for eig_i, g_i, k_i in zip(eig, g, k)]).reshape(shape_mesh)
         
         epr = self_energy.real
         
-        return eig, epr
+        return eig.reshape(shape_mesh), epr
     
     def get_with_path(self, k_names: list[str], n_split: int) -> tuple:
         """
@@ -63,7 +61,7 @@ class EPR:
         self_energy = np.zeros(shape_return, dtype='complex128')
 
         for i in range(self.electron_phonon.electron.n_band):
-            self_energy[i] = np.array([self.electron_phonon.get_self_energy_and_coupling_strength(eig_i, g[i], k_i)[0] for eig_i, k_i in zip(eig[i], k)])
+            self_energy[i] = np.array([self.electron_phonon.get_self_energy(eig_i, g[i], k_i) for eig_i, k_i in zip(eig[i], k)])
 
         epr = self_energy.real
         

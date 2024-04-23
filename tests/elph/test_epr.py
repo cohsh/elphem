@@ -13,6 +13,7 @@ class TestUnit(TestCase):
         a = 2.98 * Length.ANGSTROM["->"]
         debye_temperature = 344.0
         n_band = 8
+        n_q = np.full(3, 5)
 
         temperature = 0.3 * debye_temperature
 
@@ -20,24 +21,21 @@ class TestUnit(TestCase):
         electron = FreeElectron(lattice, n_band, 1)
         phonon = DebyePhonon(lattice, temperature)
 
-        electron_phonon = ElectronPhonon(electron, phonon, temperature)
+        electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
         self.epr = EPR(electron_phonon)
 
     def test_calculate_with_grid(self):
         n_k = np.full(3, 5)        
-        n_q = np.full(3, 5)
         
-        eig, delta_eig = self.epr.get_with_grid(n_k, n_q)
+        eig, delta_eig = self.epr.get_with_grid(n_k)
 
         self.assertEqual(eig.shape, delta_eig.shape)
     
     def test_calculate_with_path(self):
         k_names = ["G", "H", "N", "G", "P", "H"]
         n_split = 20
-        
-        n_q = np.array([5]*3)
-        
-        k, eig, delta_eig, special_k = self.epr.get_with_path(k_names, n_split, n_q)
+
+        k, eig, delta_eig, special_k = self.epr.get_with_path(k_names, n_split)
         
         self.assertEqual(eig.shape, delta_eig.shape)
         self.assertEqual(len(k_names), len(special_k))

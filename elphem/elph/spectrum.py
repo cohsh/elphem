@@ -28,16 +28,17 @@ class Spectrum:
         """
         
         g_grid, k_grid = self.electron_phonon.electron.get_gk_grid(n_k)
-        eig_grid = self.electron_phonon.electron.get_eigenenergy(k_grid)
         
         shape_mesh = g_grid[..., 0].shape
 
-        eig = eig_grid.reshape(-1, 3)        
         g = g_grid.reshape(-1, 3)
         k = k_grid.reshape(-1, 3)
-        
+
+        eig = self.electron_phonon.electron.get_eigenenergy(k + g)
         self_energy = np.array([self.electron_phonon.get_self_energy(eig_i, g_i, k_i) for eig_i, g_i, k_i in zip(eig, g, k)]).reshape(shape_mesh)
         coupling_strength = np.array([self.electron_phonon.get_coupling_strength(eig_i, g_i, k_i) for eig_i, g_i, k_i in zip(eig, g, k)]).reshape(shape_mesh)
+        
+        eig_grid = eig.reshape(shape_mesh)
 
         qp_strength = self.electron_phonon.get_qp_strength(coupling_strength)
 
@@ -47,7 +48,7 @@ class Spectrum:
         omegas = np.linspace(range_omega[0], range_omega[1], n_omega)
 
         spectrum = np.zeros((np.prod(n_k), n_omega))
-                
+        
         count = 0
         for omega in omegas:
             denominator = (
