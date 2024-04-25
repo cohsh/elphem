@@ -15,8 +15,8 @@ def main():
     temperature = debye_temperature
 
     n_omega = 1000
-    range_omega = [0.0 * Energy.EV["->"], 2.0 * Energy.EV["->"]]
-    d_omega = (range_omega[1] - range_omega[0]) / n_omega * 10
+    range_omega = [1.61 * Energy.EV["->"], 1.72 * Energy.EV["->"]]
+    d_omega = (range_omega[1] - range_omega[0]) / n_omega
     
     elph = ElectronPhonon(electron, phonon, temperature, n_q, sigma=d_omega)
     
