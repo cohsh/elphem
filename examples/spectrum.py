@@ -12,9 +12,9 @@ def main():
     debye_temperature = 344.0
     phonon = DebyePhonon(lattice, debye_temperature)
 
-    n_q = np.full(3, 12)
+    n_q = np.full(3, 8)
     temperature = debye_temperature
-    electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q, sigma=0.0001)
+    electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
 
     n_omega = 100
     range_omega = [-6 * Energy.EV["->"], 10 * Energy.EV["->"]]
@@ -42,7 +42,7 @@ def main():
     fig.colorbar(mappable, ax=ax)
     mappable.set_clim(-3.0, 0.0)
 
-    fig.savefig("spectrum_bw.png")
+    fig.savefig("spectrum.png")
 
 if __name__ == "__main__":
     main()
