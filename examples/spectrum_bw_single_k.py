@@ -11,13 +11,13 @@ def main():
     electron = FreeElectron(lattice, n_band=2, n_electron=1)
     phonon = DebyePhonon(lattice, debye_temperature)
 
-    n_q = np.full(3, 20)
+    n_q = np.full(3, 8)
     temperature = debye_temperature
     elph = ElectronPhonon(electron, phonon, temperature, n_q, sigma=0.0001)
 
     n_omega = 1000
 
-    range_omega = [1.0 * Energy.EV["->"], 1.5 * Energy.EV["->"]]
+    range_omega = [0.0 * Energy.EV["->"], 1.5 * Energy.EV["->"]]
 #    range_omega = [-1.0 * Energy.EV["->"], 3.0 * Energy.EV["->"]]
     
     k_names = ["N", "H"]
