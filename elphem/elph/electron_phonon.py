@@ -31,7 +31,7 @@ class ElectronPhonon:
         self.set_about_q()
 
     def set_about_q(self) -> None:
-        self.coefficient = 2.0 * np.pi / np.prod(self.n_q)
+        self.coefficient = 1.0 / np.prod(self.n_q)
         self.g_inter, self.q = self.electron.get_gk_grid(self.n_q) # Generate intermediate G, q grid.
 
         self.phonon_eigenenergy = self.phonon.get_eigenenergy(self.q)
@@ -86,7 +86,7 @@ class ElectronPhonon:
                                 + occupation_emit * self.get_green_function_real(denominator_emit))
 
         green_function_imag = (occupation_absorb * self.get_green_function_imag(denominator_absorb)
-                                + occupation_emit * self.get_green_function_imag(denominator_emit))
+                                + occupation_emit * self.get_green_function_imag(denominator_emit)) * np.pi
 
         self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag)) * self.coefficient
         

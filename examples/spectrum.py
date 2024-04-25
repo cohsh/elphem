@@ -12,7 +12,7 @@ def main():
     debye_temperature = 344.0
     phonon = DebyePhonon(lattice, debye_temperature)
 
-    n_q = np.full(3, 8)
+    n_q = np.full(3, 20)
     temperature = debye_temperature
     electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
 
@@ -40,7 +40,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(-3.0, 0.0)
+    mappable.set_clim(-1.0, 0.0)
 
     fig.savefig("spectrum.png")
 
