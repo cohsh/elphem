@@ -12,12 +12,13 @@ def main():
     phonon = DebyePhonon(lattice, debye_temperature)
 
     n_q = np.full(3, 8)
-    temperature = 0.3 * debye_temperature
-    elph = ElectronPhonon(electron, phonon, temperature, n_q)
+    temperature = debye_temperature
 
-    n_omega = 100
-
-    range_omega = [0. * Energy.EV["->"], 1. * Energy.EV["->"]]
+    n_omega = 1000
+    range_omega = [0.0 * Energy.EV["->"], 2.0 * Energy.EV["->"]]
+    d_omega = (range_omega[1] - range_omega[0]) / n_omega * 10
+    
+    elph = ElectronPhonon(electron, phonon, temperature, n_q, sigma=d_omega)
     
     k_names = ["N", "H"]
     n_split = 20
