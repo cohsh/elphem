@@ -6,8 +6,8 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM["->"]
     debye_temperature = 344.0
-    temperature = 3 * debye_temperature
-    n_band = 12
+    temperature = debye_temperature
+    n_band = 4
     n_electron = 1
 
     lattice = Lattice('bcc', 'Li', a)
@@ -45,7 +45,7 @@ def main():
     ax.legend()
 
 
-    fig.savefig("example_epr.png")
+    fig.savefig("epr.png")
 
 if __name__ == "__main__":
     main()

@@ -23,7 +23,7 @@ class ElectronPhonon:
     phonon: DebyePhonon
     temperature: float
     n_q: np.ndarray
-    sigma: float = 0.001
+    sigma: float = 0.0001
     eta: float = 0.1
     effective_potential: float = 1.0 / 16.0
     

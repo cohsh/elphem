@@ -22,7 +22,7 @@ def main():
     k_names = ["N", "H"]
     n_split = 20
     
-    x, omega, spectrum, special_x = SpectrumBW(elph).get_with_path(k_names, n_split, n_omega, range_omega)
+    _, omega, spectrum, __ = Spectrum(elph).get_with_path(k_names, n_split, n_omega, range_omega)
  
     fig = plt.figure()
     ax = fig.add_subplot(111)
