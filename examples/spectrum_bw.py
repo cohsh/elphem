@@ -7,7 +7,7 @@ def main():
     a = 2.98 * Length.ANGSTROM['->']
     lattice = Lattice('bcc', 'Li', a)
 
-    electron = FreeElectron(lattice, n_band=2, n_electron=1)
+    electron = FreeElectron(lattice, n_band=4, n_electron=1)
 
     debye_temperature = 344.0
     phonon = DebyePhonon(lattice, debye_temperature)
@@ -18,6 +18,7 @@ def main():
 
     n_omega = 100
     range_omega = [-10 * Energy.EV["->"], 20 * Energy.EV["->"]]
+#    range_omega = [-2 * Energy.EV["->"], 2 * Energy.EV["->"]]
     
     k_names = ["G", "H", "N", "G", "P", "H"]
     n_split = 20
@@ -39,9 +40,9 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(-5.0, 0.0)
+    mappable.set_clim(-3.0, 0.0)
 
-    fig.savefig("example_spectrum_bw.png")
+    fig.savefig("spectrum_bw.png")
 
 if __name__ == "__main__":
     main()
