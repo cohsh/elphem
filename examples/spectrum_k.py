@@ -11,11 +11,11 @@ def main():
     electron = FreeElectron(lattice, n_band=1, n_electron=1)
     phonon = DebyePhonon(lattice, debye_temperature)
 
-    n_q = np.full(3, 8)
+    n_q = np.full(3, 20)
     temperature = debye_temperature
 
-    n_omega = 1000
-    range_omega = [1.61 * Energy.EV["->"], 1.72 * Energy.EV["->"]]
+    n_omega = 200
+    range_omega = [1.25 * Energy.EV["->"], 1.75 * Energy.EV["->"]]
     d_omega = (range_omega[1] - range_omega[0]) / n_omega
     
     elph = ElectronPhonon(electron, phonon, temperature, n_q, sigma=d_omega)
