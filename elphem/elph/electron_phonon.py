@@ -48,28 +48,24 @@ class ElectronPhonon:
         
         return coupling
 
-    def get_wggkq_grid(self, omega_array: np.ndarray, k_array: np.ndarray) -> tuple:
+    def get_ggkq_grid(self, k_array: np.ndarray) -> tuple:
         q_array = self.electron.lattice.reciprocal_cell.get_monkhorst_pack_grid(*self.n_qs)
 
-        n_omega = len(omega_array)
         n_band = self.electron.n_band
         n_k = len(k_array)
         n_q = len(q_array)
 
-        shape_omega = (n_omega, n_band, n_band, n_k, n_q)        
-        shape_ggkq = (n_omega, n_band, n_band, n_k, n_q, 3)
+        shape = (n_band, n_band, n_k, n_q, 3)
         
-        omega = np.broadcast_to(omega_array[:, np.newaxis, np.newaxis, np.newaxis, np.newaxis], shape_omega)
-
-        g1 = g2 = np.broadcast_to(self.electron.reciprocal_vectors[np.newaxis, :, np.newaxis, np.newaxis, np.newaxis, :], shape_ggkq)
-        k = np.broadcast_to(k_array[np.newaxis, np.newaxis, np.newaxis, :, np.newaxis, :], shape_ggkq)
-        q = np.broadcast_to(q_array[np.newaxis, np.newaxis, np.newaxis, np.newaxis, :, :], shape_ggkq)
+        g1 = g2 = np.broadcast_to(self.electron.reciprocal_vectors[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
+        k = np.broadcast_to(k_array[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
+        q = np.broadcast_to(q_array[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
         
         print(Byte.get_str(g1.nbytes))
         
-        return omega, g1, g2, k, q
+        return g1, g2, k, q
 
-    def get_self_energy(self, omega_array: np.ndarray, k_array: np.ndarray) -> np.ndarray:
+    def get_self_energy(self, omega: float, k_array: np.ndarray) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
         Args:
@@ -81,7 +77,7 @@ class ElectronPhonon:
         """
         coefficient = 1.0 / np.prod(self.n_qs)
         
-        omega, g1, g2, k, q = self.get_wggkq_grid(omega_array, k_array)
+        g1, g2, k, q = self.get_ggkq_grid(k_array)
         
         electron_eigenenergy_inter = self.electron.get_eigenenergy(k + q + g2)
         fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
@@ -103,7 +99,7 @@ class ElectronPhonon:
         green_function_imag = np.pi * (occupation_absorb * self.get_green_function_imag(denominator_absorb)
                                 + occupation_emit * self.get_green_function_imag(denominator_emit))
 
-        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag), axis=(2, 4)) * coefficient
+        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag), axis=(1, 3)) * coefficient
         
         return self_energy
 
@@ -129,16 +125,16 @@ class ElectronPhonon:
 
         omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
         
-        self_energy = self.get_self_energy(omega_array, k)
+        for omega in omega_array:
+            self_energy = self.get_self_energy(omega, k)
         
         shape = (len(omega_array), self.electron.n_band, len(k))
         
         omega = np.broadcast_to(omega_array[:, np.newaxis, np.newaxis], shape)
         eig = np.broadcast_to(eig_array[np.newaxis, :, :], shape)
 
-        
         numerator = - self_energy.imag / np.pi
-        denominator = (omega_array - eig - self_energy.real) ** 2 + self_energy.imag ** 2
+        denominator = (omega - eig - self_energy.real) ** 2 + self_energy.imag ** 2
 
         fraction = safe_divide(numerator, denominator)
 
