@@ -26,19 +26,6 @@ class ElectronPhonon:
     sigma: float = 0.0001
     eta: float = 0.1
     effective_potential: float = 1.0 / 16.0
-    
-    def __post_init__(self):
-        self.set_init()
-
-    def set_init(self) -> None:
-        self.coefficient = 1.0 / np.prod(self.n_qs)
-
-        # Generate intermediate G, q grid.
-        self.g_inter, self.q = self.electron.get_gk_grid(self.n_q)
-
-        self.phonon_eigenenergy = self.phonon.get_eigenenergy(self.q)
-        
-        self.bose = bose_distribution(self.temperature, self.phonon_eigenenergy)
 
     def get_coupling(self, g1: np.ndarray, g2: np.ndarray, q: np.ndarray) -> np.ndarray:
         """Calculate the lowest-order electron-phonon coupling between states.
@@ -60,40 +47,6 @@ class ElectronPhonon:
         
         return coupling
 
-    def get_self_energy(self, omega: float, k_array: np.ndarray) -> np.ndarray:
-        """Calculate a single value of Fan self-energy for given wave vectors.
-
-        Args:
-            g (np.ndarray): G-vector in reciprocal space.
-            k (np.ndarray): k-vector of the electron state.
-            n_q (np.ndarray): Density of intermediate q-vectors for integration.
-
-        Returns:
-            complex: The Fan self-energy term as a complex number.
-        """
-        
-        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + self.g_inter + self.q)
-
-        fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
-
-        coupling = self.get_coupling(g, self.g_inter, self.q)
-
-        occupation_absorb = 1.0 - fermi + self.bose
-        occupation_emit = fermi + self.bose
-        
-        denominator_absorb = omega - electron_eigenenergy_inter - self.phonon_eigenenergy
-        denominator_emit = omega - electron_eigenenergy_inter + self.phonon_eigenenergy
-
-        green_function_real = (occupation_absorb * self.get_green_function_real(denominator_absorb)
-                                + occupation_emit * self.get_green_function_real(denominator_emit))
-
-        green_function_imag = (occupation_absorb * self.get_green_function_imag(denominator_absorb)
-                                + occupation_emit * self.get_green_function_imag(denominator_emit)) * np.pi
-
-        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag)) * self.coefficient
-        
-        return self_energy
-
     def get_ggkq_grid(self, k_array: np.ndarray) -> tuple:
         q_array = self.electron.lattice.reciprocal_cell.get_monkhorst_pack_grid(*self.n_qs)
         n_k = len(k_array)
@@ -106,22 +59,30 @@ class ElectronPhonon:
 
         return g1, g2, k, q
 
-
-    def get_self_energy_part(self, omega: float, electron_eigenenergy_inter: np.ndarray,
-                                fermi: np.ndarray, coupling: np.ndarray) -> np.ndarray:
+    def get_self_energy(self, omega: float, k_array: np.ndarray) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
         Args:
-            g (np.ndarray): G-vector in reciprocal space.
-            k (np.ndarray): k-vector of the electron state.
-            n_q (np.ndarray): Density of intermediate q-vectors for integration.
+            omega (float): single value of frequencies.
+            k (np.ndarray): k-vectors.
 
         Returns:
             complex: The Fan self-energy term as a complex number.
         """
+        coefficient = 1.0 / np.prod(self.n_qs)
         
-        occupation_absorb = 1.0 - fermi + self.bose
-        occupation_emit = fermi + self.bose
+        g1, g2, k, q = self.get_ggkq_grid(k_array)
+        
+        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + q + g2)
+        fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
+
+        phonon_eigenenergy = self.phonon.get_eigenenergy(q)
+        bose = bose_distribution(self.temperature, phonon_eigenenergy)
+
+        coupling = self.get_coupling(g1, g2, q)
+
+        occupation_absorb = 1.0 - fermi + bose
+        occupation_emit = fermi + bose
         
         denominator_absorb = omega - electron_eigenenergy_inter - self.phonon_eigenenergy
         denominator_emit = omega - electron_eigenenergy_inter + self.phonon_eigenenergy
@@ -129,43 +90,12 @@ class ElectronPhonon:
         green_function_real = (occupation_absorb * self.get_green_function_real(denominator_absorb)
                                 + occupation_emit * self.get_green_function_real(denominator_emit))
 
-        green_function_imag = (occupation_absorb * self.get_green_function_imag(denominator_absorb)
-                                + occupation_emit * self.get_green_function_imag(denominator_emit)) * np.pi
+        green_function_imag = np.pi * (occupation_absorb * self.get_green_function_imag(denominator_absorb)
+                                + occupation_emit * self.get_green_function_imag(denominator_emit))
 
-        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag)) * self.coefficient
+        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag), axis=(1, 3)) * coefficient
         
         return self_energy
-
-    def get_coupling_strength(self, omega: float, g: np.ndarray, k: np.ndarray) -> np.ndarray:
-        """Calculate a single value of coupling strength for given wave vectors.
-
-        Args:
-            g (np.ndarray): G-vector in reciprocal space.
-            k (np.ndarray): k-vector of the electron state.
-            n_q (np.ndarray): Density of intermediate q-vectors for integration.
-
-        Returns:
-            complex: The Fan self-energy term as a complex number.
-        """
-        
-        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + self.g_inter + self.q)
-
-        fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
-
-        coupling = self.get_coupling(g, self.g_inter, self.q)
-
-        occupation_absorb = 1.0 - fermi + self.bose
-        occupation_emit = fermi + self.bose
-        
-        denominator_absorb = omega - electron_eigenenergy_inter - self.phonon_eigenenergy
-        denominator_emit = omega - electron_eigenenergy_inter + self.phonon_eigenenergy
-
-        partial_green_function_real = (occupation_absorb * self.get_partial_green_function_real(denominator_absorb)
-                                       + occupation_emit * self.get_partial_green_function_real(denominator_emit))
-
-        coupling_strength = - np.nansum(np.abs(coupling) ** 2 * partial_green_function_real) * self.coefficient
-        
-        return coupling_strength
 
     def get_green_function_real(self, omega: np.ndarray) -> np.ndarray:
         green_function_real = safe_divide(1.0, omega + self.eta * 1.0j).real
@@ -176,22 +106,3 @@ class ElectronPhonon:
         green_function_imag = gaussian_distribution(self.sigma, omega)
         
         return green_function_imag
-
-    def get_partial_green_function_real(self, omega: np.ndarray) -> np.ndarray:
-        partial_green_function_real = -1.0 * safe_divide(1.0, (omega + self.eta * 1.0j) ** 2).real
-        
-        return partial_green_function_real
-
-    @staticmethod
-    def get_qp_strength(coupling_strength: np.ndarray) -> np.ndarray:
-        """Calculate the quasiparticle strength for given wave vectors.
-
-        Args:
-            coupling_strength (np.ndarray): Coupling strength.
-
-        Returns:
-            float: The quasiparticle strength.
-        """
-        qp_strength = safe_divide(1.0, 1.0 + coupling_strength)
-
-        return qp_strength
