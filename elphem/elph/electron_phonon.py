@@ -32,7 +32,9 @@ class ElectronPhonon:
 
     def set_about_q(self) -> None:
         self.coefficient = 1.0 / np.prod(self.n_q)
-        self.g_inter, self.q = self.electron.get_gk_grid(self.n_q) # Generate intermediate G, q grid.
+
+        # Generate intermediate G, q grid.
+        self.g_inter, self.q = self.electron.get_gk_grid(self.n_q)
 
         self.phonon_eigenenergy = self.phonon.get_eigenenergy(self.q)
         
@@ -58,7 +60,7 @@ class ElectronPhonon:
         
         return coupling
 
-    def get_self_energy(self, omega: float, g: np.ndarray, k: np.ndarray) -> np.ndarray:
+    def get_self_energy(self, omega: float, k_array: np.ndarray) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
         Args:
@@ -76,6 +78,38 @@ class ElectronPhonon:
 
         coupling = self.get_coupling(g, self.g_inter, self.q)
 
+        occupation_absorb = 1.0 - fermi + self.bose
+        occupation_emit = fermi + self.bose
+        
+        denominator_absorb = omega - electron_eigenenergy_inter - self.phonon_eigenenergy
+        denominator_emit = omega - electron_eigenenergy_inter + self.phonon_eigenenergy
+
+        green_function_real = (occupation_absorb * self.get_green_function_real(denominator_absorb)
+                                + occupation_emit * self.get_green_function_real(denominator_emit))
+
+        green_function_imag = (occupation_absorb * self.get_green_function_imag(denominator_absorb)
+                                + occupation_emit * self.get_green_function_imag(denominator_emit)) * np.pi
+
+        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag)) * self.coefficient
+        
+        return self_energy
+
+    def get_ggkq_grid(self, k_array: np.ndarray):
+        pass
+
+    def get_self_energy_part(self, omega: float, electron_eigenenergy_inter: np.ndarray,
+                                fermi: np.ndarray, coupling: np.ndarray) -> np.ndarray:
+        """Calculate a single value of Fan self-energy for given wave vectors.
+
+        Args:
+            g (np.ndarray): G-vector in reciprocal space.
+            k (np.ndarray): k-vector of the electron state.
+            n_q (np.ndarray): Density of intermediate q-vectors for integration.
+
+        Returns:
+            complex: The Fan self-energy term as a complex number.
+        """
+        
         occupation_absorb = 1.0 - fermi + self.bose
         occupation_emit = fermi + self.bose
         
