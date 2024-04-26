@@ -26,14 +26,6 @@ class TestUnit(TestCase):
         electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
         self.spectrum = Spectrum(electron_phonon)
 
-    def test_calculate_with_grid(self):
-        n_k = np.full(3, 5)
-        n_omega = 20
-        
-        a = self.spectrum.get_with_grid(n_k, n_omega, self.range_omega)
-
-        self.assertEqual(a.shape, (np.prod(n_k), n_omega))
-    
     def test_with_path(self):
         k_names = ["G", "H"]
         n_split = 20

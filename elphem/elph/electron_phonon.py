@@ -97,6 +97,45 @@ class ElectronPhonon:
         
         return self_energy
 
+    def get_self_energy_rs(self, k_array: np.ndarray) -> np.ndarray:
+        """Calculate a single value of Fan self-energy for given wave vectors.
+
+        Args:
+            omega (float): single value of frequencies.
+            k (np.ndarray): k-vectors.
+
+        Returns:
+            complex: The Fan self-energy term as a complex number.
+        """
+        coefficient = 1.0 / np.prod(self.n_qs)
+        
+        g1, g2, k, q = self.get_ggkq_grid(k_array)
+
+        electron_eigenenergy = self.electron.get_eigenenergy(k + g1)        
+        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + q + g2)
+        fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
+
+        phonon_eigenenergy = self.phonon.get_eigenenergy(q)
+        bose = bose_distribution(self.temperature, phonon_eigenenergy)
+
+        coupling = self.get_coupling(g1, g2, q)
+
+        occupation_absorb = 1.0 - fermi + bose
+        occupation_emit = fermi + bose
+        
+        denominator_absorb = electron_eigenenergy - electron_eigenenergy_inter - self.phonon_eigenenergy
+        denominator_emit = electron_eigenenergy_inter - electron_eigenenergy_inter + self.phonon_eigenenergy
+
+        green_function_real = (occupation_absorb * self.get_green_function_real(denominator_absorb)
+                                + occupation_emit * self.get_green_function_real(denominator_emit))
+
+        green_function_imag = np.pi * (occupation_absorb * self.get_green_function_imag(denominator_absorb)
+                                + occupation_emit * self.get_green_function_imag(denominator_emit))
+
+        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag), axis=(1, 3)) * coefficient
+        
+        return self_energy
+
     def get_green_function_real(self, omega: np.ndarray) -> np.ndarray:
         green_function_real = safe_divide(1.0, omega + self.eta * 1.0j).real
         

@@ -24,13 +24,6 @@ class TestUnit(TestCase):
         electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
         self.epr = EPR(electron_phonon)
 
-    def test_calculate_with_grid(self):
-        n_k = np.full(3, 5)        
-        
-        eig, delta_eig = self.epr.get_with_grid(n_k)
-
-        self.assertEqual(eig.shape, delta_eig.shape)
-    
     def test_calculate_with_path(self):
         k_names = ["G", "H", "N", "G", "P", "H"]
         n_split = 20

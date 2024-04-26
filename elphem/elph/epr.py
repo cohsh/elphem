@@ -11,32 +11,6 @@ class EPR:
         self_energy (SelfEnergy): An instance of SelfEnergy to use for calculations.
     """
     electron_phonon: ElectronPhonon
-
-    def get_with_grid(self, n_k: np.ndarray) -> np.ndarray:
-        """
-        Calculate 2nd-order Fan self-energies over a grid of k-points and q-points.
-
-        Args:
-            n_k (np.ndarray): A numpy array specifying the density of k-grid points in each direction.
-            n_q (np.ndarray): A numpy array specifying the density of q-grid points in each direction.
-
-        Returns:
-            tuple: A tuple containing the eigenenergies array and the Fan self-energy array calculated over the grid.
-        """
-        
-        g_grid, k_grid = self.electron_phonon.electron.get_gk_grid(n_k)
-
-        shape_mesh = g_grid[..., 0].shape
-        
-        g = g_grid.reshape(-1, 3)
-        k = k_grid.reshape(-1, 3)
-
-        eig = self.electron_phonon.electron.get_eigenenergy(g + k)
-        self_energy = np.array([self.electron_phonon.get_self_energy(eig_i, g_i, k_i) for eig_i, g_i, k_i in zip(eig, g, k)]).reshape(shape_mesh)
-        
-        epr = self_energy.real
-        
-        return eig.reshape(shape_mesh), epr
     
     def get_with_path(self, k_names: list[str], n_split: int) -> tuple:
         """
@@ -56,12 +30,7 @@ class EPR:
         x, k, special_x = self.electron_phonon.electron.lattice.reciprocal_cell.get_path(k_names, n_split)
         eig = np.array([self.electron_phonon.electron.get_eigenenergy(k + g_i) for g_i in g])
 
-        shape_return = eig.shape
-
-        self_energy = np.zeros(shape_return, dtype='complex128')
-
-        for i in range(self.electron_phonon.electron.n_band):
-            self_energy[i] = np.array([self.electron_phonon.get_self_energy(eig_i, g[i], k_i) for eig_i, k_i in zip(eig[i], k)])
+        self_energy = self.electron_phonon.get_self_energy_rs(k)
 
         epr = self_energy.real
         
