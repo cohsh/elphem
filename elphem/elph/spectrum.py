@@ -34,8 +34,6 @@ class Spectrum:
         x, k, special_x = self.electron_phonon.electron.lattice.reciprocal_cell.get_path(k_names, n_split)
         eig = np.array([self.electron_phonon.electron.get_eigenenergy(k + g_i) for g_i in g])
 
-        shape_return = eig.shape
-
         omegas = np.linspace(range_omega[0], range_omega[1], n_omega)
         spectrum = np.zeros(eig[0].shape + omegas.shape)
                 
