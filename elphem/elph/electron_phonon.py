@@ -22,16 +22,16 @@ class ElectronPhonon:
     electron: FreeElectron
     phonon: DebyePhonon
     temperature: float
-    n_q: np.ndarray
+    n_qs: np.ndarray
     sigma: float = 0.0001
     eta: float = 0.1
     effective_potential: float = 1.0 / 16.0
     
     def __post_init__(self):
-        self.set_about_q()
+        self.set_init()
 
-    def set_about_q(self) -> None:
-        self.coefficient = 1.0 / np.prod(self.n_q)
+    def set_init(self) -> None:
+        self.coefficient = 1.0 / np.prod(self.n_qs)
 
         # Generate intermediate G, q grid.
         self.g_inter, self.q = self.electron.get_gk_grid(self.n_q)
@@ -94,8 +94,18 @@ class ElectronPhonon:
         
         return self_energy
 
-    def get_ggkq_grid(self, k_array: np.ndarray):
-        pass
+    def get_ggkq_grid(self, k_array: np.ndarray) -> tuple:
+        q_array = self.electron.lattice.reciprocal_cell.get_monkhorst_pack_grid(*self.n_qs)
+        n_k = len(k_array)
+        n_q = len(q_array)
+        
+        g1 = np.tile(self.electron.reciprocal_vectors, (1, self.electron.n_band, n_k, n_q, 1))
+        g2 = np.tile(self.electron.reciprocal_vectors, (self.electron.n_band, 1, n_k, n_q, 1))
+        k = np.tile(k_array, (self.electron.n_band, self.electron.n_band, 1, n_q, 1))
+        q = np.tile(q_array, (self.electron.n_band, self.electron.n_band, n_k, 1, 1))
+
+        return g1, g2, k, q
+
 
     def get_self_energy_part(self, omega: float, electron_eigenenergy_inter: np.ndarray,
                                 fermi: np.ndarray, coupling: np.ndarray) -> np.ndarray:
