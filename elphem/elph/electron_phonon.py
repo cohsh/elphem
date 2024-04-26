@@ -49,13 +49,14 @@ class ElectronPhonon:
 
     def get_ggkq_grid(self, k_array: np.ndarray) -> tuple:
         q_array = self.electron.lattice.reciprocal_cell.get_monkhorst_pack_grid(*self.n_qs)
+        n_band = self.electron.n_band
         n_k = len(k_array)
         n_q = len(q_array)
         
-        g1 = np.tile(self.electron.reciprocal_vectors, (1, self.electron.n_band, n_k, n_q, 1))
-        g2 = np.tile(self.electron.reciprocal_vectors, (self.electron.n_band, 1, n_k, n_q, 1))
-        k = np.tile(k_array, (self.electron.n_band, self.electron.n_band, 1, n_q, 1))
-        q = np.tile(q_array, (self.electron.n_band, self.electron.n_band, n_k, 1, 1))
+        g1 = np.tile(self.electron.reciprocal_vectors[:, np.newaxis, np.newaxis, np.newaxis, :], (1, n_band, n_k, n_q, 1))
+        g2 = np.tile(self.electron.reciprocal_vectors[:, np.newaxis, np.newaxis, np.newaxis, :], (1, n_band, n_k, n_q, 1))
+        k = np.tile(k_array[np.newaxis, np.newaxis, :, np.newaxis, :], (n_band, n_band, 1, n_q, 1))
+        q = np.tile(q_array[np.newaxis, np.newaxis, np.newaxis, :, :], (n_band, n_band, n_k, 1, 1))
 
         return g1, g2, k, q
 
@@ -84,8 +85,8 @@ class ElectronPhonon:
         occupation_absorb = 1.0 - fermi + bose
         occupation_emit = fermi + bose
         
-        denominator_absorb = omega - electron_eigenenergy_inter - self.phonon_eigenenergy
-        denominator_emit = omega - electron_eigenenergy_inter + self.phonon_eigenenergy
+        denominator_absorb = omega - electron_eigenenergy_inter - phonon_eigenenergy
+        denominator_emit = omega - electron_eigenenergy_inter + phonon_eigenenergy
 
         green_function_real = (occupation_absorb * self.get_green_function_real(denominator_absorb)
                                 + occupation_emit * self.get_green_function_real(denominator_emit))

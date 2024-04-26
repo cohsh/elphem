@@ -12,8 +12,8 @@ class TestUnit(TestCase):
     def setUp(self) -> None:
         a = 2.98 * Length.ANGSTROM["->"]
         debye_temperature = 344.0
-        n_band = 2
-        n_q = np.full(3, 4)
+        n_band = 4
+        n_q = np.full(3, 5)
 
         self.range_omega = [-1.0, 2.0]
 
