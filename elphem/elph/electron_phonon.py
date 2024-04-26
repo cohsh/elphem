@@ -53,10 +53,11 @@ class ElectronPhonon:
         n_k = len(k_array)
         n_q = len(q_array)
         
-        g1 = np.tile(self.electron.reciprocal_vectors[:, np.newaxis, np.newaxis, np.newaxis, :], (1, n_band, n_k, n_q, 1))
-        g2 = np.tile(self.electron.reciprocal_vectors[:, np.newaxis, np.newaxis, np.newaxis, :], (1, n_band, n_k, n_q, 1))
-        k = np.tile(k_array[np.newaxis, np.newaxis, :, np.newaxis, :], (n_band, n_band, 1, n_q, 1))
-        q = np.tile(q_array[np.newaxis, np.newaxis, np.newaxis, :, :], (n_band, n_band, n_k, 1, 1))
+        shape = (n_band, n_band, n_k, n_q, 3)
+        
+        g1 = g2 = np.broadcast_to(self.electron.reciprocal_vectors[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
+        k = np.broadcast_to(k_array[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
+        q = np.broadcast_to(q_array[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
 
         return g1, g2, k, q
 
@@ -124,8 +125,8 @@ class ElectronPhonon:
         occupation_absorb = 1.0 - fermi + bose
         occupation_emit = fermi + bose
         
-        denominator_absorb = electron_eigenenergy - electron_eigenenergy_inter - self.phonon_eigenenergy
-        denominator_emit = electron_eigenenergy_inter - electron_eigenenergy_inter + self.phonon_eigenenergy
+        denominator_absorb = electron_eigenenergy - electron_eigenenergy_inter - phonon_eigenenergy
+        denominator_emit = electron_eigenenergy_inter - electron_eigenenergy_inter + phonon_eigenenergy
 
         green_function_real = (occupation_absorb * self.get_green_function_real(denominator_absorb)
                                 + occupation_emit * self.get_green_function_real(denominator_emit))
