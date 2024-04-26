@@ -61,8 +61,6 @@ class ElectronPhonon:
         k = np.broadcast_to(k_array[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
         q = np.broadcast_to(q_array[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
         
-        print(Byte.get_str(g1.nbytes))
-        
         return g1, g2, k, q
 
     def get_self_energy(self, omega: float, k_array: np.ndarray) -> np.ndarray:
