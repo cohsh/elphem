@@ -48,23 +48,28 @@ class ElectronPhonon:
         
         return coupling
 
-    def get_ggkq_grid(self, k_array: np.ndarray) -> tuple:
+    def get_wggkq_grid(self, omega_array: np.ndarray, k_array: np.ndarray) -> tuple:
         q_array = self.electron.lattice.reciprocal_cell.get_monkhorst_pack_grid(*self.n_qs)
+
+        n_omega = len(omega_array)
         n_band = self.electron.n_band
         n_k = len(k_array)
         n_q = len(q_array)
-        
-        shape = (n_band, n_band, n_k, n_q, 3)
-        
-        g1 = g2 = np.broadcast_to(self.electron.reciprocal_vectors[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
-        k = np.broadcast_to(k_array[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
-        q = np.broadcast_to(q_array[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
-        
-#        print(Byte.get_str(g1.nbytes))
-        
-        return g1, g2, k, q
 
-    def get_self_energy(self, omega: float, k_array: np.ndarray) -> np.ndarray:
+        shape_omega = (n_omega, n_band, n_band, n_k, n_q)        
+        shape_ggkq = (n_omega, n_band, n_band, n_k, n_q, 3)
+        
+        omega = np.broadcast_to(omega_array[:, np.newaxis, np.newaxis, np.newaxis, np.newaxis], shape_omega)
+
+        g1 = g2 = np.broadcast_to(self.electron.reciprocal_vectors[np.newaxis, :, np.newaxis, np.newaxis, np.newaxis, :], shape_ggkq)
+        k = np.broadcast_to(k_array[np.newaxis, np.newaxis, np.newaxis, :, np.newaxis, :], shape_ggkq)
+        q = np.broadcast_to(q_array[np.newaxis, np.newaxis, np.newaxis, np.newaxis, :, :], shape_ggkq)
+        
+        print(Byte.get_str(g1.nbytes))
+        
+        return omega, g1, g2, k, q
+
+    def get_self_energy(self, omega_array: np.ndarray, k_array: np.ndarray) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
         Args:
@@ -76,7 +81,7 @@ class ElectronPhonon:
         """
         coefficient = 1.0 / np.prod(self.n_qs)
         
-        g1, g2, k, q = self.get_ggkq_grid(k_array)
+        omega, g1, g2, k, q = self.get_wggkq_grid(omega_array, k_array)
         
         electron_eigenenergy_inter = self.electron.get_eigenenergy(k + q + g2)
         fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
@@ -98,48 +103,48 @@ class ElectronPhonon:
         green_function_imag = np.pi * (occupation_absorb * self.get_green_function_imag(denominator_absorb)
                                 + occupation_emit * self.get_green_function_imag(denominator_emit))
 
-        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag), axis=(1, 3)) * coefficient
+        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag), axis=(2, 4)) * coefficient
         
         return self_energy
 
-    def get_self_energy_rs(self, k_array: np.ndarray) -> np.ndarray:
-        """Calculate a single value of Fan self-energy for given wave vectors.
+    def get_spectrum(self, k_names: list[str], n_split: int, n_omega: int, range_omega: list[float]) -> tuple:
+        """
+        Calculate the spectral function along a specified path in the Brillouin zone.
 
         Args:
-            omega (float): single value of frequencies.
-            k (np.ndarray): k-vectors.
+            k_names (list[str]): List of special points defining the path through the Brillouin zone.
+            n_split (int): Number of points between each special point.
+            n_q (np.ndarray): A numpy array specifying the density of q-grid points in each direction.
+            n_omega (int): Number of points in the energy range.
+            range_omega (list[float]): The range of energy values over which to calculate the spectrum.
 
         Returns:
-            complex: The Fan self-energy term as a complex number.
+            tuple: A tuple containing the path x-coordinates, energy values, the calculated spectrum, and x-coordinates of special points.
         """
-        coefficient = 1.0 / np.prod(self.n_qs)
         
-        g1, g2, k, q = self.get_ggkq_grid(k_array)
-
-        electron_eigenenergy = self.electron.get_eigenenergy(k + g1)        
-        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + q + g2)
-        fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
-
-        phonon_eigenenergy = self.phonon.get_eigenenergy(q)
-        bose = bose_distribution(self.temperature, phonon_eigenenergy)
-
-        coupling = self.get_coupling(g1, g2, q)
-
-        occupation_absorb = 1.0 - fermi + bose
-        occupation_emit = fermi + bose
+        g = self.electron.reciprocal_vectors
         
-        denominator_absorb = electron_eigenenergy - electron_eigenenergy_inter - phonon_eigenenergy
-        denominator_emit = electron_eigenenergy_inter - electron_eigenenergy_inter + phonon_eigenenergy
+        x, k, special_x = self.electron.lattice.reciprocal_cell.get_path(k_names, n_split)
+        eig_array = np.array([self.electron.get_eigenenergy(k + g_i) for g_i in g])
 
-        green_function_real = (occupation_absorb * self.get_green_function_real(denominator_absorb)
-                                + occupation_emit * self.get_green_function_real(denominator_emit))
-
-        green_function_imag = np.pi * (occupation_absorb * self.get_green_function_imag(denominator_absorb)
-                                + occupation_emit * self.get_green_function_imag(denominator_emit))
-
-        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag), axis=(1, 3)) * coefficient
+        omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
         
-        return self_energy
+        self_energy = self.get_self_energy(omega_array, k)
+        
+        shape = (len(omega_array), self.electron.n_band, len(k))
+        
+        omega = np.broadcast_to(omega_array[:, np.newaxis, np.newaxis], shape)
+        eig = np.broadcast_to(eig_array[np.newaxis, :, :], shape)
+
+        
+        numerator = - self_energy.imag / np.pi
+        denominator = (omega_array - eig - self_energy.real) ** 2 + self_energy.imag ** 2
+
+        fraction = safe_divide(numerator, denominator)
+
+        spectrum = np.nansum(fraction, axis=1)
+
+        return x, omega_array, spectrum, special_x
 
     def get_green_function_real(self, omega: np.ndarray) -> np.ndarray:
         green_function_real = safe_divide(1.0, omega + self.eta * 1.0j).real

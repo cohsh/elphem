@@ -8,6 +8,7 @@ from elphem.phonon.debye import DebyePhonon
 from elphem.elph.electron_phonon import ElectronPhonon
 from elphem.elph.epr import EPR
 
+"""_summary_
 class TestUnit(TestCase):
     def setUp(self) -> None:
         a = 2.98 * Length.ANGSTROM["->"]
@@ -32,3 +33,4 @@ class TestUnit(TestCase):
         
         self.assertEqual(eig.shape, delta_eig.shape)
         self.assertEqual(len(k_names), len(special_k))
+"""

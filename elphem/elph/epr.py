@@ -30,7 +30,7 @@ class EPR:
         x, k, special_x = self.electron_phonon.electron.lattice.reciprocal_cell.get_path(k_names, n_split)
         eig = np.array([self.electron_phonon.electron.get_eigenenergy(k + g_i) for g_i in g])
 
-        self_energy = self.electron_phonon.get_self_energy_rs(k)
+        self_energy = self.electron_phonon.get_self_energy()
 
         epr = self_energy.real
         

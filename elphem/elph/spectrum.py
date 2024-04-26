@@ -34,22 +34,16 @@ class Spectrum:
         x, k, special_x = self.electron_phonon.electron.lattice.reciprocal_cell.get_path(k_names, n_split)
         eig = np.array([self.electron_phonon.electron.get_eigenenergy(k + g_i) for g_i in g])
 
-        omegas = np.linspace(range_omega[0], range_omega[1], n_omega)
-        spectrum = np.zeros(eig[0].shape + omegas.shape)
+        omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
+        spectrum = np.zeros(eig[0].shape + omega_array.shape)
                 
-        count = 0
-        for omega in omegas:
-            self_energy = self.electron_phonon.get_self_energy(omega, k)
-            
-            numerator = - self_energy.imag / np.pi
-            denominator = (omega - eig - self_energy.real) ** 2 + self_energy.imag ** 2
+        self_energy = self.electron_phonon.get_self_energy(omega_array, k)
+        
+        numerator = - self_energy.imag / np.pi
+        denominator = (omega_array - eig - self_energy.real) ** 2 + self_energy.imag ** 2
 
-            fraction = safe_divide(numerator, denominator)
+        fraction = safe_divide(numerator, denominator)
 
-            spectrum[..., count] = np.nansum(fraction, axis=0)
-            
-            print(count / len(omegas) * 100.0)
-            
-            count += 1
-                
+        spectrum[..., count] = np.nansum(fraction, axis=0)
+
         return x, omegas, spectrum, special_x

@@ -6,7 +6,6 @@ from elphem.lattice.lattice import Lattice
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyePhonon
 from elphem.elph.electron_phonon import ElectronPhonon
-from elphem.elph.spectrum import Spectrum
 
 class TestUnit(TestCase):
     def setUp(self) -> None:
@@ -23,8 +22,7 @@ class TestUnit(TestCase):
         electron = FreeElectron(lattice, n_band, 1)
         phonon = DebyePhonon(lattice, temperature)
 
-        electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
-        self.spectrum = Spectrum(electron_phonon)
+        self.electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
 
     def test_with_path(self):
         k_names = ["G", "H"]
@@ -32,7 +30,7 @@ class TestUnit(TestCase):
         
         n_omega = 20
         
-        k, omegas, a, special_k = self.spectrum.get_with_path(k_names, n_split, n_omega, self.range_omega)
+        k, omegas, a, special_k = self.electron_phonon.get_spectrum(k_names, n_split, n_omega, self.range_omega)
         
         self.assertEqual(a.shape, (len(k), len(omegas)))
         self.assertEqual(len(k_names), len(special_k))

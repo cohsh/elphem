@@ -7,7 +7,7 @@ def main():
     a = 2.98 * Length.ANGSTROM['->']
     lattice = Lattice('bcc', 'Li', a)
 
-    electron = FreeElectron(lattice, n_band=1, n_electron=1)
+    electron = FreeElectron(lattice, n_band=4, n_electron=1)
 
     debye_temperature = 344.0
     phonon = DebyePhonon(lattice, debye_temperature)
@@ -23,7 +23,7 @@ def main():
     k_names = ["G", "H", "N", "G", "P", "H"]
     n_split = 20
     
-    x, y, spectrum, special_x = Spectrum(electron_phonon).get_with_path(k_names, n_split, n_omega, range_omega)
+    x, y, spectrum, special_x = electron_phonon.get_spectrum(k_names, n_split, n_omega, range_omega)
     y_mesh, x_mesh = np.meshgrid(y, x)
 
     fig = plt.figure()
