@@ -1,6 +1,7 @@
 import numpy as np
 from dataclasses import dataclass
 
+from elphem.common.unit import Byte
 from elphem.common.function import safe_divide
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyePhonon
@@ -58,7 +59,9 @@ class ElectronPhonon:
         g1 = g2 = np.broadcast_to(self.electron.reciprocal_vectors[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
         k = np.broadcast_to(k_array[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
         q = np.broadcast_to(q_array[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
-
+        
+#        print(Byte.get_str(g1.nbytes))
+        
         return g1, g2, k, q
 
     def get_self_energy(self, omega: float, k_array: np.ndarray) -> np.ndarray:
