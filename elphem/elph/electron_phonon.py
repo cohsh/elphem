@@ -147,20 +147,22 @@ class ElectronPhonon:
             denominator_absorb = omega - electron_eigenenergy_inter - phonon_eigenenergy
             denominator_emit = omega - electron_eigenenergy_inter + phonon_eigenenergy
 
-            green_function_real = (occupation_absorb * self.get_green_function_real(denominator_absorb)
-                                    + occupation_emit * self.get_green_function_real(denominator_emit))
-
-            green_function_imag = np.pi * (occupation_absorb * self.get_green_function_imag(denominator_absorb)
-                                    + occupation_emit * self.get_green_function_imag(denominator_emit))
+            green_function = (occupation_absorb * self.get_green_function_real(denominator_absorb)
+                                    + occupation_emit * self.get_green_function_real(denominator_emit)
+                            + 1.0j * np.pi * (occupation_absorb * self.get_green_function_imag(denominator_absorb)
+                                    + occupation_emit * self.get_green_function_imag(denominator_emit)))
             
             del denominator_absorb, denominator_emit
             
-            self_energy = np.nansum(coupling2 * (green_function_real + 1.0j * green_function_imag), axis=(1, 3)) * self.coefficient
+            self_energy = np.nansum(coupling2 * green_function, axis=(1, 3)) * self.coefficient
 
             numerator = - self_energy.imag / np.pi
             denominator = (omega - eig - self_energy.real) ** 2 + self_energy.imag ** 2
 
             fraction = safe_divide(numerator, denominator)
+            
+            del numerator, denominator
+            
             spectrum[..., count] = np.nansum(fraction, axis=0)
             
             count += 1
