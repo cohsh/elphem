@@ -78,9 +78,6 @@ class ElectronPhonon:
         occupation_absorb = 1.0 - fermi + bose
         occupation_emit = fermi + bose
 
-        del fermi
-        del bose
-
         coupling = self.get_coupling(g1, g2, q)
 
         return electron_eigenenergy_inter, phonon_eigenenergy, occupation_absorb, occupation_emit, coupling
@@ -138,6 +135,8 @@ class ElectronPhonon:
 
         electron_eigenenergy_inter, phonon_eigenenergy, occupation_absorb, occupation_emit, coupling = self.get_omega_independent_values(k)
 
+        coupling2 = np.abs(coupling) ** 2
+
         count = 0
         for omega in omega_array:
             denominator_absorb = omega - electron_eigenenergy_inter - phonon_eigenenergy
@@ -149,7 +148,7 @@ class ElectronPhonon:
             green_function_imag = np.pi * (occupation_absorb * self.get_green_function_imag(denominator_absorb)
                                     + occupation_emit * self.get_green_function_imag(denominator_emit))
 
-            self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag), axis=(1, 3)) * self.coefficient
+            self_energy = np.nansum(coupling2 * (green_function_real + 1.0j * green_function_imag), axis=(1, 3)) * self.coefficient
 
             numerator = - self_energy.imag / np.pi
             denominator = (omega - eig - self_energy.real) ** 2 + self_energy.imag ** 2
