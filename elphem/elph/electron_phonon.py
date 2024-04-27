@@ -119,24 +119,26 @@ class ElectronPhonon:
         g = self.electron.reciprocal_vectors
         
         x, k, special_x = self.electron.lattice.reciprocal_cell.get_path(k_names, n_split)
-        eig_array = np.array([self.electron.get_eigenenergy(k + g_i) for g_i in g])
+        eig = np.array([self.electron.get_eigenenergy(k + g_i) for g_i in g])
 
         omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
         
+        shape = (len(k), len(omega_array))
+        spectrum = np.empty(shape)
+
+        count = 0
         for omega in omega_array:
             self_energy = self.get_self_energy(omega, k)
-        
-        shape = (len(omega_array), self.electron.n_band, len(k))
-        
-        omega = np.broadcast_to(omega_array[:, np.newaxis, np.newaxis], shape)
-        eig = np.broadcast_to(eig_array[np.newaxis, :, :], shape)
 
-        numerator = - self_energy.imag / np.pi
-        denominator = (omega - eig - self_energy.real) ** 2 + self_energy.imag ** 2
+            numerator = - self_energy.imag / np.pi
+            denominator = (omega - eig - self_energy.real) ** 2 + self_energy.imag ** 2
 
-        fraction = safe_divide(numerator, denominator)
+            fraction = safe_divide(numerator, denominator)
+            spectrum[..., count] = np.nansum(fraction, axis=0)
+            
+            count += 1
 
-        spectrum = np.nansum(fraction, axis=1)
+            print(count / n_omega * 100)
 
         return x, omega_array, spectrum, special_x
 
