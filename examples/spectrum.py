@@ -16,7 +16,7 @@ def main():
     temperature = debye_temperature
     electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
 
-    n_omega = 100
+    n_omega = 50
     range_omega = [-6 * Energy.EV["->"], 10 * Energy.EV["->"]]
     
     k_names = ["G", "H", "N", "G", "P", "H"]
