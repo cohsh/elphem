@@ -63,7 +63,8 @@ class ElectronPhonon:
 
         shape = (n_band, n_band, n_k, n_q, 3)
         
-        g1 = g2 = np.broadcast_to(self.electron.reciprocal_vectors[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
+        g1 = np.broadcast_to(self.electron.reciprocal_vectors[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
+        g2 = np.broadcast_to(self.electron.reciprocal_vectors[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
         k = np.broadcast_to(k_array[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
         q = np.broadcast_to(q_array[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
         
