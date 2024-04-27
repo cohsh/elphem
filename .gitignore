@@ -168,3 +168,7 @@ cython_debug/
 # Add
 *private
 examples/*.png
+*.in
+*.out
+*.txt
+*.dat
