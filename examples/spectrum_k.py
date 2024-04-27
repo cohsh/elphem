@@ -8,22 +8,21 @@ def main():
     debye_temperature = 344.0
 
     lattice = Lattice('bcc', 'Li', a)
-    electron = FreeElectron(lattice, n_band=1, n_electron=1)
+    electron = FreeElectron(lattice, n_band=2, n_electron=1)
     phonon = DebyePhonon(lattice, debye_temperature)
 
-    n_q = np.full(3, 20)
+    n_q = np.full(3, 25)
     temperature = debye_temperature
 
-    n_omega = 200
-    range_omega = [1.25 * Energy.EV["->"], 1.75 * Energy.EV["->"]]
-    d_omega = (range_omega[1] - range_omega[0]) / n_omega
+    n_omega = 1000
+    range_omega = [1. * Energy.EV["->"], 1.8 * Energy.EV["->"]]
     
-    elph = ElectronPhonon(electron, phonon, temperature, n_q, sigma=d_omega)
+    elph = ElectronPhonon(electron, phonon, temperature, n_q, sigma=0.00001)
     
     k_names = ["N", "H"]
-    n_split = 20
+    n_split = 2
     
-    _, omega, spectrum, __ = Spectrum(elph).get_with_path(k_names, n_split, n_omega, range_omega)
+    _, omega, spectrum, __ = elph.get_spectrum(k_names, n_split, n_omega, range_omega)
  
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -31,7 +30,7 @@ def main():
     ax.plot(omega * Energy.EV["<-"], np.abs(spectrum[0]) / Energy.EV["<-"])
 #    ax.axvline(x=0.0, color="black", linewidth=0.3)
 
-
+    ax.set_ylim(0,10)
     ax.set_xlabel("$\omega$ ($\mathrm{eV}$)")
     ax.set_ylabel("$A(\mathbf{k}_\mathrm{N}, \omega)$ ($\mathrm{eV}^{-1}$)")
     ax.set_title("Spectral function of bcc-Li")
