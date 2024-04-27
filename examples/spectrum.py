@@ -7,7 +7,7 @@ def main():
     a = 2.98 * Length.ANGSTROM['->']
     lattice = Lattice('bcc', 'Li', a)
 
-    electron = FreeElectron(lattice, n_band=1, n_electron=1)
+    electron = FreeElectron(lattice, n_band=4, n_electron=1)
 
     debye_temperature = 344.0
     phonon = DebyePhonon(lattice, debye_temperature)
@@ -30,10 +30,10 @@ def main():
     
     mappable = ax.pcolormesh(k_mesh, omega_mesh * Energy.EV["<-"], spectrum / Energy.EV["<-"])
     
-    for x0 in special_x:
+    for x0 in special_k:
         ax.axvline(x=x0, color="black", linewidth=0.3)
     
-    ax.set_xticks(special_x)
+    ax.set_xticks(special_k)
     ax.set_xticklabels(k_names)
     ax.set_ylabel("Energy ($\mathrm{eV}$)")
     ax.set_title("Spectral function of bcc-Li")

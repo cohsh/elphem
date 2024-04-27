@@ -28,6 +28,9 @@ class ElectronPhonon:
     eta: float = 0.1
     effective_potential: float = 1.0 / 16.0
 
+    def __post_init__(self):
+        self.coefficient = 1.0 / np.prod(self.n_qs)
+
     def get_coupling(self, g1: np.ndarray, g2: np.ndarray, q: np.ndarray) -> np.ndarray:
         """Calculate the lowest-order electron-phonon coupling between states.
 
@@ -62,6 +65,25 @@ class ElectronPhonon:
         q = np.broadcast_to(q_array[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
         
         return g1, g2, k, q
+    
+    def get_omega_independent_values(self, k_array: np.ndarray) -> tuple:
+        g1, g2, k, q = self.get_ggkq_grid(k_array)
+        
+        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + q + g2)
+        phonon_eigenenergy = self.phonon.get_eigenenergy(q)
+
+        fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
+        bose = bose_distribution(self.temperature, phonon_eigenenergy)
+
+        occupation_absorb = 1.0 - fermi + bose
+        occupation_emit = fermi + bose
+
+        del fermi
+        del bose
+
+        coupling = self.get_coupling(g1, g2, q)
+
+        return electron_eigenenergy_inter, phonon_eigenenergy, occupation_absorb, occupation_emit, coupling
 
     def get_self_energy(self, omega: float, k_array: np.ndarray) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
@@ -73,20 +95,8 @@ class ElectronPhonon:
         Returns:
             complex: The Fan self-energy term as a complex number.
         """
-        coefficient = 1.0 / np.prod(self.n_qs)
         
-        g1, g2, k, q = self.get_ggkq_grid(k_array)
-        
-        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + q + g2)
-        fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
-
-        phonon_eigenenergy = self.phonon.get_eigenenergy(q)
-        bose = bose_distribution(self.temperature, phonon_eigenenergy)
-
-        coupling = self.get_coupling(g1, g2, q)
-
-        occupation_absorb = 1.0 - fermi + bose
-        occupation_emit = fermi + bose
+        electron_eigenenergy_inter, phonon_eigenenergy, occupation_absorb, occupation_emit, coupling = self.get_omega_independent_values(k_array)
         
         denominator_absorb = omega - electron_eigenenergy_inter - phonon_eigenenergy
         denominator_emit = omega - electron_eigenenergy_inter + phonon_eigenenergy
@@ -97,7 +107,7 @@ class ElectronPhonon:
         green_function_imag = np.pi * (occupation_absorb * self.get_green_function_imag(denominator_absorb)
                                 + occupation_emit * self.get_green_function_imag(denominator_emit))
 
-        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag), axis=(1, 3)) * coefficient
+        self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag), axis=(1, 3)) * self.coefficient
         
         return self_energy
 
@@ -126,9 +136,20 @@ class ElectronPhonon:
         shape = (len(k), len(omega_array))
         spectrum = np.empty(shape)
 
+        electron_eigenenergy_inter, phonon_eigenenergy, occupation_absorb, occupation_emit, coupling = self.get_omega_independent_values(k)
+
         count = 0
         for omega in omega_array:
-            self_energy = self.get_self_energy(omega, k)
+            denominator_absorb = omega - electron_eigenenergy_inter - phonon_eigenenergy
+            denominator_emit = omega - electron_eigenenergy_inter + phonon_eigenenergy
+
+            green_function_real = (occupation_absorb * self.get_green_function_real(denominator_absorb)
+                                    + occupation_emit * self.get_green_function_real(denominator_emit))
+
+            green_function_imag = np.pi * (occupation_absorb * self.get_green_function_imag(denominator_absorb)
+                                    + occupation_emit * self.get_green_function_imag(denominator_emit))
+
+            self_energy = np.nansum(np.abs(coupling) ** 2 * (green_function_real + 1.0j * green_function_imag), axis=(1, 3)) * self.coefficient
 
             numerator = - self_energy.imag / np.pi
             denominator = (omega - eig - self_energy.real) ** 2 + self_energy.imag ** 2
