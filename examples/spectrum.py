@@ -12,7 +12,7 @@ def main():
     debye_temperature = 344.0
     phonon = DebyePhonon(lattice, debye_temperature)
 
-    n_q = np.full(3, 20)
+    n_q = np.full(3, 10)
     temperature = debye_temperature
     electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
 

@@ -31,6 +31,9 @@ class ElectronPhonon:
     def __post_init__(self):
         self.coefficient = 1.0 / np.prod(self.n_qs)
 
+        self.gaussian_coefficient_a = 2.0 * self.sigma ** 2
+        self.gaussian_coefficient_b = np.sqrt(2.0 * np.pi) * self.sigma
+
     def get_coupling(self, g1: np.ndarray, g2: np.ndarray, q: np.ndarray) -> np.ndarray:
         """Calculate the lowest-order electron-phonon coupling between states.
 
@@ -168,6 +171,6 @@ class ElectronPhonon:
         return green_function_real
     
     def get_green_function_imag(self, omega: np.ndarray) -> np.ndarray:
-        green_function_imag = gaussian_distribution(self.sigma, omega)
+        green_function_imag = np.exp(- omega ** 2 / self.gaussian_coefficient_a) / self.gaussian_coefficient_b
         
         return green_function_imag

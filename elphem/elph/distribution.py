@@ -71,6 +71,4 @@ def gaussian_distribution(sigma: float, energy: float | np.ndarray) -> float | n
     Returns:
         float | np.ndarray: Probability density(s) based on the Gaussian distribution.
     """
-    if sigma == 0.0:
-        raise ValueError("Sigma must not be zero.")
     return np.exp(- energy ** 2 / (2.0 * sigma ** 2)) / (np.sqrt(2.0 * np.pi) * sigma)
