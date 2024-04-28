@@ -144,15 +144,15 @@ class ReciprocalCell(Cell):
         return np.array(g_list[0:n_g])
 
     def get_monkhorst_pack_grid(self, n_x: int, n_y: int, n_z: int) -> np.ndarray:
-        r_x = np.arange(1, n_x + 1)
-        r_y = np.arange(1, n_y + 1)
-        r_z = np.arange(1, n_z + 1)
+        x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
+        y = (2 * np.arange(1, n_y + 1) - n_y - 1) / (2 * n_y)
+        z = (2 * np.arange(1, n_z + 1) - n_z - 1) / (2 * n_z)
 
-        x = (2 * r_x - n_x - 1) / ( 2 * n_x )
-        y = (2 * r_y - n_y - 1) / ( 2 * n_y )
-        z = (2 * r_z - n_z - 1) / ( 2 * n_z )
+        bx = np.broadcast_to(x[:, np.newaxis, np.newaxis], (n_x, n_y, n_z))
+        by = np.broadcast_to(y[np.newaxis, :, np.newaxis], (n_x, n_y, n_z))
+        bz = np.broadcast_to(z[np.newaxis, np.newaxis, :], (n_x, n_y, n_z))
 
-        aligned_k = np.array(np.meshgrid(x, y, z, indexing='ij')).T.reshape(-1, 3) @ self.basis
+        aligned_k = np.stack([bx, by, bz], axis=-1).reshape(-1, 3) @ self.basis
 
         return aligned_k
 
