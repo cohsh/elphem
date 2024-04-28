@@ -89,6 +89,20 @@ class ElectronPhonon:
 
         return electron_eigenenergy_inter, phonon_eigenenergy, occupations, coupling2
 
+    def get_green_function(self, omega: float, electron_eigenenergy: np.ndarray, phonon_eigenenergy: np.ndarray, occupations: dict) -> np.ndarray:
+        denominators = {}
+
+        denominators['-'] = omega - electron_eigenenergy - phonon_eigenenergy
+        denominators['+'] = omega - electron_eigenenergy + phonon_eigenenergy
+
+        green_function = np.zeros(electron_eigenenergy.shape, dtype='complex')
+
+        for sign in denominators.keys():
+            green_function += occupations[sign] * self.get_green_function_real(denominators[sign])
+            green_function += 1.0j * np.pi * occupations[sign] * self.get_green_function_imag(denominators[sign])
+        
+        return green_function
+
     def get_self_energy(self, omega: float, k_array: np.ndarray) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
@@ -102,16 +116,7 @@ class ElectronPhonon:
         
         electron_eigenenergy_inter, phonon_eigenenergy, occupations, coupling2 = self.get_omega_independent_values(k_array)
         
-        denominators = {}
-
-        denominators['-'] = omega - electron_eigenenergy_inter - phonon_eigenenergy
-        denominators['+'] = omega - electron_eigenenergy_inter + phonon_eigenenergy
-
-        green_function = np.zeros(coupling2.shape, dtype='complex')
-
-        for sign in denominators.keys():
-            green_function += occupations[sign] * self.get_green_function_real(denominators[sign])
-            green_function += 1.0j * np.pi * occupations[sign] * self.get_green_function_imag(denominators[sign])
+        green_function = self.get_green_function(omega, electron_eigenenergy_inter, phonon_eigenenergy, occupations)
 
         self_energy = np.nansum(coupling2 * green_function, axis=(1, 3)) * self.coefficient
         
@@ -148,16 +153,7 @@ class ElectronPhonon:
 
         progress_bar = ProgressBar('Spectrum', n_omega)
         for omega in omega_array:
-            denominators = {}
-
-            denominators['-'] = omega - electron_eigenenergy_inter - phonon_eigenenergy
-            denominators['+'] = omega - electron_eigenenergy_inter + phonon_eigenenergy
-
-            green_function = np.zeros(coupling2.shape, dtype='complex')
-
-            for sign in denominators.keys():
-                green_function += occupations[sign] * self.get_green_function_real(denominators[sign])
-                green_function += 1.0j * np.pi * occupations[sign] * self.get_green_function_imag(denominators[sign])
+            green_function = self.get_green_function(omega, electron_eigenenergy_inter, phonon_eigenenergy, occupations)
             
             self_energy = np.nansum(coupling2 * green_function, axis=(1, 3)) * self.coefficient
 
