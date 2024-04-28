@@ -16,11 +16,11 @@ def main():
     temperature = debye_temperature
     electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
 
-    n_omega = 50
+    n_omega = 500
     range_omega = [-6 * Energy.EV["->"], 10 * Energy.EV["->"]]
     
     k_names = ["G", "H", "N", "G", "P", "H"]
-    n_split = 20
+    n_split = 40
     
     k, omega, spectrum, special_k = electron_phonon.get_spectrum(k_names, n_split, n_omega, range_omega)
     omega_mesh, k_mesh = np.meshgrid(omega, k)
@@ -39,7 +39,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(-1.0, 0.0)
+    mappable.set_clim(-10.0, 0.0)
 
     fig.savefig("spectrum.png")
 
