@@ -6,7 +6,7 @@ from elphem.common.stdout import ProgressBar
 from elphem.common.function import safe_divide
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyePhonon
-from elphem.elph.distribution import fermi_distribution, bose_distribution, gaussian_distribution
+from elphem.elph.distribution import fermi_distribution, bose_distribution
 
 @dataclass
 class ElectronPhonon:
