@@ -2,6 +2,7 @@ import numpy as np
 from dataclasses import dataclass
 
 from elphem.common.unit import Byte
+from elphem.common.stdout import ProgressBar
 from elphem.common.function import safe_divide
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyePhonon
@@ -143,6 +144,8 @@ class ElectronPhonon:
         del coupling
 
         count = 0
+
+        progress_bar = ProgressBar('Spectrum', n_omega)
         for omega in omega_array:
             denominator_absorb = omega - electron_eigenenergy_inter - phonon_eigenenergy
             denominator_emit = omega - electron_eigenenergy_inter + phonon_eigenenergy
@@ -167,7 +170,7 @@ class ElectronPhonon:
             
             count += 1
 
-            print(count / n_omega * 100)
+            progress_bar.print(count)
 
         return x, omega_array, spectrum, special_x
 
