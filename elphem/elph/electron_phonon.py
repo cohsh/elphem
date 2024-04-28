@@ -80,35 +80,40 @@ class ElectronPhonon:
         fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
         bose = bose_distribution(self.temperature, phonon_eigenenergy)
 
-        occupation_absorb = 1.0 - fermi + bose
-        occupation_emit = fermi + bose
+        occupations = {}
 
-        coupling = self.get_coupling(g1, g2, q)
+        occupations['+'] = fermi + bose
+        occupations['-'] = 1.0 - fermi + bose
 
-        return electron_eigenenergy_inter, phonon_eigenenergy, occupation_absorb, occupation_emit, coupling
+        coupling2 = np.abs(self.get_coupling(g1, g2, q)) ** 2
+
+        return electron_eigenenergy_inter, phonon_eigenenergy, occupations, coupling2
 
     def get_self_energy(self, omega: float, k_array: np.ndarray) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
         Args:
-            omega (float): single value of frequencies.
-            k (np.ndarray): k-vectors.
+            omega (float): a frequency.
+            k_array (np.ndarray): k-vectors.
 
         Returns:
             complex: The Fan self-energy term as a complex number.
         """
         
-        electron_eigenenergy_inter, phonon_eigenenergy, occupation_absorb, occupation_emit, coupling = self.get_omega_independent_values(k_array)
+        electron_eigenenergy_inter, phonon_eigenenergy, occupations, coupling2 = self.get_omega_independent_values(k_array)
         
-        denominator_absorb = omega - electron_eigenenergy_inter - phonon_eigenenergy
-        denominator_emit = omega - electron_eigenenergy_inter + phonon_eigenenergy
+        denominators = {}
 
-        green_function = (occupation_absorb * self.get_green_function_real(denominator_absorb)
-                                + occupation_emit * self.get_green_function_real(denominator_emit)
-                        + 1.0j * np.pi * (occupation_absorb * self.get_green_function_imag(denominator_absorb)
-                                + occupation_emit * self.get_green_function_imag(denominator_emit)))
+        denominators['-'] = omega - electron_eigenenergy_inter - phonon_eigenenergy
+        denominators['+'] = omega - electron_eigenenergy_inter + phonon_eigenenergy
 
-        self_energy = np.nansum(np.abs(coupling) ** 2 * green_function, axis=(1, 3)) * self.coefficient
+        green_function = np.zeros(coupling2.shape, dtype='complex')
+
+        for sign in denominators.keys():
+            green_function += occupations[sign] * self.get_green_function_real(denominators[sign])
+            green_function += 1.0j * np.pi * occupations[sign] * self.get_green_function_imag(denominators[sign])
+
+        self_energy = np.nansum(coupling2 * green_function, axis=(1, 3)) * self.coefficient
         
         return self_energy
 
@@ -137,25 +142,22 @@ class ElectronPhonon:
         shape = (len(k), len(omega_array))
         spectrum = np.empty(shape)
         
-        electron_eigenenergy_inter, phonon_eigenenergy, occupation_absorb, occupation_emit, coupling = self.get_omega_independent_values(k)
-
-        coupling2 = np.abs(coupling) ** 2
-
-        del coupling
+        electron_eigenenergy_inter, phonon_eigenenergy, occupations, coupling2 = self.get_omega_independent_values(k)
 
         count = 0
 
         progress_bar = ProgressBar('Spectrum', n_omega)
         for omega in omega_array:
-            denominator_absorb = omega - electron_eigenenergy_inter - phonon_eigenenergy
-            denominator_emit = omega - electron_eigenenergy_inter + phonon_eigenenergy
+            denominators = {}
 
-            green_function = (occupation_absorb * self.get_green_function_real(denominator_absorb)
-                                    + occupation_emit * self.get_green_function_real(denominator_emit)
-                            + 1.0j * np.pi * (occupation_absorb * self.get_green_function_imag(denominator_absorb)
-                                    + occupation_emit * self.get_green_function_imag(denominator_emit)))
-            
-            del denominator_absorb, denominator_emit
+            denominators['-'] = omega - electron_eigenenergy_inter - phonon_eigenenergy
+            denominators['+'] = omega - electron_eigenenergy_inter + phonon_eigenenergy
+
+            green_function = np.zeros(coupling2.shape, dtype='complex')
+
+            for sign in denominators.keys():
+                green_function += occupations[sign] * self.get_green_function_real(denominators[sign])
+                green_function += 1.0j * np.pi * occupations[sign] * self.get_green_function_imag(denominators[sign])
             
             self_energy = np.nansum(coupling2 * green_function, axis=(1, 3)) * self.coefficient
 
@@ -163,8 +165,6 @@ class ElectronPhonon:
             denominator = (omega - eig - self_energy.real) ** 2 + self_energy.imag ** 2
 
             fraction = safe_divide(numerator, denominator)
-            
-            del numerator, denominator
             
             spectrum[..., count] = np.nansum(fraction, axis=0)
             
