@@ -11,20 +11,20 @@ def main():
 
     q_names = ["G", "H", "N", "G", "P", "H"]
     
-    q, omega, special_q = phonon.get_dispersion(q_names, n_split=40)
+    omega = phonon.get_dispersion(q_names, n_split=40)
     
     fig, ax = plt.subplots()
 
-    ax.plot(q, omega * Energy.EV["<-"] * 1.0e+3, color="tab:blue")
+    ax.plot(omega.distances, omega.values * Energy.EV["<-"] * 1.0e+3, color="tab:blue")
     
-    for q0 in special_q:
+    for q0 in omega.special_distances:
         ax.axvline(x=q0, color="black", linewidth=0.3)
     
-    ax.set_xticks(special_q)
+    ax.set_xticks(omega.special_distances)
     ax.set_xticklabels(q_names)
     ax.set_ylabel("Energy ($\mathrm{meV}$)")
 
-    fig.savefig("example_phonon_dispersion.png")
+    fig.savefig("phonon_dispersion.png")
 
 if __name__ == "__main__":
     main()
