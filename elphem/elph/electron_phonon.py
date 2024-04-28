@@ -114,9 +114,9 @@ class ElectronPhonon:
             complex: The Fan self-energy term as a complex number.
         """
         
-        electron_eigenenergy_inter, phonon_eigenenergy, occupations, coupling2 = self.get_omega_independent_values(k_array)
+        electron_eigenenergy, phonon_eigenenergy, occupations, coupling2 = self.get_omega_independent_values(k_array)
         
-        green_function = self.get_green_function(omega, electron_eigenenergy_inter, phonon_eigenenergy, occupations)
+        green_function = self.get_green_function(omega, electron_eigenenergy, phonon_eigenenergy, occupations)
 
         self_energy = np.nansum(coupling2 * green_function, axis=(1, 3)) * self.coefficient
         
@@ -147,13 +147,13 @@ class ElectronPhonon:
         shape = (len(k), len(omega_array))
         spectrum = np.empty(shape)
         
-        electron_eigenenergy_inter, phonon_eigenenergy, occupations, coupling2 = self.get_omega_independent_values(k)
+        electron_eigenenergy, phonon_eigenenergy, occupations, coupling2 = self.get_omega_independent_values(k)
 
         count = 0
 
         progress_bar = ProgressBar('Spectrum', n_omega)
         for omega in omega_array:
-            green_function = self.get_green_function(omega, electron_eigenenergy_inter, phonon_eigenenergy, occupations)
+            green_function = self.get_green_function(omega, electron_eigenenergy, phonon_eigenenergy, occupations)
             
             self_energy = np.nansum(coupling2 * green_function, axis=(1, 3)) * self.coefficient
 
