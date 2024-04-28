@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from elphem.common.unit import Energy
 from elphem.common.function import safe_divide
 from elphem.lattice.lattice import Lattice
+from elphem.lattice.path import BrillouinPathValues
 
 @dataclass
 class DebyePhonon:
@@ -68,10 +69,10 @@ class DebyePhonon:
             tuple: A tuple containing the x-coordinates for plotting, omega (eigenenergy values), and x-coordinates of special points.
         """
 
-        x, q, x_special = self.lattice.reciprocal_cell.get_path(q_names, n_split)
-        omega = self.get_eigenenergy(q)
+        q_path = self.lattice.reciprocal_cell.get_path(q_names, n_split)
+        omega = self.get_eigenenergy(q_path.values)
         
-        return x, omega, x_special
+        return BrillouinPathValues(q_path.distances, omega, q_path.special_distances)
 
     def set_speed_of_sound(self) -> None:
         """Calculate the speed of sound in the lattice based on Debye model.

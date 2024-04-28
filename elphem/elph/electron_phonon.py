@@ -139,15 +139,15 @@ class ElectronPhonon:
         
         g = self.electron.reciprocal_vectors
         
-        x, k, special_x = self.electron.lattice.reciprocal_cell.get_path(k_names, n_split)
-        eig = np.array([self.electron.get_eigenenergy(k + g_i) for g_i in g])
+        k_path = self.electron.lattice.reciprocal_cell.get_path(k_names, n_split)
+        eig = np.array([self.electron.get_eigenenergy(k_path.values + g_i) for g_i in g])
 
         omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
         
-        shape = (len(k), len(omega_array))
+        shape = (len(k_path.values), n_omega)
         spectrum = np.empty(shape)
         
-        electron_eigenenergy, phonon_eigenenergy, occupations, coupling2 = self.get_omega_independent_values(k)
+        electron_eigenenergy, phonon_eigenenergy, occupations, coupling2 = self.get_omega_independent_values(k_path.values)
 
         count = 0
 
@@ -168,7 +168,7 @@ class ElectronPhonon:
 
             progress_bar.print(count)
 
-        return x, omega_array, spectrum, special_x
+        return k_path.distances, omega_array, spectrum, k_path.special_distances
 
     def get_green_function_real(self, omega: np.ndarray) -> np.ndarray:
         green_function_real = safe_divide(1.0, omega + self.eta * 1.0j).real

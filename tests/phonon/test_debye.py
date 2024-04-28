@@ -15,7 +15,7 @@ class TestUnit(TestCase):
     
     def test_dispersion(self):
         q_names = ["G", "H", "N", "G", "P", "H"]
-        x, omega, x_special = self.phonon.get_dispersion(q_names, n_split=20)
+        omega_path = self.phonon.get_dispersion(q_names, n_split=20)
 
-        self.assertEqual(len(omega), len(x))
-        self.assertEqual(len(q_names), len(x_special))
+        self.assertEqual(len(omega_path.values), len(omega_path.distances))
+        self.assertEqual(len(q_names), len(omega_path.special_distances))

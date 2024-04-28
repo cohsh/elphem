@@ -1,6 +1,8 @@
 import numpy as np
 from dataclasses import dataclass
+
 from elphem.lattice.lattice import Lattice
+from elphem.lattice.path import BrillouinPathValues
 
 @dataclass
 class FreeElectron:
@@ -68,12 +70,12 @@ class FreeElectron:
         Returns:
             tuple: A tuple containing x-coordinates for plotting, eigenenergy values, and x-coordinates of special points.
         """
-        x, k, special_x = self.lattice.reciprocal_cell.get_path(k_names, n_split)
+        k_path = self.lattice.reciprocal_cell.get_path(k_names, n_split)
         
-        eigenenergy = np.array([self.get_eigenenergy(k + g_i) for g_i in self.reciprocal_vectors])
+        eigenenergy = np.array([self.get_eigenenergy(k_path.values + g_i) for g_i in self.reciprocal_vectors])
         
-        return x, eigenenergy, special_x
-
+        return BrillouinPathValues(k_path.distances, eigenenergy, k_path.special_distances)
+        
     def set_fermi_energy(self) -> None:
         """Calculate the Fermi energy of the electron system.
 

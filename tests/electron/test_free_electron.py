@@ -12,10 +12,10 @@ class TestUnit(TestCase):
 
     def test_band_structure(self):
         k_names = ["G", "H", "N", "G", "P", "H"]
-        x, eig, x_special = self.electron.get_band_structure(k_names, n_split=20)
+        eig_path = self.electron.get_band_structure(k_names, n_split=20)
         
-        self.assertEqual(eig.shape, (self.electron.n_band, len(x)))
-        self.assertEqual(len(k_names), len(x_special))
+        self.assertEqual(eig_path.values.shape, (self.electron.n_band, len(eig_path.distances)))
+        self.assertEqual(len(k_names), len(eig_path.special_distances))
     
     def test_get_reciprocal_vector(self):
         g = self.electron.reciprocal_vectors

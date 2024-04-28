@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from elphem.lattice.rotation import LatticeRotation
 from elphem.lattice.lattice_constant import LatticeConstant
+from elphem.lattice.path import BrillouinPathValues
 from elphem.common.brillouin import SpecialPoints
 
 class Cell:
@@ -156,7 +157,7 @@ class ReciprocalCell(Cell):
 
         return aligned_k
 
-    def get_path(self, k_names: list[str], n: int) -> np.ndarray:
+    def get_path(self, k_names: list[str], n: int) -> BrillouinPathValues:
         """Calculates a path through specified special points in the Brillouin zone.
 
         Args:
@@ -182,7 +183,7 @@ class ReciprocalCell(Cell):
             length = np.linalg.norm(direction)
 
             x = np.linspace(0.0, 1.0, n)
-                        
+            
             for j in range(n):
                 k[count] = k_via[i] @ self.basis + x[j] * direction
                 total_length[count] = x[j] * length + length_part
@@ -191,7 +192,9 @@ class ReciprocalCell(Cell):
             length_part += length
             special_length[i+1] = length_part
 
-        return total_length, k, special_length
+        k_path = BrillouinPathValues(total_length, k, special_length)
+
+        return k_path
 
     def get_special_point(self, k_name: str) -> np.ndarray:
         """Retrieves the coordinates of special k-points based on the crystal structure.
