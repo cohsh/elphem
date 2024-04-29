@@ -20,6 +20,8 @@ class FreeElectron:
     
     def __post_init__(self):
         self._set_fermi_energy()
+        
+        self.n_k = np.prod(self.n_k_array)
 
         self.k = self.lattice.reciprocal.get_monkhorst_pack_grid(*self.n_k_array)
         self.g = self.lattice.reciprocal.get_reciprocal_vectors(self.n_band)
