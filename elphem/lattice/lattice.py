@@ -19,17 +19,8 @@ class Lattice:
         self.correct_atoms()
         self.set_about_atoms()
 
-        self.primitive_cell = PrimitiveCell(self.constants)
-        self.reciprocal_cell = ReciprocalCell(self.constants)
-
-        self.volume = {
-            "primitive": self.primitive_cell.volume(),
-            "reciprocal": self.reciprocal_cell.volume()
-        }
-        self.basis = {
-            "primitive": self.primitive_cell.basis,
-            "reciprocal": self.reciprocal_cell.basis
-        }
+        self.primitive = PrimitiveCell(self.constants)
+        self.reciprocal = ReciprocalCell(self.constants)
 
     def set_constants(self) -> None:
         """Determines lattice constants based on the crystal structure.

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from elphem.lattice.rotation import LatticeRotation
 from elphem.lattice.lattice_constant import LatticeConstant
-from elphem.lattice.path import BrillouinPathValues
+from elphem.lattice.path import PathValues
 from elphem.common.brillouin import SpecialPoints
 
 class Cell:
@@ -20,7 +20,7 @@ class Cell:
         """
         return np.identity(3)
     
-    def volume(self) -> float:
+    def get_volume(self) -> float:
         """Calculates the volume of the cell.
 
         Returns:
@@ -65,6 +65,7 @@ class PrimitiveCell(Cell):
     def __post_init__(self):
         """Initializes and builds the basis for the primitive cell."""
         self.basis = self.build()
+        self.volume = self.get_volume()
     
     def build(self) -> np.ndarray:
         """Constructs the basis matrix for the primitive cell from lattice constants and angles.
@@ -96,6 +97,7 @@ class ReciprocalCell(Cell):
     def __post_init__(self):
         """Initializes and builds the basis for the reciprocal cell."""
         self.basis = self.build()
+        self.volume = self.get_volume()
     
     def build(self) -> np.ndarray:
         """Constructs the basis matrix for the reciprocal cell from the primitive cell.
@@ -113,7 +115,7 @@ class ReciprocalCell(Cell):
             k = (i+2) % 3
             basis[i] = np.cross(primitive_vector[j], primitive_vector[k])
 
-        basis *= 2.0 * np.pi / primitive_cell.volume()
+        basis *= 2.0 * np.pi / primitive_cell.volume
         
         return basis
 
@@ -157,7 +159,7 @@ class ReciprocalCell(Cell):
 
         return aligned_k
 
-    def get_path(self, k_names: list[str], n: int) -> BrillouinPathValues:
+    def get_path(self, k_names: list[str], n_split: int) -> PathValues:
         """Calculates a path through specified special points in the Brillouin zone.
 
         Args:
@@ -170,29 +172,29 @@ class ReciprocalCell(Cell):
         k_via = [self.get_special_point(s) for s in k_names]
         n_via = len(k_via) - 1
 
-        total_length = np.empty((n_via * n,))
-        special_length = np.empty((n_via+1,))
-        k = np.empty((n_via * n, 3))
+        major_scales = np.empty((n_via+1,))
+        minor_scales = np.empty((n_via * n_split,))
+        k = np.empty((n_via * n_split, 3))
 
         count = 0
         length_part = 0.0
-        special_length[0] = 0.0
+        major_scales[0] = 0.0
 
         for i in range(n_via):
             direction = (np.array(k_via[i+1]) - np.array(k_via[i])) @ self.basis
             length = np.linalg.norm(direction)
 
-            x = np.linspace(0.0, 1.0, n)
+            x = np.linspace(0.0, 1.0, n_split)
             
-            for j in range(n):
+            for j in range(n_split):
                 k[count] = k_via[i] @ self.basis + x[j] * direction
-                total_length[count] = x[j] * length + length_part
+                minor_scales[count] = x[j] * length + length_part
                 count += 1
             
             length_part += length
-            special_length[i+1] = length_part
+            major_scales[i+1] = length_part
 
-        k_path = BrillouinPathValues(total_length, k, special_length)
+        k_path = PathValues(major_scales, minor_scales, k)
 
         return k_path
 
