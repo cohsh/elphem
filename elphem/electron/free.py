@@ -21,10 +21,10 @@ class FreeElectron:
     def __post_init__(self):
         self._set_fermi_energy()
 
-        self.k = self.lattice.reciprocal_cell.get_monkhorst_pack_grid(*self.n_k_array)
-        self.g = self.lattice.reciprocal_cell.get_reciprocal_vectors(self.n_band)
+        self.k = self.lattice.reciprocal.get_monkhorst_pack_grid(*self.n_k_array)
+        self.g = self.lattice.reciprocal.get_reciprocal_vectors(self.n_band)
 
-        self.eigenenergies = self.get_eigenenegies(self.k, self.g)
+        self.eigenenergies = self.get_eigenenergies(self.k, self.g)
 
     def get_eigenenergies(self, k_array: np.ndarray = None, g_array: np.ndarray = None) -> np.ndarray:
         """Calculate the electron eigenenergies at wave vector k.
@@ -67,5 +67,5 @@ class FreeElectron:
         Returns:
             float: The Fermi energy.
         """
-        self.electron_density = self.n_electron / self.lattice.volume["primitive"]
+        self.electron_density = self.n_electron / self.lattice.primitive.volume
         self.fermi_energy = 0.5 * (3 * np.pi ** 2 * self.electron_density) ** (2/3)

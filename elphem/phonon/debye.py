@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from elphem.common.unit import Energy
 from elphem.common.function import safe_divide
 from elphem.lattice.lattice import Lattice
-from elphem.lattice.path import BrillouinPathValues
+from elphem.lattice.path import PathValues
 
 @dataclass
 class DebyePhonon:
