@@ -24,13 +24,13 @@ class ElectronPhonon:
     electron: FreeElectron
     phonon: DebyePhonon
     temperature: float
-    n_qs: np.ndarray
-    sigma: float = 0.0001
+    n_q_array: np.ndarray
+    sigma: float = 0.00001
     eta: float = 0.1
     effective_potential: float = 1.0 / 16.0
 
     def __post_init__(self):
-        self.coefficient = 1.0 / np.prod(self.n_qs)
+        self.coefficient = 1.0 / np.prod(self.n_q_array)
 
         self.gaussian_coefficient_a = 2.0 * self.sigma ** 2
         self.gaussian_coefficient_b = np.sqrt(2.0 * np.pi) * self.sigma
@@ -56,7 +56,7 @@ class ElectronPhonon:
         return coupling
 
     def get_ggkq_grid(self, k_array: np.ndarray) -> tuple:
-        q_array = self.electron.lattice.reciprocal_cell.get_monkhorst_pack_grid(*self.n_qs)
+        q_array = self.electron.lattice.reciprocal_cell.get_monkhorst_pack_grid(*self.n_q_array)
 
         n_band = self.electron.n_band
         n_k = len(k_array)
