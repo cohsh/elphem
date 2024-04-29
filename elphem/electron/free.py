@@ -19,9 +19,11 @@ class FreeElectron:
     n_k_array: np.ndarray
     
     def __post_init__(self):
-        self.set_fermi_energy()
+        self._set_fermi_energy()
+
         self.k = self.lattice.reciprocal_cell.get_monkhorst_pack_grid(*self.n_k_array)
         self.g = self.lattice.reciprocal_cell.get_reciprocal_vectors(self.n_band)
+
         self.eigenenergies = self.get_eigenenegies(self.k, self.g)
 
     def get_eigenenergies(self, k_array: np.ndarray, g_array: np.ndarray = None) -> np.ndarray:
@@ -57,12 +59,11 @@ class FreeElectron:
         
         return BrillouinPathValues(k_path.distances, eigenenergies, k_path.special_distances)
         
-    def set_fermi_energy(self) -> None:
+    def _set_fermi_energy(self) -> None:
         """Calculate the Fermi energy of the electron system.
 
         Returns:
             float: The Fermi energy.
         """
-        electron_density = self.n_electron / self.lattice.volume["primitive"]
-        
+        self.electron_density = self.n_electron / self.lattice.volume["primitive"]
         self.fermi_energy = 0.5 * (3 * np.pi ** 2 * electron_density) ** (2/3)
