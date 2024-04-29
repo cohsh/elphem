@@ -89,20 +89,6 @@ class ElectronPhonon:
 
         return electron_eigenenergy_inter, phonon_eigenenergy, occupations, coupling2
 
-    def get_green_function(self, omega: float, electron_eigenenergy: np.ndarray, phonon_eigenenergy: np.ndarray, occupations: dict) -> np.ndarray:
-        denominators = {}
-
-        denominators['-'] = omega - electron_eigenenergy - phonon_eigenenergy
-        denominators['+'] = omega - electron_eigenenergy + phonon_eigenenergy
-
-        green_function = np.zeros(electron_eigenenergy.shape, dtype='complex')
-
-        for sign in denominators.keys():
-            green_function += occupations[sign] * self.get_green_function_real(denominators[sign])
-            green_function += 1.0j * np.pi * occupations[sign] * self.get_green_function_imag(denominators[sign])
-        
-        return green_function
-
     def get_self_energy(self, omega: float, k_array: np.ndarray) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
@@ -169,6 +155,20 @@ class ElectronPhonon:
             progress_bar.print(count)
 
         return k_path.distances, omega_array, spectrum, k_path.special_distances
+
+    def get_green_function(self, omega: float, electron_eigenenergy: np.ndarray, phonon_eigenenergy: np.ndarray, occupations: dict) -> np.ndarray:
+        denominators = {}
+
+        denominators['-'] = omega - electron_eigenenergy - phonon_eigenenergy
+        denominators['+'] = omega - electron_eigenenergy + phonon_eigenenergy
+
+        green_function = np.zeros(electron_eigenenergy.shape, dtype='complex')
+
+        for sign in denominators.keys():
+            green_function += occupations[sign] * self.get_green_function_real(denominators[sign])
+            green_function += 1.0j * np.pi * occupations[sign] * self.get_green_function_imag(denominators[sign])
+        
+        return green_function
 
     def get_green_function_real(self, omega: np.ndarray) -> np.ndarray:
         green_function_real = safe_divide(1.0, omega + self.eta * 1.0j).real
