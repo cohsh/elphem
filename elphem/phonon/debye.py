@@ -19,15 +19,20 @@ class DebyePhonon:
 
     lattice: Lattice
     debye_temperature: float
+    n_q_array: np.ndarray | list[str]
 
     def __post_init__(self):
         """Validate initial model parameters."""
         if self.debye_temperature < 0.0:
             raise ValueError("Debye temperature must be not-negative.")
 
-        self.set_speed_of_sound()
+        self.n_q = np.prod(self.n_q_array)
 
-    def get_eigenenergy(self, q: np.ndarray) -> np.ndarray:
+        self._set_speed_of_sound()
+        
+        self.q = self.lattice.reciprocal.get_monkhorst_pack_grid(*self.n_q_array)
+
+    def get_eigenenergies(self, q_array: np.ndarray = None) -> np.ndarray:
         """Calculate phonon eigenenergies at wave vector q.
 
         Args:
@@ -36,29 +41,14 @@ class DebyePhonon:
         Returns:
             np.ndarray: The phonon eigenenergies at each wave vector.
         """
-
-        eigenenergy = self.speed_of_sound * np.linalg.norm(q, axis=-1)
+        if q_array is None:
+            eigenenergies = self.speed_of_sound * np.linalg.norm(self.q, axis=-1)
+        else:
+            eigenenergies = self.speed_of_sound * np.linalg.norm(q_array, axis=-1)
         
-        return eigenenergy
+        return eigenenergies
 
-    def get_eigenvector(self, q: np.ndarray) -> np.ndarray:
-        """Calculate phonon eigenvectors at wave vector q.
-
-        Args:
-            q (np.ndarray): A numpy array representing vectors in reciprocal space.
-
-        Returns:
-            np.ndarray: The phonon eigenvectors at each wave vector, represented as complex numbers.
-        """
-
-        q_norm = np.linalg.norm(q, axis=-1, keepdims=True)
-        q_norm_expanded = np.repeat(q_norm, q.shape[-1], axis=-1)
-        
-        eigenvector = 1.0j * safe_divide(q, q_norm_expanded)
-
-        return eigenvector
-
-    def get_dispersion(self, q_names: list[np.ndarray], n_split) -> tuple:
+    def get_eigenenergies_with_path(self, q_names: list[np.ndarray], n_split) -> PathValues:
         """Calculate the phonon dispersion curves along specified paths in reciprocal space.
 
         Args:
@@ -69,19 +59,39 @@ class DebyePhonon:
             tuple: A tuple containing the x-coordinates for plotting, omega (eigenenergy values), and x-coordinates of special points.
         """
 
-        q_path = self.lattice.reciprocal_cell.get_path(q_names, n_split)
-        omega = self.get_eigenenergy(q_path.values)
-        
-        return BrillouinPathValues(q_path.distances, omega, q_path.special_distances)
+        q_path = self.lattice.reciprocal.get_path(q_names, n_split)
 
-    def set_speed_of_sound(self) -> None:
+        eigenenergies = self.get_eigenenergies(q_path.values)
+        
+        return q_path.derive(eigenenergies)
+
+    def get_eigenvectors(self, q_array: np.ndarray = None) -> np.ndarray:
+        """Calculate phonon eigenvectors at wave vector q.
+
+        Args:
+            q (np.ndarray): A numpy array representing vectors in reciprocal space.
+
+        Returns:
+            np.ndarray: The phonon eigenvectors at each wave vector, represented as complex numbers.
+        """
+
+        if q_array is None:
+            q_norm = np.repeat(np.linalg.norm(self.q, axis=-1, keepdims=True), self.q.shape[-1], axis=-1)
+            eigenvectors = 1.0j * safe_divide(self.q, q_norm)
+        else:
+            q_norm = np.repeat(np.linalg.norm(q_array, axis=-1, keepdims=True), q_array.shape[-1], axis=-1)
+            eigenvectors = 1.0j * safe_divide(q_array, q_norm)
+
+        return eigenvectors
+
+    def _set_speed_of_sound(self) -> None:
         """Calculate the speed of sound in the lattice based on Debye model.
 
         Returns:
             float: The speed of sound in Hartree atomic units.
         """
         try:
-            number_density = self.lattice.n_atoms / self.lattice.volume["primitive"]
+            number_density = self.lattice.n_atoms / self.lattice.primitive.volume
         except ZeroDivisionError:
             ValueError("Lattice volume must be positive.")
 
