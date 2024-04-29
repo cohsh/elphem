@@ -81,7 +81,7 @@ class DebyePhonon:
 
         return eigenvectors
 
-    def update_q(self, q) -> None:
+    def update(self, q: np.ndarray) -> None:
         self.q = q
         self.n_q = len(q)
         self.eigenenergies = self.get_eigenenergies(q)

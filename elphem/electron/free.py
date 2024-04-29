@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from elphem.lattice.lattice import Lattice
 from elphem.lattice.path import PathValues
 
-@dataclass
 class FreeElectron:
     """Represents a free electron model on a given crystal lattice.
     
@@ -13,18 +12,17 @@ class FreeElectron:
         n_band (int): Number of energy bands considered.
         n_electron (int): Number of electrons per unit cell.
     """
-    lattice: Lattice
-    n_band: int
-    n_electron: int
-    n_k_array: np.ndarray | list[int] = None
     
-    def __post_init__(self):
-        self.g = self.lattice.reciprocal.get_reciprocal_vectors(self.n_band)
+    def __init__(self, lattice: Lattice, n_band: int, n_electron: int, n_k_array: np.ndarray | list[int] = None):
+        self.g = lattice.reciprocal.get_reciprocal_vectors(self.n_band)
+        self.n_band = n_band
+        self.n_electron = n_electron
+        
         self._set_fermi_energy()
         
-        if self.n_k_array is not None:
-            self.n_k = np.prod(self.n_k_array)
-            self.k = self.lattice.reciprocal.get_monkhorst_pack_grid(*self.n_k_array)
+        if n_k_array is not None:
+            self.n_k = np.prod(n_k_array)
+            self.k = self.lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
             self.eigenenergies = self.get_eigenenergies(self.k, self.g)
 
     def get_eigenenergies(self, k_array: np.ndarray = None, g_array: np.ndarray = None) -> np.ndarray:
@@ -68,9 +66,15 @@ class FreeElectron:
         
         return free_electron
     
-    def set_k(self, k: np.ndarray) -> None:
+    def update(self, k: np.ndarray, g: np.ndarray = None) -> None:
         self.k = k
-        self.eigenenergies = self.get_eigenenergies(self.k)
+        self.n_k = len(k)
+        
+        if g is not None:
+            self.eigenenergies = self.get_eigenenergies(k)
+            self.g = g
+        else:
+            self.eigenenergies = self.get_eigenenergies(k, self.g)
         
     def _set_fermi_energy(self) -> None:
         """Calculate the Fermi energy of the electron system.
