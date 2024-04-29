@@ -16,17 +16,16 @@ class FreeElectron:
     lattice: Lattice
     n_band: int
     n_electron: int
-    n_k_array: np.ndarray | list[int]
+    n_k_array: np.ndarray | list[int] = None
     
     def __post_init__(self):
+        self.g = self.lattice.reciprocal.get_reciprocal_vectors(self.n_band)
         self._set_fermi_energy()
         
-        self.n_k = np.prod(self.n_k_array)
-
-        self.k = self.lattice.reciprocal.get_monkhorst_pack_grid(*self.n_k_array)
-        self.g = self.lattice.reciprocal.get_reciprocal_vectors(self.n_band)
-
-        self.eigenenergies = self.get_eigenenergies(self.k, self.g)
+        if self.n_k_array is not None:
+            self.n_k = np.prod(self.n_k_array)
+            self.k = self.lattice.reciprocal.get_monkhorst_pack_grid(*self.n_k_array)
+            self.eigenenergies = self.get_eigenenergies(self.k, self.g)
 
     def get_eigenenergies(self, k_array: np.ndarray = None, g_array: np.ndarray = None) -> np.ndarray:
         """Calculate the electron eigenenergies at wave vector k.
@@ -62,6 +61,16 @@ class FreeElectron:
         eigenenergies = self.get_eigenenergies(k_path.values, self.g)
         
         return k_path.derive(eigenenergies)
+
+    def derive(self, k: np.ndarray) -> 'FreeElectron':
+        free_electron = FreeElectron(self.lattice, self.n_band, self.n_electron)
+        free_electron.set_k(k)
+        
+        return free_electron
+    
+    def set_k(self, k: np.ndarray) -> None:
+        self.k = k
+        self.eigenenergies = self.get_eigenenergies(self.k)
         
     def _set_fermi_energy(self) -> None:
         """Calculate the Fermi energy of the electron system.

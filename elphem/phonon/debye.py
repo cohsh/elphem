@@ -32,6 +32,11 @@ class DebyePhonon:
         
         self.q = self.lattice.reciprocal.get_monkhorst_pack_grid(*self.n_q_array)
 
+        self.eigenenergies = self.get_eigenenergies(self.q)
+        self.eigenvectors = self.get_eigenvectors(self.q)
+        self.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * self.lattice.mass * self.eigenenergies))
+
+
     def get_eigenenergies(self, q_array: np.ndarray = None) -> np.ndarray:
         """Calculate phonon eigenenergies at wave vector q.
 

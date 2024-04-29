@@ -24,18 +24,19 @@ class ElectronPhonon:
     electron: FreeElectron
     phonon: DebyePhonon
     temperature: float
-    n_q_array: np.ndarray
     sigma: float = 0.00001
     eta: float = 0.1
     effective_potential: float = 1.0 / 16.0
 
     def __post_init__(self):
-        self.coefficient = 1.0 / np.prod(self.n_q_array)
+        self.coefficient = 1.0 / self.phonon.n_q
 
         self.gaussian_coefficient_a = 2.0 * self.sigma ** 2
         self.gaussian_coefficient_b = np.sqrt(2.0 * np.pi) * self.sigma
+        
+        self._set_omega_independent_values()
 
-    def get_coupling(self, g1: np.ndarray, g2: np.ndarray, q: np.ndarray) -> np.ndarray:
+    def get_coupling(self, g1_array: np.ndarray, g2_array: np.ndarray, q_array: np.ndarray) -> np.ndarray:
         """Calculate the lowest-order electron-phonon coupling between states.
 
         Args:
@@ -47,38 +48,31 @@ class ElectronPhonon:
             np.ndarray: The electron-phonon coupling strength for the given vectors.
         """
         
-        phonon_eigenenergy = self.phonon.get_eigenenergy(q)
-        phonon_eigenvector = self.phonon.get_eigenvector(q)
-        zero_point_length = safe_divide(1.0, np.sqrt(2.0 * self.phonon.lattice.mass * phonon_eigenenergy))
-        
-        coupling = -1.0j * self.effective_potential * np.sum((q + g1 - g2) * phonon_eigenvector, axis=-1) * zero_point_length
-        
+        phonon_eigenenergies = self.phonon.get_eigenenergies(q_array)
+        phonon_eigenvectors = self.phonon.get_eigenvectors(q_array)
+        zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * self.lattice.mass * phonon_eigenenergies))
+
+        coupling = -1.0j * self.effective_potential * np.sum((q_array + g1_array - g2_array) * phonon_eigenvectors, axis=-1) * zero_point_lengths
+
         return coupling
 
-    def get_ggkq_grid(self, k_array: np.ndarray) -> tuple:
-        q_array = self.electron.lattice.reciprocal_cell.get_monkhorst_pack_grid(*self.n_q_array)
-
-        n_band = self.electron.n_band
-        n_k = len(k_array)
-        n_q = len(q_array)
-
-        shape = (n_band, n_band, n_k, n_q, 3)
+    def get_ggkq_grid(self) -> tuple:
+        shape = (self.electron.n_band, self.electron.n_band, self.electron.n_k, self.phonon.n_q, 3)
         
-        g1 = np.broadcast_to(self.electron.reciprocal_vectors[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
-        g2 = np.broadcast_to(self.electron.reciprocal_vectors[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
-        k = np.broadcast_to(k_array[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
-        q = np.broadcast_to(q_array[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
+        g1 = np.broadcast_to(self.electron.g[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
+        g2 = np.broadcast_to(self.electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
+        k = np.broadcast_to(self.electron.k[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
+        q = np.broadcast_to(self.phonon.q[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
         
         return g1, g2, k, q
 
-    def get_omega_independent_values(self, k_array: np.ndarray) -> tuple:
-        g1, g2, k, q = self.get_ggkq_grid(k_array)
-        
-        electron_eigenenergy_inter = self.electron.get_eigenenergy(k + q + g2)
-        phonon_eigenenergy = self.phonon.get_eigenenergy(q)
+    def _set_omega_independent_values(self) -> None:
+        g1, g2, k, q = self.get_ggkq_grid()
 
-        fermi = fermi_distribution(self.temperature, electron_eigenenergy_inter)
-        bose = bose_distribution(self.temperature, phonon_eigenenergy)
+        self.electron_inter = self.electron.derive(g2 + k + q)
+
+        fermi = fermi_distribution(self.temperature, self.electron_inter.eigenenergies)
+        bose = bose_distribution(self.temperature, self.phonon.eigenenergies)
 
         occupations = {}
 
@@ -87,9 +81,9 @@ class ElectronPhonon:
 
         coupling2 = np.abs(self.get_coupling(g1, g2, q)) ** 2
 
-        return electron_eigenenergy_inter, phonon_eigenenergy, occupations, coupling2
+        return electron_eigenenergies, occupations, coupling2
 
-    def get_self_energy(self, omega: float, k_array: np.ndarray) -> np.ndarray:
+    def get_self_energy(self, omega: float) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
         Args:
@@ -100,15 +94,15 @@ class ElectronPhonon:
             complex: The Fan self-energy term as a complex number.
         """
         
-        electron_eigenenergy, phonon_eigenenergy, occupations, coupling2 = self.get_omega_independent_values(k_array)
+        electron_eigenenergies, occupations, coupling2 = self.get_omega_independent_values()
         
-        green_function = self.get_green_function(omega, electron_eigenenergy, phonon_eigenenergy, occupations)
+        green_function = self.get_green_function(omega, electron_eigenenergies, occupations)
 
         self_energy = np.nansum(coupling2 * green_function, axis=(1, 3)) * self.coefficient
         
         return self_energy
 
-    def get_spectrum(self, k_names: list[str], n_split: int, n_omega: int, range_omega: list[float]) -> tuple:
+    def get_spectrum_with_path(self, k_names: list[str], n_split: int, n_omega: int, range_omega: list[float]) -> tuple:
         """
         Calculate the spectral function along a specified path in the Brillouin zone.
 
@@ -126,20 +120,20 @@ class ElectronPhonon:
         g = self.electron.reciprocal_vectors
         
         k_path = self.electron.lattice.reciprocal_cell.get_path(k_names, n_split)
-        eig = np.array([self.electron.get_eigenenergy(k_path.values + g_i) for g_i in g])
+        eig = self.electron.get_eigenenergies(k_path.values, g)
 
         omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
         
         shape = (len(k_path.values), n_omega)
         spectrum = np.empty(shape)
         
-        electron_eigenenergy, phonon_eigenenergy, occupations, coupling2 = self.get_omega_independent_values(k_path.values)
+        electron_eigenenergies, occupations, coupling2 = self.get_omega_independent_values(k_path.values)
 
         count = 0
 
         progress_bar = ProgressBar('Spectrum', n_omega)
         for omega in omega_array:
-            green_function = self.get_green_function(omega, electron_eigenenergy, phonon_eigenenergy, occupations)
+            green_function = self.get_green_function(omega, electron_eigenenergies, occupations)
             
             self_energy = np.nansum(coupling2 * green_function, axis=(1, 3)) * self.coefficient
 
@@ -154,13 +148,13 @@ class ElectronPhonon:
 
             progress_bar.print(count)
 
-        return k_path.distances, omega_array, spectrum, k_path.special_distances
+        return k_path.derive(spectrum), omega_array
 
-    def get_green_function(self, omega: float, electron_eigenenergy: np.ndarray, phonon_eigenenergy: np.ndarray, occupations: dict) -> np.ndarray:
+    def get_green_function(self, omega: float, electron_eigenenergy: np.ndarray, occupations: dict) -> np.ndarray:
         denominators = {}
 
-        denominators['-'] = omega - electron_eigenenergy - phonon_eigenenergy
-        denominators['+'] = omega - electron_eigenenergy + phonon_eigenenergy
+        denominators['-'] = omega - electron_eigenenergy - self.phonon.eigenenergies
+        denominators['+'] = omega - electron_eigenenergy + self.phonon.eigenenergies
 
         green_function = np.zeros(electron_eigenenergy.shape, dtype='complex')
 
