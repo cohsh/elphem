@@ -43,7 +43,7 @@ class FreeElectron:
         
         return eigenenergies
 
-    def get_eigenenergies_with_path(self, k_names: list[np.ndarray], n_split: int) -> tuple:
+    def get_eigenenergies_with_path(self, k_path: BrillouinPathValues) -> tuple:
         """Calculate the electronic band structures along the specified path in reciprocal space.
 
         Args:
@@ -53,8 +53,6 @@ class FreeElectron:
         Returns:
             tuple: A tuple containing x-coordinates for plotting, eigenenergy values, and x-coordinates of special points.
         """
-        k_path = self.lattice.reciprocal_cell.get_path(k_names, n_split)
-
         eigenenergies = self.get_eigenenergies(k_path.values, self.g)
         
         return BrillouinPathValues(k_path.distances, eigenenergies, k_path.special_distances)
