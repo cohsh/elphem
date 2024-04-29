@@ -41,26 +41,7 @@ class FreeElectron:
         
         return eigenenergies
 
-    def get_gk_grid(self, n_k: np.ndarray) -> tuple:
-        """Generate a (G, k)-grid for electron states calculation.
-
-        Args:
-            n_k (np.ndarray): A numpy array specifying the density of k-grid points in each direction of reciprocal space.
-
-        Returns:
-            tuple: A tuple containing G-meshgrid and k-meshgrid for electron state calculations.
-        """
-        if np.array(n_k).shape != (3,):
-            raise ValueError("Shape of n_k should be (3,).")
-        
-        k_grid = self.lattice.reciprocal_cell.get_monkhorst_pack_grid(*n_k)
-
-        k_return = np.tile(k_grid, (self.n_band, 1, 1))
-        g_return = np.repeat(self.reciprocal_vectors[:, np.newaxis, :], len(k_grid), axis=1)
-
-        return g_return, k_return
-
-    def get_band_structure(self, k_names: list[np.ndarray], n_split: int) -> tuple:
+    def get_eigenenergies_with_path(self, k_names: list[np.ndarray], n_split: int) -> tuple:
         """Calculate the electronic band structures along the specified path in reciprocal space.
 
         Args:
@@ -71,10 +52,10 @@ class FreeElectron:
             tuple: A tuple containing x-coordinates for plotting, eigenenergy values, and x-coordinates of special points.
         """
         k_path = self.lattice.reciprocal_cell.get_path(k_names, n_split)
+
+        eigenenergies = self.get_eigenenergies(k_path.values, self.g)
         
-        eigenenergy = np.array([self.get_eigenenergy(k_path.values + g_i) for g_i in self.reciprocal_vectors])
-        
-        return BrillouinPathValues(k_path.distances, eigenenergy, k_path.special_distances)
+        return BrillouinPathValues(k_path.distances, eigenenergies, k_path.special_distances)
         
     def set_fermi_energy(self) -> None:
         """Calculate the Fermi energy of the electron system.
