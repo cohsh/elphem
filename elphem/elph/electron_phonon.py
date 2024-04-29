@@ -69,19 +69,18 @@ class ElectronPhonon:
     def _set_omega_independent_values(self) -> None:
         g1, g2, k, q = self.get_ggkq_grid()
 
-        self.electron_inter = self.electron.derive(g2 + k + q)
+        self.electron_eigenenergies = self.electron.get_eigenenergies(g2 + k + q)
+        self.phonon_eigenenergies = self.phonon.get_eigenenergies(q)
 
-        fermi = fermi_distribution(self.temperature, self.electron_inter.eigenenergies)
-        bose = bose_distribution(self.temperature, self.phonon.eigenenergies)
+        fermi = fermi_distribution(self.temperature, self.electron_eigenenergies)
+        bose = bose_distribution(self.temperature, self.phonon_eigenenergies)
 
         occupations = {}
-
         occupations['+'] = fermi + bose
         occupations['-'] = 1.0 - fermi + bose
 
-        coupling2 = np.abs(self.get_coupling(g1, g2, q)) ** 2
-
-        return electron_eigenenergies, occupations, coupling2
+        self.occupations = occupations
+        self.coupling2 = np.abs(self.get_coupling(g1, g2, q)) ** 2
 
     def get_self_energy(self, omega: float) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
@@ -94,11 +93,9 @@ class ElectronPhonon:
             complex: The Fan self-energy term as a complex number.
         """
         
-        electron_eigenenergies, occupations, coupling2 = self.get_omega_independent_values()
-        
-        green_function = self.get_green_function(omega, electron_eigenenergies, occupations)
+        green_function = self.get_green_function(omega)
 
-        self_energy = np.nansum(coupling2 * green_function, axis=(1, 3)) * self.coefficient
+        self_energy = np.nansum(self.coupling2 * green_function, axis=(1, 3)) * self.coefficient
         
         return self_energy
 
@@ -150,17 +147,17 @@ class ElectronPhonon:
 
         return k_path.derive(spectrum), omega_array
 
-    def get_green_function(self, omega: float, electron_eigenenergy: np.ndarray, occupations: dict) -> np.ndarray:
+    def get_green_function(self, omega: float) -> np.ndarray:
         denominators = {}
 
-        denominators['-'] = omega - electron_eigenenergy - self.phonon.eigenenergies
-        denominators['+'] = omega - electron_eigenenergy + self.phonon.eigenenergies
+        denominators['-'] = omega - self.electron_eigenenergies - self.phonon_eigenenergies
+        denominators['+'] = omega - self.electron_eigenenergies + self.phonon_eigenenergies
 
-        green_function = np.zeros(electron_eigenenergy.shape, dtype='complex')
+        green_function = np.zeros(self.electron_eigenenergies.shape, dtype='complex')
 
         for sign in denominators.keys():
-            green_function += occupations[sign] * self.get_green_function_real(denominators[sign])
-            green_function += 1.0j * np.pi * occupations[sign] * self.get_green_function_imag(denominators[sign])
+            green_function += self.occupations[sign] * self.get_green_function_real(denominators[sign])
+            green_function += 1.0j * np.pi * self.occupations[sign] * self.get_green_function_imag(denominators[sign])
         
         return green_function
 
