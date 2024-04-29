@@ -16,30 +16,30 @@ class FreeElectron:
     lattice: Lattice
     n_band: int
     n_electron: int
+    n_k_array: np.ndarray
     
     def __post_init__(self):
-        """Validate and initialize the FreeElectron model."""
-        if not isinstance(self.lattice, Lattice):
-            raise TypeError("The type of first variable must be EmptyLattice.")
-        if self.n_electron <= 0:
-            raise ValueError("Second variable (number of electrons per unit cell) should be a positive value.")
-        
         self.set_fermi_energy()
-        self.reciprocal_vectors = self.lattice.reciprocal_cell.get_reciprocal_vectors(self.n_band)
+        self.k = self.lattice.reciprocal_cell.get_monkhorst_pack_grid(*self.n_k_array)
+        self.g = self.lattice.reciprocal_cell.get_reciprocal_vectors(self.n_band)
+        self.eigenenergies = self.get_eigenenegies(self.k, self.g)
 
-    def get_eigenenergy(self, k: np.ndarray) -> np.ndarray:
+    def get_eigenenergies(self, k_array: np.ndarray, g_array: np.ndarray = None) -> np.ndarray:
         """Calculate the electron eigenenergies at wave vector k.
-
+        
         Args:
-            k (np.ndarray): A numpy array representing vectors in reciprocal space.
+            k_array (np.ndarray): A numpy array representing vectors in reciprocal space.
+            g_array (Optional[np.ndarray]): An optional numpy array of vectors to be added to `k_array`.
 
         Returns:
             np.ndarray: The electron eigenenergies at each wave vector.
         """
-
-        eigenenergy = 0.5 * np.linalg.norm(k, axis=-1) ** 2 - self.fermi_energy
-
-        return eigenenergy
+        if g_array is None:
+            eigenenergies =  0.5 * np.linalg.norm(k_array, axis=-1) ** 2 - self.fermi_energy
+        else:
+            eigenenergies = np.array([0.5 * np.linalg.norm(k_array + g, axis=-1) ** 2 - self.fermi_energy for g in g_array])
+        
+        return eigenenergies
 
     def get_gk_grid(self, n_k: np.ndarray) -> tuple:
         """Generate a (G, k)-grid for electron states calculation.
