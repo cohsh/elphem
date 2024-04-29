@@ -6,7 +6,6 @@ from elphem.common.function import safe_divide
 from elphem.lattice.lattice import Lattice
 from elphem.lattice.path import PathValues
 
-@dataclass
 class DebyePhonon:
     """Models the phononic properties of a lattice using the Debye model.
 
@@ -17,21 +16,14 @@ class DebyePhonon:
         mass (float): The mass of the crystal's atoms.
     """
 
-    lattice: Lattice
-    debye_temperature: float
-    n_q_array: np.ndarray | list[str]
-
-    def __post_init__(self):
+    def __init__(self, lattice: Lattice, debye_temperature: float, n_q_array: np.ndarray | list[int]):
         """Validate initial model parameters."""
-        if self.debye_temperature < 0.0:
-            raise ValueError("Debye temperature must be not-negative.")
-
+        self.debye_temperature = debye_temperature
         self.n_q = np.prod(self.n_q_array)
 
         self._set_speed_of_sound()
         
-        self.q = self.lattice.reciprocal.get_monkhorst_pack_grid(*self.n_q_array)
-
+        self.q = lattice.reciprocal.get_monkhorst_pack_grid(*n_q_array)
         self.eigenenergies = self.get_eigenenergies(self.q)
         self.eigenvectors = self.get_eigenvectors(self.q)
         self.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * self.lattice.mass * self.eigenenergies))
@@ -88,6 +80,14 @@ class DebyePhonon:
             eigenvectors = 1.0j * safe_divide(q_array, q_norm)
 
         return eigenvectors
+
+    def update_q(self, q) -> None:
+        self.q = q
+        self.n_q = len(q)
+        self.eigenenergies = self.get_eigenenergies(q)
+        self.eigenvectors = self.get_eigenvectors(q)
+        self.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * self.lattice.mass * self.eigenenergies))
+
 
     def _set_speed_of_sound(self) -> None:
         """Calculate the speed of sound in the lattice based on Debye model.
