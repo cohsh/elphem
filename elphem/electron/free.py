@@ -17,30 +17,35 @@ class FreeElectron:
         self.g = lattice.reciprocal.get_reciprocal_vectors(self.n_band)
         self.n_band = n_band
         self.n_electron = n_electron
+        self.temperature = lattice.temperature
+        self.fermi_energy = self.calculate_fermi_energy(lattice)
         
-        self._set_fermi_energy()
-        
+        self.k = None
+        self.n_k = None
+        self.eigenenergies = None
+        self.occupations = None
 
     def create_from_k(self, lattice: Lattice, n_band: int, n_electron: int, k_array: np.ndarray) -> 'FreeElectron':
+        free_electron = FreeElectron(lattice, n_band, n_electron)
+
+        free_electron.n_k = len(k_array)
+        free_electron.k = k_array
+        
+        free_electron.eigenenergies = free_electron.calculate_eigenenergies(k_array, free_electron.g)
+        free_electron.occupations = fermi_distribution(free_electron.temperature, free_electron.eigenenergies)
+        
+        return free_electron
         
     def create_from_n(self, lattice: Lattice, n_band: int, n_electron: int, n_k_array: np.ndarray) -> 'FreeElectron':
         free_electron = FreeElectron(lattice, n_band, n_electron)
 
-        free_electron.set_n_k(np.prod(n_k_array))
-        free_electron.set_k(lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array))
+        free_electron.n_k = np.prod(n_k_array)
+        free_electron.k = lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
 
         free_electron.eigenenergies = free_electron.calculate_eigenenergies(free_electron.k, free_electron.g)
-        free_electron.temperature = lattice.temperature
         free_electron.occupations = fermi_distribution(free_electron.temperature, free_electron.eigenenergies)
-
-    def set_n_k(self, n_k: int) -> None:
-        self.n_k = n_k
-
-    def set_k(self, k_array: np.ndarray) -> None:
-        self.k = k_array
-
-    def set_g(self, g_array: np.ndarray) -> None:
-        self.g = g_array
+        
+        return free_electron
 
     def calculate_eigenenergies(self, k_array: np.ndarray, g_array: np.ndarray = None) -> np.ndarray:
         """Calculate the electron eigenenergies at wave vector k.
@@ -59,44 +64,65 @@ class FreeElectron:
         
         return eigenenergies
 
-    def get_eigenenergies_with_path(self, k_names: list[str], n_split: int) -> PathValues:
-        """Calculate the electronic band structures along the specified path in reciprocal space.
-
-        Args:
-            k_names (list[np.ndarray]): A list of special points names defining the path.
-            n_split (int): Number of points between each special point to compute the band structure.
-
-        Returns:
-            tuple: A tuple containing x-coordinates for plotting, eigenenergy values, and x-coordinates of special points.
-        """
-        k_path = self.lattice.reciprocal.get_path(k_names, n_split)
-        
-        eigenenergies = self.get_eigenenergies(k_path.values, self.g)
-        
-        return k_path.derive(eigenenergies)
-
-    def derive(self, k: np.ndarray, g: np.ndarray) -> 'FreeElectron':
-        free_electron = FreeElectron(self.lattice, self.n_band, self.n_electron)
-        free_electron.update(k, g)
-        
-        return free_electron
-    
     def update(self, k: np.ndarray, g: np.ndarray = None) -> None:
         self.k = k
         self.n_k = len(k)
         
         if g is not None:
-            self.eigenenergies = self.get_eigenenergies(k)
+            self.eigenenergies = self.get_eigenenergies(k + g)
             self.g = g
             self.occupations = fermi_distribution(self.temperature, self.eigenenergies)
         else:
             self.eigenenergies = self.get_eigenenergies(k, self.g)
+            self.occupations = fermi_distribution(self.temperature, self.eigenenergies)
         
-    def _set_fermi_energy(self) -> None:
+    def calculate_fermi_energy(self, lattice: Lattice) -> float:
         """Calculate the Fermi energy of the electron system.
 
         Returns:
             float: The Fermi energy.
         """
-        self.electron_density = self.n_electron / self.lattice.primitive.volume
-        self.fermi_energy = 0.5 * (3 * np.pi ** 2 * self.electron_density) ** (2/3)
+        electron_density = self.n_electron / lattice.primitive.volume
+        fermi_energy = 0.5 * (3 * np.pi ** 2 * electron_density) ** (2/3)
+        
+        return fermi_energy
+    
+    @property
+    def n_k(self) -> int:
+        return self.n_k
+    
+    @n_k.setter
+    def n_k(self, n_k: int) -> None:
+        self.n_k = n_k
+
+    @property
+    def k(self) -> np.ndarray:
+        return self.k
+    
+    @k.setter
+    def k(self, k_array: np.ndarray) -> None:
+        self.k = k_array
+
+    @property
+    def g(self) -> np.ndarray:
+        return self.g
+
+    @g.setter
+    def g(self, g_array: np.ndarray) -> None:
+        self.g = g_array
+    
+    @property
+    def eigenenergies(self) -> np.ndarray:
+        return self.eigenenergies
+    
+    @eigenenergies.setter
+    def eigenenergies(self, eigenenergies) -> None:
+        self.eigenenergies = eigenenergies
+        
+    @property
+    def occupations(self) -> np.ndarray:
+        return self.occupations
+    
+    @occupations.setter
+    def occupations(self, occupations) -> None:
+        self.occupations = occupations
