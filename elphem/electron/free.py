@@ -1,5 +1,4 @@
 import numpy as np
-from dataclasses import dataclass
 
 from elphem.common.distribution import fermi_distribution
 from elphem.lattice.lattice import Lattice
@@ -14,21 +13,30 @@ class FreeElectron:
         n_electron (int): Number of electrons per unit cell.
     """
     
-    def __init__(self, lattice: Lattice, n_band: int, n_electron: int, n_k_array: np.ndarray | list[int] = None):
+    def __init__(self, lattice: Lattice, n_band: int, n_electron: int):
         self.g = lattice.reciprocal.get_reciprocal_vectors(self.n_band)
         self.n_band = n_band
         self.n_electron = n_electron
         
         self._set_fermi_energy()
         
-        if n_k_array is not None:
-            self.n_k = np.prod(n_k_array)
-            self.k = self.lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
-            self.eigenenergies = self.get_eigenenergies(self.k, self.g)
-            self.temperature = lattice.temperature
-            self.occupations = fermi_distribution(self.temperature, self.eigenenergies)
 
-    def get_eigenenergies(self, k_array: np.ndarray = None, g_array: np.ndarray = None) -> np.ndarray:
+    def create_from_k(self, lattice: Lattice, n_band: int, n_electron: int, k_array: np.ndarray) -> 'FreeElectron':
+        
+    def create_from_n(self, lattice: Lattice, n_band: int, n_electron: int, n_k_array: np.ndarray) -> 'FreeElectron':
+        free_electron = FreeElectron(lattice, n_band, n_electron)
+
+        free_electron.n_k = np.prod(n_k_array)
+        free_electron.k = free_electron.lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
+
+        free_electron.eigenenergies = free_electron.calculate_eigenenergies(free_electron.k, free_electron.g)
+        free_electron.temperature = lattice.temperature
+        free_electron.occupations = fermi_distribution(free_electron.temperature, free_electron.eigenenergies)
+
+    def set_eigenenergies:
+        pass
+
+    def calculate_eigenenergies(self, k_array: np.ndarray, g_array: np.ndarray = None) -> np.ndarray:
         """Calculate the electron eigenenergies at wave vector k.
         
         Args:
@@ -38,9 +46,7 @@ class FreeElectron:
         Returns:
             np.ndarray: The electron eigenenergies at each wave vector.
         """
-        if k_array is None and g_array is None:
-            eigenenergies = np.array([0.5 * np.linalg.norm(self.k + g, axis=-1) ** 2 - self.fermi_energy for g in self.g])
-        elif g_array is None:
+        if g_array is None:
             eigenenergies =  0.5 * np.linalg.norm(k_array, axis=-1) ** 2 - self.fermi_energy
         else:
             eigenenergies = np.array([0.5 * np.linalg.norm(k_array + g, axis=-1) ** 2 - self.fermi_energy for g in g_array])
