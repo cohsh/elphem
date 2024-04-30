@@ -29,7 +29,7 @@ class DebyePhonon:
         self.zero_point_lengths = None
         self.occupations = None
         
-    def create_from_k(self, lattice: Lattice, debye_temperature: float, q_array: np.ndarray) -> 'DebyePhonon':
+    def create_from_q(self, lattice: Lattice, debye_temperature: float, q_array: np.ndarray) -> 'DebyePhonon':
         debye_phonon = DebyePhonon(lattice, debye_temperature)
     
         debye_phonon.n_q = len(q_array)
