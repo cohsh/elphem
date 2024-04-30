@@ -12,12 +12,16 @@ class Lattice:
     crystal_structure: str
     atoms: str | list[str] | np.ndarray
     a: float
+    temperature: float = None
 
     def __post_init__(self):
         """Initializes the lattice constants, primitive, and reciprocal cells along with their volumes and bases."""
         self.set_constants()
         self.correct_atoms()
         self.set_about_atoms()
+        
+        if self.temperature is None:
+            self.temperature = 0.0
 
         self.primitive = PrimitiveCell(self.constants)
         self.reciprocal = ReciprocalCell(self.constants)

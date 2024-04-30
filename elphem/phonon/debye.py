@@ -2,6 +2,7 @@ import numpy as np
 
 from elphem.common.unit import Energy
 from elphem.common.function import safe_divide
+from elphem.common.distribution import bose_distribution
 from elphem.lattice.lattice import Lattice
 from elphem.lattice.path import PathValues
 
@@ -25,8 +26,10 @@ class DebyePhonon:
         self.q = lattice.reciprocal.get_monkhorst_pack_grid(*n_q_array)
         self.eigenenergies = self.get_eigenenergies(self.q)
         self.eigenvectors = self.get_eigenvectors(self.q)
-        self.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * self.lattice.mass * self.eigenenergies))
-
+        self.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * lattice.mass * self.eigenenergies))
+        
+        self.temperature = lattice.temperature
+        self.occupations = bose_distribution(self.temperature, self.eigenenergies)
 
     def get_eigenenergies(self, q_array: np.ndarray = None) -> np.ndarray:
         """Calculate phonon eigenenergies at wave vector q.
@@ -86,7 +89,7 @@ class DebyePhonon:
         self.eigenenergies = self.get_eigenenergies(q)
         self.eigenvectors = self.get_eigenvectors(q)
         self.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * self.lattice.mass * self.eigenenergies))
-
+        self.occupations = bose_distribution(self.temperature, self.eigenenergies)
 
     def _set_speed_of_sound(self) -> None:
         """Calculate the speed of sound in the lattice based on Debye model.
