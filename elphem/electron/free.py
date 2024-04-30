@@ -26,15 +26,21 @@ class FreeElectron:
     def create_from_n(self, lattice: Lattice, n_band: int, n_electron: int, n_k_array: np.ndarray) -> 'FreeElectron':
         free_electron = FreeElectron(lattice, n_band, n_electron)
 
-        free_electron.n_k = np.prod(n_k_array)
-        free_electron.k = free_electron.lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
+        free_electron.set_n_k(np.prod(n_k_array))
+        free_electron.set_k(lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array))
 
         free_electron.eigenenergies = free_electron.calculate_eigenenergies(free_electron.k, free_electron.g)
         free_electron.temperature = lattice.temperature
         free_electron.occupations = fermi_distribution(free_electron.temperature, free_electron.eigenenergies)
 
-    def set_eigenenergies:
-        pass
+    def set_n_k(self, n_k: int) -> None:
+        self.n_k = n_k
+
+    def set_k(self, k_array: np.ndarray) -> None:
+        self.k = k_array
+
+    def set_g(self, g_array: np.ndarray) -> None:
+        self.g = g_array
 
     def calculate_eigenenergies(self, k_array: np.ndarray, g_array: np.ndarray = None) -> np.ndarray:
         """Calculate the electron eigenenergies at wave vector k.
