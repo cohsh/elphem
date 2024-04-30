@@ -73,15 +73,9 @@ class ElectronPhonon:
         self.phonon.update(q)
         self.electron_inter = self.electron.derive(k + q, g2)
 
-        self.electron_eigenenergies = self.electron.get_eigenenergies(g2 + k + q)
-        self.phonon_eigenenergies = self.phonon.get_eigenenergies(q)
-
-        fermi = fermi_distribution(self.temperature, self.electron_eigenenergies)
-        bose = bose_distribution(self.temperature, self.phonon_eigenenergies)
-
         occupations = {}
-        occupations['+'] = fermi + bose
-        occupations['-'] = 1.0 - fermi + bose
+        occupations['+'] = self.electron_inter.occupations + self.phonon.occupations
+        occupations['-'] = 1.0 - self.electron_inter.occupations + self.phonon.occupations
 
         self.occupations = occupations
         self.coupling2 = np.abs(self.get_coupling(g1, g2, q)) ** 2

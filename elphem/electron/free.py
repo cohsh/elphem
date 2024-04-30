@@ -1,6 +1,7 @@
 import numpy as np
 from dataclasses import dataclass
 
+from elphem.common.distribution import fermi_distribution
 from elphem.lattice.lattice import Lattice
 from elphem.lattice.path import PathValues
 
@@ -24,6 +25,8 @@ class FreeElectron:
             self.n_k = np.prod(n_k_array)
             self.k = self.lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
             self.eigenenergies = self.get_eigenenergies(self.k, self.g)
+            self.temperature = lattice.temperature
+            self.occupations = fermi_distribution(self.temperature, self.eigenenergies)
 
     def get_eigenenergies(self, k_array: np.ndarray = None, g_array: np.ndarray = None) -> np.ndarray:
         """Calculate the electron eigenenergies at wave vector k.
@@ -73,6 +76,7 @@ class FreeElectron:
         if g is not None:
             self.eigenenergies = self.get_eigenenergies(k)
             self.g = g
+            self.occupations = fermi_distribution(self.temperature, self.eigenenergies)
         else:
             self.eigenenergies = self.get_eigenenergies(k, self.g)
         
