@@ -69,6 +69,10 @@ class ElectronPhonon:
     def _set_omega_independent_values(self) -> None:
         g1, g2, k, q = self.get_ggkq_grid()
 
+        self.electron.update(k, g1)
+        self.phonon.update(q)
+        self.electron_inter = self.electron.derive(k + q, g2)
+
         self.electron_eigenenergies = self.electron.get_eigenenergies(g2 + k + q)
         self.phonon_eigenenergies = self.phonon.get_eigenenergies(q)
 

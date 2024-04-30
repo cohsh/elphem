@@ -1,5 +1,4 @@
 import numpy as np
-from dataclasses import dataclass
 
 from elphem.common.unit import Energy
 from elphem.common.function import safe_divide
