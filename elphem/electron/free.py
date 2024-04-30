@@ -60,9 +60,9 @@ class FreeElectron:
         
         return k_path.derive(eigenenergies)
 
-    def derive(self, k: np.ndarray) -> 'FreeElectron':
+    def derive(self, k: np.ndarray, g: np.ndarray) -> 'FreeElectron':
         free_electron = FreeElectron(self.lattice, self.n_band, self.n_electron)
-        free_electron.set_k(k)
+        free_electron.update(k, g)
         
         return free_electron
     
