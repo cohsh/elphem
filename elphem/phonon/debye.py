@@ -16,22 +16,47 @@ class DebyePhonon:
         mass (float): The mass of the crystal's atoms.
     """
 
-    def __init__(self, lattice: Lattice, debye_temperature: float, n_q_array: np.ndarray | list[int]):
+    def __init__(self, lattice: Lattice, debye_temperature: float) -> None:
         """Validate initial model parameters."""
         self.debye_temperature = debye_temperature
         self.n_q = np.prod(self.n_q_array)
-
-        self._set_speed_of_sound()
-        
-        self.q = lattice.reciprocal.get_monkhorst_pack_grid(*n_q_array)
-        self.eigenenergies = self.get_eigenenergies(self.q)
-        self.eigenvectors = self.get_eigenvectors(self.q)
-        self.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * lattice.mass * self.eigenenergies))
-        
         self.temperature = lattice.temperature
-        self.occupations = bose_distribution(self.temperature, self.eigenenergies)
+        self.speed_of_sound = self.calculate_speed_of_sound(lattice)
+        
+        self.q = None
+        self.eigenenergies = None
+        self.eigenvectors = None
+        self.zero_point_lengths = None
+        self.occupations = None
+        
+    def create_from_k(self, lattice: Lattice, debye_temperature: float, q_array: np.ndarray) -> 'DebyePhonon':
+        debye_phonon = DebyePhonon(lattice, debye_temperature)
+    
+        debye_phonon.n_q = len(q_array)
+        debye_phonon.q = q_array
+        
+        debye_phonon.eigenenergies = debye_phonon.calculate_eigenenergies(q_array)
+        debye_phonon.eigenvectors = debye_phonon.calculate_eigenvectors(q_array)
+        debye_phonon.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * lattice.mass * debye_phonon.eigenenergies))
+        debye_phonon.occupations = bose_distribution(debye_phonon.temperature, debye_phonon.eigenenergies)
+        
+        return debye_phonon
+    
+    def create_from_n(self, lattice: Lattice, debye_temperature: float, n_q_array: np.ndarray | list[int]) -> 'DebyePhonon':
+        debye_phonon = DebyePhonon(lattice, debye_temperature)
 
-    def get_eigenenergies(self, q_array: np.ndarray = None) -> np.ndarray:
+        debye_phonon.n_q = np.prod(self.n_q_array)
+        debye_phonon.q = lattice.reciprocal.get_monkhorst_pack_grid(*n_q_array)
+
+        debye_phonon.eigenenergies = debye_phonon.calculate_eigenenergies(debye_phonon.q)
+        debye_phonon.eigenvectors = debye_phonon.calculate_eigenvectors(debye_phonon.q)
+        debye_phonon.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * lattice.mass * debye_phonon.eigenenergies))
+        debye_phonon.occupations = bose_distribution(debye_phonon.temperature, debye_phonon.eigenenergies)
+        
+        return debye_phonon
+
+
+    def calculate_eigenenergies(self, q_array: np.ndarray = None) -> np.ndarray:
         """Calculate phonon eigenenergies at wave vector q.
 
         Args:
@@ -64,7 +89,7 @@ class DebyePhonon:
         
         return q_path.derive(eigenenergies)
 
-    def get_eigenvectors(self, q_array: np.ndarray = None) -> np.ndarray:
+    def calculate_eigenvectors(self, q_array: np.ndarray = None) -> np.ndarray:
         """Calculate phonon eigenvectors at wave vector q.
 
         Args:
@@ -91,18 +116,20 @@ class DebyePhonon:
         self.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * self.lattice.mass * self.eigenenergies))
         self.occupations = bose_distribution(self.temperature, self.eigenenergies)
 
-    def _set_speed_of_sound(self) -> None:
+    def calculate_speed_of_sound(self, lattice) -> float:
         """Calculate the speed of sound in the lattice based on Debye model.
 
         Returns:
             float: The speed of sound in Hartree atomic units.
         """
         try:
-            number_density = self.lattice.n_atoms / self.lattice.primitive.volume
+            number_density = lattice.n_atoms / lattice.primitive.volume
         except ZeroDivisionError:
             ValueError("Lattice volume must be positive.")
 
 
         debye_frequency = self.debye_temperature * Energy.KELVIN["->"]
 
-        self.speed_of_sound = debye_frequency * (6.0 * np.pi ** 2 * number_density) ** (-1.0/3.0)
+        speed_of_sound = debye_frequency * (6.0 * np.pi ** 2 * number_density) ** (-1.0/3.0)
+        
+        return speed_of_sound
