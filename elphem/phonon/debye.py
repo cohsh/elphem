@@ -18,18 +18,20 @@ class DebyePhonon:
 
     def __init__(self, lattice: Lattice, debye_temperature: float) -> None:
         """Validate initial model parameters."""
+        self.lattice = lattice
         self.debye_temperature = debye_temperature
-        self.n_q = np.prod(self.n_q_array)
         self.temperature = lattice.temperature
         self.speed_of_sound = self.calculate_speed_of_sound(lattice)
         
         self.q = None
+        self.n_q = None
         self.eigenenergies = None
         self.eigenvectors = None
         self.zero_point_lengths = None
         self.occupations = None
-        
-    def create_from_q(self, lattice: Lattice, debye_temperature: float, q_array: np.ndarray) -> 'DebyePhonon':
+    
+    @classmethod
+    def create_from_q(cls, lattice: Lattice, debye_temperature: float, q_array: np.ndarray) -> 'DebyePhonon':
         debye_phonon = DebyePhonon(lattice, debye_temperature)
     
         debye_phonon.n_q = len(q_array)
@@ -42,10 +44,11 @@ class DebyePhonon:
         
         return debye_phonon
     
-    def create_from_n(self, lattice: Lattice, debye_temperature: float, n_q_array: np.ndarray | list[int]) -> 'DebyePhonon':
+    @classmethod
+    def create_from_n(cls, lattice: Lattice, debye_temperature: float, n_q_array: np.ndarray | list[int]) -> 'DebyePhonon':
         debye_phonon = DebyePhonon(lattice, debye_temperature)
 
-        debye_phonon.n_q = np.prod(self.n_q_array)
+        debye_phonon.n_q = np.prod(n_q_array)
         debye_phonon.q = lattice.reciprocal.get_monkhorst_pack_grid(*n_q_array)
 
         debye_phonon.eigenenergies = debye_phonon.calculate_eigenenergies(debye_phonon.q)
@@ -76,7 +79,7 @@ class DebyePhonon:
         
         return eigenenergies
 
-    def get_eigenenergies_with_path(self, q_names: list[np.ndarray], n_split) -> PathValues:
+    def get_eigenenergies_with_path(self, q_path: PathValues) -> PathValues:
         """Calculate the phonon dispersion curves along specified paths in reciprocal space.
 
         Args:
@@ -86,10 +89,7 @@ class DebyePhonon:
         Returns:
             tuple: A tuple containing the x-coordinates for plotting, omega (eigenenergy values), and x-coordinates of special points.
         """
-
-        q_path = self.lattice.reciprocal.get_path(q_names, n_split)
-
-        eigenenergies = self.get_eigenenergies(q_path.values)
+        eigenenergies = self.calculate_eigenenergies(q_path.values)
         
         return q_path.derive(eigenenergies)
 

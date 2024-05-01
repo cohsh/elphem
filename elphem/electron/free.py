@@ -2,6 +2,7 @@ import numpy as np
 
 from elphem.common.distribution import fermi_distribution
 from elphem.lattice.lattice import Lattice
+from elphem.lattice.path import PathValues
 
 class FreeElectron:
     """Represents a free electron model on a given crystal lattice.
@@ -21,41 +22,48 @@ class FreeElectron:
         self.n_band = None
         self.g = None
         self.k = None
+        self.n_k = None
         self.eigenenergies = None
         self.occupations = None
         
-    def create_from_n(self, lattice: Lattice, n_electron: int, n_band: int, n_k_array: np.ndarray) -> 'FreeElectron':
+    @classmethod
+    def create_from_n(cls, lattice: Lattice, n_electron: int, n_band: int, n_k_array: np.ndarray) -> 'FreeElectron':
         free_electron = FreeElectron(lattice, n_electron)
 
         free_electron.k = lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
+        free_electron.n_k = np.prod(n_k_array)
 
         free_electron.update_band(lattice, n_band)
         free_electron.update_eigenenergies_and_occupations()
         
         return free_electron
 
-    def create_from_k(self, lattice: Lattice, n_electron: int, n_band: int, k_array: np.ndarray) -> 'FreeElectron':
+    @classmethod
+    def create_from_k(cls, lattice: Lattice, n_electron: int, n_band: int, k_array: np.ndarray) -> 'FreeElectron':
         free_electron = FreeElectron(lattice, n_electron)
 
         free_electron.k = k_array
+        free_electron.n_k = len(k_array)
 
         free_electron.update_band(lattice, n_band)
         free_electron.update_eigenenergies_and_occupations()
         
         return free_electron
 
-    def create_from_gk_grid(self, lattice: Lattice, n_electron: int, g_array: np.ndarray, k_array: np.ndarray) -> 'FreeElectron':
+    @classmethod
+    def create_from_gk_grid(cls, lattice: Lattice, n_electron: int, g_array: np.ndarray, k_array: np.ndarray) -> 'FreeElectron':
         free_electron = FreeElectron(lattice, n_electron)
         
         free_electron.g = g_array
         free_electron.k = k_array
         
-        free_electron.update_eigenenergies_and_occupations()
+        free_electron.update_eigenenergies_and_occupations(expand_g=False)
         
         return free_electron
 
     def clone_with_gk_grid(self, g_array: np.ndarray, k_array: np.ndarray) -> 'FreeElectron':
         free_electron = self.create_from_gk_grid(self.lattice, self.n_electron, g_array, k_array)
+        free_electron.n_k = self.n_k
         
         return free_electron
 
@@ -75,6 +83,11 @@ class FreeElectron:
             eigenenergies = np.array([0.5 * np.linalg.norm(k_array + g, axis=-1) ** 2 - self.fermi_energy for g in g_array])
         
         return eigenenergies
+    
+    def calculate_eigenenergies_with_path(self, k_path: PathValues) -> PathValues:
+        eigenenergies = self.calculate_eigenenergies(k_path.values, self.g)
+        
+        return k_path.derive(eigenenergies)
 
     def calculate_occupations(self, eigenenergies: np.ndarray) -> np.ndarray:
         return fermi_distribution(self.temperature, eigenenergies)

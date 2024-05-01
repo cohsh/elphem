@@ -10,27 +10,28 @@ from elphem.elph.electron_phonon import ElectronPhonon
 class TestUnit(TestCase):
     def setUp(self) -> None:
         a = 2.98 * Length.ANGSTROM["->"]
-        debye_temperature = 344.0
-        n_band = 4
-        n_q = np.full(3, 5)
+        self.debye_temperature = 344.0
 
-        self.range_omega = [-1.0, 2.0]
+        temperature = 0.3 * self.debye_temperature
 
-        temperature = 0.3 * debye_temperature
-
-        lattice = Lattice('bcc', 'Li', a)
-        electron = FreeElectron(lattice, n_band, 1)
-        phonon = DebyePhonon(lattice, temperature)
-
-        self.electron_phonon = ElectronPhonon(electron, phonon, temperature, n_q)
+        self.lattice = Lattice('bcc', 'Li', a, temperature)
 
     def test_with_path(self):
         k_names = ["G", "H"]
         n_split = 20
+        k_path = self.lattice.reciprocal.get_path(k_names, n_split)
+
+        n_band = 4
+        n_q = np.full(3, 5)
+
+        electron = FreeElectron.create_from_k(self.lattice, 1, n_band, k_path.values)
+        phonon = DebyePhonon.create_from_n(self.lattice, self.debye_temperature, n_q)
+
+        electron_phonon = ElectronPhonon(electron, phonon)
+
         
-        n_omega = 20
+        omega_array = np.linspace(-1.0, 2.0, 100)
         
-        k, omegas, a, special_k = self.electron_phonon.get_spectrum(k_names, n_split, n_omega, self.range_omega)
+        spectrum = electron_phonon.calculate_spectrum_over_range(omega_array)
         
-        self.assertEqual(a.shape, (len(k), len(omegas)))
-        self.assertEqual(len(k_names), len(special_k))
+        self.assertEqual(spectrum.shape, (len(k_path.values), len(omega_array)))

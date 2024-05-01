@@ -17,8 +17,12 @@ class ElectronPhonon:
         eta (float): Small positive constant to ensure numerical stability, defaults to 0.01.
         effective_potential (float): Effective potential used in electron-phonon coupling calculation, defaults to 1.0 / 16.0.
     """
+    effective_potential: float = 1.0 / 16.0
 
-    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, effective_potential: float = 1.0 / 16.0):
+    def __init__(self, electron: FreeElectron, phonon: DebyePhonon):
+        self.coefficient = 1.0 / phonon.n_q
+        self.eigenenergies = electron.eigenenergies
+        
         g1, g2, k, q = self.create_ggkq_grid(electron, phonon)
 
         self.electron = electron.clone_with_gk_grid(g1, k)
@@ -66,7 +70,11 @@ class ElectronPhonon:
         self_energies = self.calculate_self_energies(omega)
 
         numerator = - self_energies.imag / np.pi
-        denominator = (omega - self.electron.eigenenergies - self_energies.real) ** 2 + self_energies.imag ** 2
+        
+        print(self.electron.eigenenergies.shape)
+        print(self_energies.shape)
+
+        denominator = (omega - self.eigenenergies - self_energies.real) ** 2 + self_energies.imag ** 2
         
         return np.nansum(safe_divide(numerator, denominator), axis=0)
 
