@@ -20,30 +20,25 @@ class ElectronPhonon:
         effective_potential (float): Effective potential used in electron-phonon coupling calculation, defaults to 1.0 / 16.0.
     """
 
-    def __init__(self, electron: FreeElectron, phonon: DebyePhonon):
+    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, effective_potential: float = 1.0 / 16.0):
         g1, g2, k, q = self.create_ggkq_grid(electron, phonon)
 
-        self.electron.update(g1, k)
-        self.phonon.update(q)
-        self.electron_inter = self.electron.clone_with_gk_grid(g2, k + q)
+        self.electron = electron.clone_with_gk_grid(g1, k)
+        self.electron_inter = electron.clone_with_gk_grid(g2, k + q)
+        self.phonon = phonon.clone_with_q(q)
         
-        self.green_function = GreenFunction(self.electron, self.phonon)
+        self.green_function = GreenFunction(self.electron_inter, self.phonon)
 
-        self.coupling2 = np.abs(self.get_coupling(g1, g2, q)) ** 2
+        self.coupling2 = np.abs(self.calculate_couplings()) ** 2
 
     def calculate_couplings(self) -> np.ndarray:
         """Calculate the lowest-order electron-phonon coupling between states.
-
-        Args:
-            g1 (np.ndarray): Initial G-vector in reciprocal space.
-            g2 (np.ndarray): Final G-vector in reciprocal space.
-            q (np.ndarray): Phonon wave vector in reciprocal space.
 
         Returns:
             np.ndarray: The electron-phonon coupling strength for the given vectors.
         """
         
-        couplings = -1.0j * self.effective_potential * np.sum((self.phonon.q + self.electron.g1 - self.electron.g2) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        couplings = -1.0j * self.effective_potential * np.sum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
 
         return couplings
 
