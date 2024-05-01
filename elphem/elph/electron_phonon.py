@@ -100,7 +100,6 @@ class ElectronPhonon:
         
     def calculate_spectrum_over_range(self, omega_array: np.ndarray | list[float]) -> np.ndarray:
         n_omega = len(omega_array)
-        shape = 
         spectrum = np.empty((self.electron.n_k, n_omega))
         
         count = 0
