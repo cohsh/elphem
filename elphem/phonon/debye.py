@@ -55,6 +55,10 @@ class DebyePhonon:
         
         return debye_phonon
 
+    def clone_with_q(self, q_array: np.ndarray) -> 'DebyePhonon':
+        debye_phonon = self.create_from_q(self.lattice, self.debye_temperature, q_array)
+        
+        return debye_phonon
 
     def calculate_eigenenergies(self, q_array: np.ndarray = None) -> np.ndarray:
         """Calculate phonon eigenenergies at wave vector q.
