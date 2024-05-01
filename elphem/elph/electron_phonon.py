@@ -71,9 +71,6 @@ class ElectronPhonon:
 
         numerator = - self_energies.imag / np.pi
         
-        print(self.electron.eigenenergies.shape)
-        print(self_energies.shape)
-
         denominator = (omega - self.eigenenergies - self_energies.real) ** 2 + self_energies.imag ** 2
         
         return np.nansum(safe_divide(numerator, denominator), axis=0)

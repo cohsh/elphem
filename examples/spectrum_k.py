@@ -6,28 +6,30 @@ def main():
     # Example: Li (BCC)
     a = 2.98 * Length.ANGSTROM["->"]
     debye_temperature = 344.0
+    n_band = 1
+    n_electron = 1
+    k_names = ["N", "H"]
+    n_split = 2
+    n_q_array = np.full(3, 40)
 
-    lattice = Lattice('bcc', 'Li', a)
-    electron = FreeElectron(lattice, n_band=1, n_electron=1)
-    phonon = DebyePhonon(lattice, debye_temperature)
-
-    n_q = np.full(3, 30)
-    temperature = debye_temperature
+    lattice = Lattice('bcc', 'Li', a, debye_temperature)
+    
+    k_path = lattice.reciprocal.get_path(k_names, n_split)
+    electron = FreeElectron.create_from_k(lattice, n_electron, n_band, k_path.values)
+    phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q_array)
 
     n_omega = 2000
     range_omega = [0.5 * Energy.EV["->"], 2.5 * Energy.EV["->"]]
+    omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
     
-    elph = ElectronPhonon(electron, phonon, temperature, n_q, sigma=0.00001)
+    elph = ElectronPhonon(electron, phonon)
     
-    k_names = ["N", "H"]
-    n_split = 2
-    
-    _, omega, spectrum, __ = elph.get_spectrum(k_names, n_split, n_omega, range_omega)
- 
+    spectrum = elph.calculate_spectrum_over_range(omega_array)
+
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
-    ax.plot(omega * Energy.EV["<-"], np.abs(spectrum[0]) / Energy.EV["<-"])
+    ax.plot(omega_array * Energy.EV["<-"], np.abs(spectrum[0]) / Energy.EV["<-"])
 #    ax.axvline(x=0.0, color="black", linewidth=0.3)
 
     ax.set_ylim(0,30)
