@@ -1,7 +1,5 @@
 import numpy as np
-from dataclasses import dataclass
 
-from elphem.common.unit import Byte
 from elphem.common.stdout import ProgressBar
 from elphem.common.function import safe_divide
 from elphem.electron.free import FreeElectron
