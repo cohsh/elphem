@@ -38,7 +38,7 @@ class ElectronPhonon:
 
         self.coupling2 = np.abs(self.get_coupling(g1, g2, q)) ** 2
 
-    def calculate_coupling(self, g1_array: np.ndarray, g2_array: np.ndarray, q_array: np.ndarray) -> np.ndarray:
+    def calculate_couplings(self) -> np.ndarray:
         """Calculate the lowest-order electron-phonon coupling between states.
 
         Args:
@@ -50,9 +50,9 @@ class ElectronPhonon:
             np.ndarray: The electron-phonon coupling strength for the given vectors.
         """
         
-        coupling = -1.0j * self.effective_potential * np.sum((q_array + g1_array - g2_array) * self.phonon_eigenvectors, axis=-1) * self.zero_point_lengths
+        couplings = -1.0j * self.effective_potential * np.sum((self.phonon.q + self.electron.g1 - self.electron.g2) * self.phonon_eigenvectors, axis=-1) * self.phonon.zero_point_lengths
 
-        return coupling
+        return couplings
 
     def create_ggkq_grid(self) -> tuple:
         shape = (self.electron.n_band, self.electron.n_band, self.electron.n_k, self.phonon.n_q, 3)
