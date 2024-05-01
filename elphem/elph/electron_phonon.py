@@ -35,9 +35,7 @@ class ElectronPhonon:
 
         self.electron.update(g1, k)
         self.phonon.update(q)
-        self.electron.clone_with_gk_grid(g2, k + q)
-        
-        self.electron_inter = self.electron.derive(k + q, g2)
+        self.electron_inter = self.electron.clone_with_gk_grid(g2, k + q)
 
         occupations = {}
         occupations['+'] = self.electron_inter.occupations + self.phonon.occupations

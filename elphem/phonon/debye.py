@@ -110,7 +110,6 @@ class DebyePhonon:
 
     def update(self, q: np.ndarray) -> None:
         self.q = q
-        self.n_q = len(q)
         self.eigenenergies = self.get_eigenenergies(q)
         self.eigenvectors = self.get_eigenvectors(q)
         self.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * self.lattice.mass * self.eigenenergies))
