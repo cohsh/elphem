@@ -85,50 +85,17 @@ class ElectronPhonon:
         
         return np.nansum(safe_divide(numerator, denominator), axis=0)
         
-
-    def calculate_spectrum_with_path(self, k_names: list[str], n_split: int, n_omega: int, range_omega: list[float]) -> tuple:
-        """
-        Calculate the spectral function along a specified path in the Brillouin zone.
-
-        Args:
-            k_names (list[str]): List of special points defining the path through the Brillouin zone.
-            n_split (int): Number of points between each special point.
-            n_q (np.ndarray): A numpy array specifying the density of q-grid points in each direction.
-            n_omega (int): Number of points in the energy range.
-            range_omega (list[float]): The range of energy values over which to calculate the spectrum.
-
-        Returns:
-            tuple: A tuple containing the path x-coordinates, energy values, the calculated spectrum, and x-coordinates of special points.
-        """
-        
-        g = self.electron.reciprocal_vectors
-        
-        k_path = self.electron.lattice.reciprocal_cell.get_path(k_names, n_split)
-        eig = self.electron.get_eigenenergies(k_path.values, g)
-
-        omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
-        
-        shape = (len(k_path.values), n_omega)
+    def calculate_spectrum_over_range(self, omega_array: np.ndarray | list[float]) -> np.ndarray:
+        n_omega = len(omega_array)
+        shape = (self.electron.n_k, n_omega)
         spectrum = np.empty(shape)
         
-        electron_eigenenergies, occupations, coupling2 = self.get_omega_independent_values(k_path.values)
-
         count = 0
         progress_bar = ProgressBar('Spectrum', n_omega)
         for omega in omega_array:
-            green_function = self.get_green_function(omega, electron_eigenenergies, occupations)
-            
-            self_energy = np.nansum(coupling2 * green_function, axis=(1, 3)) * self.coefficient
-
-            numerator = - self_energy.imag / np.pi
-            denominator = (omega - eig - self_energy.real) ** 2 + self_energy.imag ** 2
-
-            fraction = safe_divide(numerator, denominator)
-            
-            spectrum[..., count] = np.nansum(fraction, axis=0)
+            spectrum[..., count] = self.calculate_spectrum(omega)
             
             count += 1
-
             progress_bar.print(count)
 
-        return k_path.derive(spectrum), omega_array
+        return spectrum
