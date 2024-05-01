@@ -8,7 +8,6 @@ from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyePhonon
 from elphem.elph.green_function import GreenFunction
 
-@dataclass
 class ElectronPhonon:
     """Calculate the electron-phonon components for electronic states in a lattice.
 
@@ -21,14 +20,8 @@ class ElectronPhonon:
         effective_potential (float): Effective potential used in electron-phonon coupling calculation, defaults to 1.0 / 16.0.
     """
 
-    electron: FreeElectron
-    phonon: DebyePhonon
-    sigma: float = 0.00001
-    eta: float = 0.1
-    effective_potential: float = 1.0 / 16.0
-
-    def __post_init__(self):
-        g1, g2, k, q = self.create_ggkq_grid()
+    def __init__(self, electron: FreeElectron, phonon: DebyePhonon):
+        g1, g2, k, q = self.create_ggkq_grid(electron, phonon)
 
         self.electron.update(g1, k)
         self.phonon.update(q)
@@ -54,13 +47,13 @@ class ElectronPhonon:
 
         return couplings
 
-    def create_ggkq_grid(self) -> tuple:
-        shape = (self.electron.n_band, self.electron.n_band, self.electron.n_k, self.phonon.n_q, 3)
+    def create_ggkq_grid(self, electron: FreeElectron, phonon: DebyePhonon) -> tuple:
+        shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q, 3)
         
-        g1 = np.broadcast_to(self.electron.g[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
-        g2 = np.broadcast_to(self.electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
-        k = np.broadcast_to(self.electron.k[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
-        q = np.broadcast_to(self.phonon.q[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
+        g1 = np.broadcast_to(electron.g[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
+        g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
+        k = np.broadcast_to(electron.k[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
+        q = np.broadcast_to(phonon.q[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
         
         return g1, g2, k, q
 
