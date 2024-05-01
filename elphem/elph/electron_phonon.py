@@ -64,12 +64,11 @@ class ElectronPhonon:
         
         return g1, g2, k, q
 
-    def calculate_self_energy(self, omega: float) -> np.ndarray:
+    def calculate_self_energies(self, omega: float) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
         Args:
             omega (float): a frequency.
-            k_array (np.ndarray): k-vectors.
 
         Returns:
             complex: The Fan self-energy term as a complex number.
@@ -78,17 +77,31 @@ class ElectronPhonon:
         return np.nansum(self.coupling2 * self.green_function.calculate(omega), axis=(1, 3)) * self.coefficient
 
     def calculate_spectrum(self, omega: float) -> np.ndarray:
-        self_energy = self.calculate_self_energy(omega)
+        self_energies = self.calculate_self_energies(omega)
 
-        numerator = - self_energy.imag / np.pi
-        denominator = (omega - self.electron.eigenenergies - self_energy.real) ** 2 + self_energy.imag ** 2
+        numerator = - self_energies.imag / np.pi
+        denominator = (omega - self.electron.eigenenergies - self_energies.real) ** 2 + self_energies.imag ** 2
         
         return np.nansum(safe_divide(numerator, denominator), axis=0)
+
+    def calculate_self_energies_over_range(self, omega_array: np.ndarray | list[float]) -> np.ndarray:
+        n_omega = len(omega_array)
+        self_energies = np.empty((self.electron.n_k, n_omega))
+        
+        count = 0
+        progress_bar = ProgressBar('Self Energy', n_omega)
+        for omega in omega_array:
+            self_energies[..., count] = self.calculate_self_energies(omega)
+            
+            count += 1
+            progress_bar.print(count)
+
+        return self_energies
         
     def calculate_spectrum_over_range(self, omega_array: np.ndarray | list[float]) -> np.ndarray:
         n_omega = len(omega_array)
-        shape = (self.electron.n_k, n_omega)
-        spectrum = np.empty(shape)
+        shape = 
+        spectrum = np.empty((self.electron.n_k, n_omega))
         
         count = 0
         progress_bar = ProgressBar('Spectrum', n_omega)
