@@ -31,8 +31,8 @@ class FreeElectron:
         free_electron.n_k = len(k_array)
         free_electron.k = k_array
         
-        free_electron.eigenenergies = free_electron.calculate_eigenenergies(k_array, free_electron.g)
-        free_electron.occupations = fermi_distribution(free_electron.temperature, free_electron.eigenenergies)
+        free_electron.eigenenergies = free_electron.calculate_eigenenergies(free_electron.k, free_electron.g)
+        free_electron.occupations = free_electron.calculate_occupations(free_electron.eigenenergies)
         
         return free_electron
         
@@ -43,7 +43,7 @@ class FreeElectron:
         free_electron.k = lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
 
         free_electron.eigenenergies = free_electron.calculate_eigenenergies(free_electron.k, free_electron.g)
-        free_electron.occupations = fermi_distribution(free_electron.temperature, free_electron.eigenenergies)
+        free_electron.occupations = free_electron.calculate_occupations(free_electron.eigenenergies)
         
         return free_electron
 
@@ -63,6 +63,9 @@ class FreeElectron:
             eigenenergies = np.array([0.5 * np.linalg.norm(k_array + g, axis=-1) ** 2 - self.fermi_energy for g in g_array])
         
         return eigenenergies
+
+    def calculate_occupations(self, eigenenergies: np.ndarray) -> np.ndarray:
+        return fermi_distribution(self.temperature, eigenenergies)
 
     def update(self, k: np.ndarray, g: np.ndarray = None) -> None:
         self.k = k
