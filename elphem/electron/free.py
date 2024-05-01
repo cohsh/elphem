@@ -2,7 +2,6 @@ import numpy as np
 
 from elphem.common.distribution import fermi_distribution
 from elphem.lattice.lattice import Lattice
-from elphem.lattice.path import PathValues
 
 class FreeElectron:
     """Represents a free electron model on a given crystal lattice.
