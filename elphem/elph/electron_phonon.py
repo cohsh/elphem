@@ -23,20 +23,30 @@ class ElectronPhonon:
 
     electron: FreeElectron
     phonon: DebyePhonon
-    temperature: float
     sigma: float = 0.00001
     eta: float = 0.1
     effective_potential: float = 1.0 / 16.0
 
     def __post_init__(self):
-        self.coefficient = 1.0 / self.phonon.n_q
-
         self.gaussian_coefficient_a = 2.0 * self.sigma ** 2
         self.gaussian_coefficient_b = np.sqrt(2.0 * np.pi) * self.sigma
         
-        self._set_omega_independent_values()
+        g1, g2, k, q = self.create_ggkq_grid()
 
-    def get_coupling(self, g1_array: np.ndarray, g2_array: np.ndarray, q_array: np.ndarray) -> np.ndarray:
+        self.electron.update(g1, k)
+        self.phonon.update(q)
+        self.electron.clone_with_gk_grid(g2, k + q)
+        
+        self.electron_inter = self.electron.derive(k + q, g2)
+
+        occupations = {}
+        occupations['+'] = self.electron_inter.occupations + self.phonon.occupations
+        occupations['-'] = 1.0 - self.electron_inter.occupations + self.phonon.occupations
+
+        self.occupations = occupations
+        self.coupling2 = np.abs(self.get_coupling(g1, g2, q)) ** 2
+
+    def calculate_coupling(self, g1_array: np.ndarray, g2_array: np.ndarray, q_array: np.ndarray) -> np.ndarray:
         """Calculate the lowest-order electron-phonon coupling between states.
 
         Args:
@@ -48,15 +58,11 @@ class ElectronPhonon:
             np.ndarray: The electron-phonon coupling strength for the given vectors.
         """
         
-        phonon_eigenenergies = self.phonon.get_eigenenergies(q_array)
-        phonon_eigenvectors = self.phonon.get_eigenvectors(q_array)
-        zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * self.lattice.mass * phonon_eigenenergies))
-
-        coupling = -1.0j * self.effective_potential * np.sum((q_array + g1_array - g2_array) * phonon_eigenvectors, axis=-1) * zero_point_lengths
+        coupling = -1.0j * self.effective_potential * np.sum((q_array + g1_array - g2_array) * self.phonon_eigenvectors, axis=-1) * self.zero_point_lengths
 
         return coupling
 
-    def get_ggkq_grid(self) -> tuple:
+    def create_ggkq_grid(self) -> tuple:
         shape = (self.electron.n_band, self.electron.n_band, self.electron.n_k, self.phonon.n_q, 3)
         
         g1 = np.broadcast_to(self.electron.g[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
@@ -80,7 +86,7 @@ class ElectronPhonon:
         self.occupations = occupations
         self.coupling2 = np.abs(self.get_coupling(g1, g2, q)) ** 2
 
-    def get_self_energy(self, omega: float) -> np.ndarray:
+    def calculate_self_energy(self, omega: float) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
         Args:

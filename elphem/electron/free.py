@@ -14,6 +14,7 @@ class FreeElectron:
     """
     
     def __init__(self, lattice: Lattice, n_electron: int):
+        self.lattice = lattice
         self.n_electron = n_electron
         self.temperature = lattice.temperature
         self.fermi_energy = self.calculate_fermi_energy(lattice)
@@ -44,13 +45,18 @@ class FreeElectron:
         
         return free_electron
 
-    def create_from_gk_grid(self, lattice: Lattice, n_electron: int, g: np.ndarray, k: np.ndarray) -> 'FreeElectron':
+    def create_from_gk_grid(self, lattice: Lattice, n_electron: int, g_array: np.ndarray, k_array: np.ndarray) -> 'FreeElectron':
         free_electron = FreeElectron(lattice, n_electron)
         
-        free_electron.g = g
-        free_electron.k = k
+        free_electron.g = g_array
+        free_electron.k = k_array
         
         free_electron.update_eigenenergies_and_occupations()
+        
+        return free_electron
+
+    def clone_with_gk_grid(self, g_array: np.ndarray, k_array: np.ndarray) -> 'FreeElectron':
+        free_electron = self.create_from_gk_grid(self.lattice, self.n_electron, g_array, k_array)
         
         return free_electron
 
@@ -78,7 +84,7 @@ class FreeElectron:
         self.n_band = n_band
         self.g = lattice.reciprocal.get_reciprocal_vectors(self.n_band)
 
-    def update_eigenenergies_and_occupations(self, expand_g: True) -> None:
+    def update_eigenenergies_and_occupations(self, expand_g: bool = True) -> None:
         if expand_g:
             self.eigenenergies = self.calculate_eigenenergies(self.k, self.g)
         else:
@@ -86,16 +92,11 @@ class FreeElectron:
 
         self.occupations = self.calculate_occupations(self.eigenenergies)
 
-    def update(self, k: np.ndarray, g: np.ndarray = None) -> None:
+    def update(self, g: np.ndarray, k: np.ndarray, expand_g: bool = False) -> None:
         self.k = k
+        self.g = g
         
-        if g is not None:
-            self.eigenenergies = self.get_eigenenergies(k + g)
-            self.g = g
-            self.occupations = fermi_distribution(self.temperature, self.eigenenergies)
-        else:
-            self.eigenenergies = self.get_eigenenergies(k, self.g)
-            self.occupations = fermi_distribution(self.temperature, self.eigenenergies)
+        self.update_eigenenergies_and_occupations(expand_g)
         
     def calculate_fermi_energy(self, lattice: Lattice) -> float:
         """Calculate the Fermi energy of the electron system.
