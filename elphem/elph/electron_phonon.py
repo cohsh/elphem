@@ -31,6 +31,16 @@ class ElectronPhonon:
 
         self.coupling2 = np.abs(self.calculate_couplings()) ** 2
 
+    def create_ggkq_grid(self, electron: FreeElectron, phonon: DebyePhonon) -> tuple:
+        shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q, 3)
+        
+        g1 = np.broadcast_to(electron.g[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
+        g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
+        k = np.broadcast_to(electron.k[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
+        q = np.broadcast_to(phonon.q[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
+        
+        return g1, g2, k, q
+
     def calculate_couplings(self) -> np.ndarray:
         """Calculate the lowest-order electron-phonon coupling between states.
 
@@ -41,16 +51,6 @@ class ElectronPhonon:
         couplings = -1.0j * self.effective_potential * np.sum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
 
         return couplings
-
-    def create_ggkq_grid(self, electron: FreeElectron, phonon: DebyePhonon) -> tuple:
-        shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q, 3)
-        
-        g1 = np.broadcast_to(electron.g[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
-        g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
-        k = np.broadcast_to(electron.k[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
-        q = np.broadcast_to(phonon.q[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
-        
-        return g1, g2, k, q
 
     def calculate_self_energies(self, omega: float) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
