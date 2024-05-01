@@ -6,7 +6,7 @@ from elphem.common.stdout import ProgressBar
 from elphem.common.function import safe_divide
 from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyePhonon
-from elphem.elph.distribution import fermi_distribution, bose_distribution
+from elphem.elph.green_function import GreenFunction
 
 @dataclass
 class ElectronPhonon:
@@ -28,20 +28,14 @@ class ElectronPhonon:
     effective_potential: float = 1.0 / 16.0
 
     def __post_init__(self):
-        self.gaussian_coefficient_a = 2.0 * self.sigma ** 2
-        self.gaussian_coefficient_b = np.sqrt(2.0 * np.pi) * self.sigma
-        
         g1, g2, k, q = self.create_ggkq_grid()
 
         self.electron.update(g1, k)
         self.phonon.update(q)
         self.electron_inter = self.electron.clone_with_gk_grid(g2, k + q)
+        
+        self.green_function = GreenFunction(self.electron, self.phonon)
 
-        occupations = {}
-        occupations['+'] = self.electron_inter.occupations + self.phonon.occupations
-        occupations['-'] = 1.0 - self.electron_inter.occupations + self.phonon.occupations
-
-        self.occupations = occupations
         self.coupling2 = np.abs(self.get_coupling(g1, g2, q)) ** 2
 
     def calculate_coupling(self, g1_array: np.ndarray, g2_array: np.ndarray, q_array: np.ndarray) -> np.ndarray:
@@ -70,20 +64,6 @@ class ElectronPhonon:
         
         return g1, g2, k, q
 
-    def _set_omega_independent_values(self) -> None:
-        g1, g2, k, q = self.get_ggkq_grid()
-
-        self.electron.update(k, g1)
-        self.phonon.update(q)
-        self.electron_inter = self.electron.derive(k + q, g2)
-
-        occupations = {}
-        occupations['+'] = self.electron_inter.occupations + self.phonon.occupations
-        occupations['-'] = 1.0 - self.electron_inter.occupations + self.phonon.occupations
-
-        self.occupations = occupations
-        self.coupling2 = np.abs(self.get_coupling(g1, g2, q)) ** 2
-
     def calculate_self_energy(self, omega: float) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
@@ -95,13 +75,18 @@ class ElectronPhonon:
             complex: The Fan self-energy term as a complex number.
         """
         
-        green_function = self.get_green_function(omega)
+        return np.nansum(self.coupling2 * self.green_function.calculate(omega), axis=(1, 3)) * self.coefficient
 
-        self_energy = np.nansum(self.coupling2 * green_function, axis=(1, 3)) * self.coefficient
+    def calculate_spectrum(self, omega: float) -> np.ndarray:
+        self_energy = self.calculate_self_energy(omega)
+
+        numerator = - self_energy.imag / np.pi
+        denominator = (omega - self.electron.eigenenergies - self_energy.real) ** 2 + self_energy.imag ** 2
         
-        return self_energy
+        return np.nansum(safe_divide(numerator, denominator), axis=0)
+        
 
-    def get_spectrum_with_path(self, k_names: list[str], n_split: int, n_omega: int, range_omega: list[float]) -> tuple:
+    def calculate_spectrum_with_path(self, k_names: list[str], n_split: int, n_omega: int, range_omega: list[float]) -> tuple:
         """
         Calculate the spectral function along a specified path in the Brillouin zone.
 
@@ -129,7 +114,6 @@ class ElectronPhonon:
         electron_eigenenergies, occupations, coupling2 = self.get_omega_independent_values(k_path.values)
 
         count = 0
-
         progress_bar = ProgressBar('Spectrum', n_omega)
         for omega in omega_array:
             green_function = self.get_green_function(omega, electron_eigenenergies, occupations)
@@ -148,27 +132,3 @@ class ElectronPhonon:
             progress_bar.print(count)
 
         return k_path.derive(spectrum), omega_array
-
-    def get_green_function(self, omega: float) -> np.ndarray:
-        denominators = {}
-
-        denominators['-'] = omega - self.electron_eigenenergies - self.phonon_eigenenergies
-        denominators['+'] = omega - self.electron_eigenenergies + self.phonon_eigenenergies
-
-        green_function = np.zeros(self.electron_eigenenergies.shape, dtype='complex')
-
-        for sign in denominators.keys():
-            green_function += self.occupations[sign] * self.get_green_function_real(denominators[sign])
-            green_function += 1.0j * np.pi * self.occupations[sign] * self.get_green_function_imag(denominators[sign])
-        
-        return green_function
-
-    def get_green_function_real(self, omega: np.ndarray) -> np.ndarray:
-        green_function_real = safe_divide(1.0, omega + self.eta * 1.0j).real
-        
-        return green_function_real
-    
-    def get_green_function_imag(self, omega: np.ndarray) -> np.ndarray:
-        green_function_imag = np.exp(- omega ** 2 / self.gaussian_coefficient_a) / self.gaussian_coefficient_b
-        
-        return green_function_imag
