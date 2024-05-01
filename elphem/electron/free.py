@@ -13,34 +13,43 @@ class FreeElectron:
         n_electron (int): Number of electrons per unit cell.
     """
     
-    def __init__(self, lattice: Lattice, n_band: int, n_electron: int):
-        self.g = lattice.reciprocal.get_reciprocal_vectors(self.n_band)
-        self.n_band = n_band
+    def __init__(self, lattice: Lattice, n_electron: int):
         self.n_electron = n_electron
         self.temperature = lattice.temperature
         self.fermi_energy = self.calculate_fermi_energy(lattice)
-        
+
+        self.n_band = None
+        self.g = None
         self.k = None
-        self.n_k = None
         self.eigenenergies = None
         self.occupations = None
+        
+    def create_from_n(self, lattice: Lattice, n_electron: int, n_band: int, n_k_array: np.ndarray) -> 'FreeElectron':
+        free_electron = FreeElectron(lattice, n_electron)
 
-    def create_from_k(self, lattice: Lattice, n_band: int, n_electron: int, k_array: np.ndarray) -> 'FreeElectron':
-        free_electron = FreeElectron(lattice, n_band, n_electron)
+        free_electron.k = lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
 
-        free_electron.n_k = len(k_array)
-        free_electron.k = k_array
-
+        free_electron.update_band(lattice, n_band)
         free_electron.update_eigenenergies_and_occupations()
         
         return free_electron
+
+    def create_from_k(self, lattice: Lattice, n_electron: int, n_band: int, k_array: np.ndarray) -> 'FreeElectron':
+        free_electron = FreeElectron(lattice, n_electron)
+
+        free_electron.k = k_array
+
+        free_electron.update_band(lattice, n_band)
+        free_electron.update_eigenenergies_and_occupations()
         
-    def create_from_n(self, lattice: Lattice, n_band: int, n_electron: int, n_k_array: np.ndarray) -> 'FreeElectron':
-        free_electron = FreeElectron(lattice, n_band, n_electron)
+        return free_electron
 
-        free_electron.n_k = np.prod(n_k_array)
-        free_electron.k = lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
-
+    def create_from_gk_grid(self, lattice: Lattice, n_electron: int, g: np.ndarray, k: np.ndarray) -> 'FreeElectron':
+        free_electron = FreeElectron(lattice, n_electron)
+        
+        free_electron.g = g
+        free_electron.k = k
+        
         free_electron.update_eigenenergies_and_occupations()
         
         return free_electron
@@ -65,13 +74,20 @@ class FreeElectron:
     def calculate_occupations(self, eigenenergies: np.ndarray) -> np.ndarray:
         return fermi_distribution(self.temperature, eigenenergies)
 
-    def update_eigenenergies_and_occupations(self) -> None:
-        self.eigenenergies = self.calculate_eigenenergies(self.k, self.g)
+    def update_band(self, lattice: Lattice, n_band: int) -> None:
+        self.n_band = n_band
+        self.g = lattice.reciprocal.get_reciprocal_vectors(self.n_band)
+
+    def update_eigenenergies_and_occupations(self, expand_g: True) -> None:
+        if expand_g:
+            self.eigenenergies = self.calculate_eigenenergies(self.k, self.g)
+        else:
+            self.eigenenergies = self.calculate_eigenenergies(self.k + self.g)
+
         self.occupations = self.calculate_occupations(self.eigenenergies)
 
     def update(self, k: np.ndarray, g: np.ndarray = None) -> None:
         self.k = k
-        self.n_k = len(k)
         
         if g is not None:
             self.eigenenergies = self.get_eigenenergies(k + g)
