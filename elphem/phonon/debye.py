@@ -57,6 +57,12 @@ class DebyePhonon:
         debye_phonon.occupations = bose_distribution(debye_phonon.temperature, debye_phonon.eigenenergies)
         
         return debye_phonon
+    
+    @classmethod
+    def create_from_path(cls, lattice: Lattice, debye_temperature: float, q_path: PathValues) -> 'DebyePhonon':
+        debye_phonon = DebyePhonon.create_from_q(lattice, debye_temperature, q_path.values)
+        
+        return debye_phonon
 
     def clone_with_q(self, q_array: np.ndarray) -> 'DebyePhonon':
         debye_phonon = self.create_from_q(self.lattice, self.debye_temperature, q_array)
