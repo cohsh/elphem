@@ -18,7 +18,7 @@ def main():
     electron = FreeElectron.create_from_k(lattice, n_electron, n_band, k_path.values)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q_array)
 
-    n_omega = 1000
+    n_omega = 10000
     range_omega = [0. * Energy.EV["->"], 2. * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
     
