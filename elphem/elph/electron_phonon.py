@@ -50,7 +50,7 @@ class ElectronPhonon:
             np.ndarray: The electron-phonon coupling strength for the given vectors.
         """
         
-        couplings = -1.0j * self.effective_potential * np.sum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        couplings = -1.0j * self.effective_potential * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
 
         return couplings
 

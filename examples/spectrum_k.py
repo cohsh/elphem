@@ -18,7 +18,7 @@ def main():
     electron = FreeElectron.create_from_k(lattice, n_electron, n_band, k_path.values)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q_array)
 
-    n_omega = 2000
+    n_omega = 1000
     range_omega = [0. * Energy.EV["->"], 2. * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
     
@@ -30,7 +30,6 @@ def main():
     ax = fig.add_subplot(111)
 
     ax.plot(omega_array * Energy.EV["<-"], np.abs(spectrum[0]) / Energy.EV["<-"])
-#    ax.axvline(x=0.0, color="black", linewidth=0.3)
 
     ax.set_ylim(0,30)
     ax.set_xlabel("$\omega$ ($\mathrm{eV}$)")
