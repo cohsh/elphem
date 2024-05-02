@@ -20,7 +20,7 @@ class GreenFunction:
         return self.calculate_real_part(omega_minus_poles) + 1.0j * self.calculate_imag_part(omega_minus_poles)
     
     def calculate_real_part(self, omega_minus_poles: np.ndarray) -> np.ndarray:
-        real_part = np.nansum(safe_divide(self.weights, omega_minus_poles + self.eta).real, axis=0)
+        real_part = np.nansum(safe_divide(self.weights, omega_minus_poles + 1.0j * self.eta).real, axis=0)
         
         return real_part
     
