@@ -10,7 +10,7 @@ def main():
     n_electron = 1
     k_names = ["N", "H"]
     n_split = 2
-    n_q_array = np.full(3, 40)
+    n_q_array = np.full(3, 30)
 
     lattice = Lattice('bcc', 'Li', a, debye_temperature)
     
@@ -19,7 +19,7 @@ def main():
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q_array)
 
     n_omega = 2000
-    range_omega = [0.5 * Energy.EV["->"], 2.5 * Energy.EV["->"]]
+    range_omega = [0. * Energy.EV["->"], 2. * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
     
     elph = ElectronPhonon(electron, phonon)
