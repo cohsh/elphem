@@ -60,6 +60,12 @@ class FreeElectron:
         free_electron.update_eigenenergies_and_occupations(expand_g=False)
         
         return free_electron
+    
+    @classmethod
+    def create_from_path(cls, lattice: Lattice, n_electron: int, n_band: int, k_path: PathValues) -> 'FreeElectron':
+        free_electron = FreeElectron.create_from_k(lattice, n_electron, n_band, k_path.values)
+        
+        return free_electron
 
     def clone_with_gk_grid(self, g_array: np.ndarray, k_array: np.ndarray) -> 'FreeElectron':
         free_electron = self.create_from_gk_grid(self.lattice, self.n_electron, g_array, k_array)
@@ -83,14 +89,14 @@ class FreeElectron:
             eigenenergies = np.array([0.5 * np.linalg.norm(k_array + g, axis=-1) ** 2 - self.fermi_energy for g in g_array])
         
         return eigenenergies
+
+    def calculate_occupations(self, eigenenergies: np.ndarray) -> np.ndarray:
+        return fermi_distribution(self.temperature, eigenenergies)
     
     def calculate_eigenenergies_with_path(self, k_path: PathValues) -> PathValues:
         eigenenergies = self.calculate_eigenenergies(k_path.values, self.g)
         
         return k_path.derive(eigenenergies)
-
-    def calculate_occupations(self, eigenenergies: np.ndarray) -> np.ndarray:
-        return fermi_distribution(self.temperature, eigenenergies)
 
     def update_band(self, lattice: Lattice, n_band: int) -> None:
         self.n_band = n_band
