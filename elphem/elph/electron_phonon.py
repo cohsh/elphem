@@ -27,7 +27,7 @@ class ElectronPhonon:
 
         self.electron = electron.clone_with_gk_grid(g1, k)
         self.electron_inter = electron.clone_with_gk_grid(g2, k + q)
-        self.phonon = phonon.clone_with_q(q)
+        self.phonon = phonon.clone_with_q_grid(q)
         
         self.green_function = GreenFunction(self.electron_inter, self.phonon)
 

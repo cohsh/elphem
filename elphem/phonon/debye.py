@@ -37,8 +37,8 @@ class DebyePhonon:
         debye_phonon.n_q = len(q_array)
         debye_phonon.q = q_array
         
-        debye_phonon.eigenenergies = debye_phonon.calculate_eigenenergies(q_array)
-        debye_phonon.eigenvectors = debye_phonon.calculate_eigenvectors(q_array)
+        debye_phonon.eigenenergies = debye_phonon.calculate_eigenenergies(debye_phonon.q)
+        debye_phonon.eigenvectors = debye_phonon.calculate_eigenvectors(debye_phonon.q)
         debye_phonon.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * lattice.mass * debye_phonon.eigenenergies))
         debye_phonon.occupations = bose_distribution(debye_phonon.temperature, debye_phonon.eigenenergies)
         
@@ -64,12 +64,13 @@ class DebyePhonon:
         
         return debye_phonon
 
-    def clone_with_q(self, q_array: np.ndarray) -> 'DebyePhonon':
+    def clone_with_q_grid(self, q_array: np.ndarray) -> 'DebyePhonon':
         debye_phonon = self.create_from_q(self.lattice, self.debye_temperature, q_array)
+        debye_phonon.n_q = self.n_q
         
         return debye_phonon
 
-    def calculate_eigenenergies(self, q_array: np.ndarray = None) -> np.ndarray:
+    def calculate_eigenenergies(self, q_array: np.ndarray) -> np.ndarray:
         """Calculate phonon eigenenergies at wave vector q.
 
         Args:
@@ -78,10 +79,7 @@ class DebyePhonon:
         Returns:
             np.ndarray: The phonon eigenenergies at each wave vector.
         """
-        if q_array is None:
-            eigenenergies = self.speed_of_sound * np.linalg.norm(self.q, axis=-1)
-        else:
-            eigenenergies = self.speed_of_sound * np.linalg.norm(q_array, axis=-1)
+        eigenenergies = self.speed_of_sound * np.linalg.norm(q_array, axis=-1)
         
         return eigenenergies
 
@@ -99,7 +97,7 @@ class DebyePhonon:
         
         return q_path.derive(eigenenergies)
 
-    def calculate_eigenvectors(self, q_array: np.ndarray = None) -> np.ndarray:
+    def calculate_eigenvectors(self, q_array: np.ndarray) -> np.ndarray:
         """Calculate phonon eigenvectors at wave vector q.
 
         Args:
@@ -109,12 +107,8 @@ class DebyePhonon:
             np.ndarray: The phonon eigenvectors at each wave vector, represented as complex numbers.
         """
 
-        if q_array is None:
-            q_norm = np.repeat(np.linalg.norm(self.q, axis=-1, keepdims=True), self.q.shape[-1], axis=-1)
-            eigenvectors = 1.0j * safe_divide(self.q, q_norm)
-        else:
-            q_norm = np.repeat(np.linalg.norm(q_array, axis=-1, keepdims=True), q_array.shape[-1], axis=-1)
-            eigenvectors = 1.0j * safe_divide(q_array, q_norm)
+        q_norm = np.repeat(np.linalg.norm(q_array, axis=-1, keepdims=True), q_array.shape[-1], axis=-1)
+        eigenvectors = 1.0j * safe_divide(q_array, q_norm)
 
         return eigenvectors
 
