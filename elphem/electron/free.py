@@ -42,6 +42,12 @@ class FreeElectron:
     def create_from_k(cls, lattice: Lattice, n_electron: int, n_band: int, k_array: np.ndarray) -> 'FreeElectron':
         free_electron = FreeElectron(lattice, n_electron)
 
+        if isinstance(k_array, list):
+            k_array = np.ndarray(k_array)
+
+        if k_array.shape == (3,):
+            k_array = np.array([k_array])
+
         free_electron.k = k_array
         free_electron.n_k = len(k_array)
 

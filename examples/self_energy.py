@@ -16,10 +16,12 @@ def main():
     electron = FreeElectron.create_from_k(lattice, n_electron, n_band, k_gamma)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
-    electron_phonon = ElectronPhonon(electron, phonon)
+    print(electron.eigenenergies.shape)
 
-    n_omega = 500
-    range_omega = [-6 * Energy.EV["->"], 10 * Energy.EV["->"]]
+    electron_phonon = ElectronPhonon(electron, phonon)
+    
+    n_omega = 1000
+    range_omega = [-20 * Energy.EV["->"], 20 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
     
     self_energies = electron_phonon.calculate_self_energies_over_range(omega_array)
@@ -29,12 +31,11 @@ def main():
 
     ax.plot(omega_array * Energy.EV["<-"], self_energies[0, 0] * Energy.EV["<-"])
 
-    ax.set_ylim(0,30)
     ax.set_xlabel("$\omega$ ($\mathrm{eV}$)")
     ax.set_ylabel("$A(\mathbf{k}_\mathrm{N}, \omega)$ ($\mathrm{eV}^{-1}$)")
     ax.set_title("Spectral function of bcc-Li")
 
-    fig.savefig("self_energy_k.png")
+    fig.savefig("self_energy.png")
 
 if __name__ == "__main__":
     main()
