@@ -169,7 +169,7 @@ class ReciprocalCell(Cell):
         Returns:
             tuple: Returns the total length of the path, the path coordinates, and the lengths at special points.
         """
-        k_via = [self.get_special_point(s) for s in k_names]
+        k_via = [self.calculate_special_k(s) for s in k_names]
         n_via = len(k_via) - 1
 
         major_scales = np.empty((n_via+1,))
@@ -181,7 +181,7 @@ class ReciprocalCell(Cell):
         major_scales[0] = 0.0
 
         for i in range(n_via):
-            direction = (np.array(k_via[i+1]) - np.array(k_via[i])) @ self.basis
+            direction = k_via[i+1] - k_via[i]
             length = np.linalg.norm(direction)
 
             x = np.linspace(0.0, 1.0, n_split)
@@ -198,7 +198,7 @@ class ReciprocalCell(Cell):
 
         return k_path
 
-    def get_special_point(self, k_name: str) -> np.ndarray:
+    def calculate_special_k(self, k_name: str) -> np.ndarray:
         """Retrieves the coordinates of special k-points based on the crystal structure.
 
         Args:
@@ -211,10 +211,12 @@ class ReciprocalCell(Cell):
             ValueError: If an invalid crystal structure name is provided.
         """
         if self.lattice_constant.crystal_structure == 'bcc':
-            return SpecialPoints.BCC[k_name]
+            special_point = SpecialPoints.BCC[k_name]
         elif self.lattice_constant.crystal_structure == 'fcc':
-            return SpecialPoints.FCC[k_name]
+            special_point = SpecialPoints.FCC[k_name]
         elif self.lattice_constant.crystal_structure == 'sc':
-            return SpecialPoints.SC[k_name]
+            special_point = SpecialPoints.SC[k_name]
         else:
             raise ValueError("Invalid name specified.")
+        
+        return np.array(special_point) @ self.basis
