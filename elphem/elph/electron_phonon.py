@@ -77,7 +77,7 @@ class ElectronPhonon:
 
     def calculate_self_energies_over_range(self, omega_array: np.ndarray | list[float]) -> np.ndarray:
         n_omega = len(omega_array)
-        self_energies = np.empty(self.eigenenergies.shape + (n_omega,))
+        self_energies = np.empty(self.eigenenergies.shape + (n_omega,), dtype='complex')
         
         count = 0
         progress_bar = ProgressBar('Self Energy', n_omega)
