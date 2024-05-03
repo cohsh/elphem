@@ -16,12 +16,12 @@ def main():
 
     k_path = lattice.reciprocal.get_path(k_names, n_split)
 
-    electron = FreeElectron.create_from_k(lattice, n_electron, n_band, k_path.values)
+    electron = FreeElectron.create_from_path(lattice, n_electron, n_band, k_path)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
     electron_phonon = ElectronPhonon(electron, phonon)
 
-    n_omega = 500
+    n_omega = 100
     range_omega = [-6 * Energy.EV["->"], 10 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
     
@@ -43,7 +43,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(-10.0, 0.0)
+    mappable.set_clim(-5.0, 0.0)
 
     fig.savefig("spectrum.png")
 
