@@ -20,7 +20,6 @@ class ElectronPhonon:
     effective_potential: float = 1.0 / 16.0
 
     def __init__(self, electron: FreeElectron, phonon: DebyePhonon):
-        self.coefficient = 1.0 / phonon.n_q
         self.eigenenergies = electron.eigenenergies
         
         g1, g2, k, q = self.create_ggkq_grid(electron, phonon)
@@ -64,7 +63,7 @@ class ElectronPhonon:
             complex: The Fan self-energy term as a complex number.
         """
         
-        return np.nansum(self.coupling2 * self.green_function.calculate(omega), axis=(1, 3)) * self.coefficient
+        return np.nansum(self.coupling2 * self.green_function.calculate(omega), axis=(1, 3)) / self.phonon.n_q
 
     def calculate_spectrum(self, omega: float) -> np.ndarray:
         self_energies = self.calculate_self_energies(omega)
