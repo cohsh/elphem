@@ -22,7 +22,7 @@ def main():
     electron_phonon = ElectronPhonon(electron, phonon)
 
     n_omega = 100
-    range_omega = [-6 * Energy.EV["->"], 10 * Energy.EV["->"]]
+    range_omega = [-6 * Energy.EV["->"], 5 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
     
     spectrum = electron_phonon.calculate_spectrum_over_range(omega_array)
