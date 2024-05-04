@@ -187,7 +187,7 @@ class ReciprocalCell(Cell):
             x = np.linspace(0.0, 1.0, n_split)
             
             for j in range(n_split):
-                k[count] = k_via[i] @ self.basis + x[j] * direction
+                k[count] = k_via[i] + x[j] * direction
                 minor_scales[count] = x[j] * length + length_part
                 count += 1
             
