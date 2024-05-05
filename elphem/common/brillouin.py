@@ -1,6 +1,6 @@
 from types import MappingProxyType
 
-class SpecialPoints:
+class SpecialPoints3D:
     """Defines immutable sets of special points in first Brillouin zone for different types of crystal lattices.
 
     Attributes:
@@ -52,3 +52,37 @@ class SpecialPoints:
         "L": (1/2, 0, 1/2)
     })
     Hexagonal = MappingProxyType(_Hexagonal)
+
+class SpecialPoints2D:
+    # Gamma Point
+    _Gamma = {
+        "G": (0, 0)
+    }
+    Gamma = MappingProxyType(_Gamma)
+
+    _Square = {**_Gamma}
+    _Square.update({
+        "X": (1/2, 0),
+        "M": (1/2, 1/2)
+    })
+    Square = MappingProxyType(_Square)
+    
+    _Hexagonal = {**_Gamma}
+    _Hexagonal.update({
+        "M": (1/2, 0),
+        "K": (1/2, 1/2)
+    })
+    Hexagonal = MappingProxyType(_Hexagonal)
+
+class SpecialPoints1D:
+    # Gamma Point
+    _Gamma = {
+        "G": (0)
+    }
+    Gamma = MappingProxyType(_Gamma)
+    
+    _Line = {**_Gamma}
+    _Line.update({
+        "X": (1/2)
+    })
+    Line = MappingProxyType(_Line)
