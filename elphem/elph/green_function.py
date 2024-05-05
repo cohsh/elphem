@@ -5,7 +5,7 @@ from elphem.electron.free import FreeElectron
 from elphem.phonon.debye import DebyePhonon
 
 class GreenFunction:
-    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, sigma: float = 0.00001, eta: float = 0.0001):
+    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, sigma: float, eta: float):
         self.sigma = sigma
         self.eta = eta
         self.gaussian_coefficient_a = 2.0 * self.sigma ** 2

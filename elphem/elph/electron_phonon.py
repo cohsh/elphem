@@ -19,7 +19,7 @@ class ElectronPhonon:
     """
     effective_potential: float = 1.0 / 16.0
 
-    def __init__(self, electron: FreeElectron, phonon: DebyePhonon):
+    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, sigma: float = 0.00001, eta: float = 0.0001):
         self.eigenenergies = electron.eigenenergies
         
         g1, g2, k, q = self.create_ggkq_grid(electron, phonon)
@@ -28,7 +28,7 @@ class ElectronPhonon:
         self.electron_inter = electron.clone_with_gk_grid(g2, k + q)
         self.phonon = phonon.clone_with_q_grid(q)
         
-        self.green_function = GreenFunction(self.electron_inter, self.phonon)
+        self.green_function = GreenFunction(self.electron_inter, self.phonon, sigma, eta)
 
         self.coupling2 = np.abs(self.calculate_couplings()) ** 2
 
