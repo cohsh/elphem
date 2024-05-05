@@ -6,14 +6,15 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM['->']
     debye_temperature = 344.0
-    n_q = np.full(3, 30)
+    n_q = np.full(3, 40)
     n_electron = 1
     n_band = 1
-    k_gamma = np.full(3, 0.)
 
     lattice = Lattice('bcc', 'Li', a, debye_temperature)
+    
+    k = lattice.reciprocal.calculate_special_k('N')
 
-    electron = FreeElectron.create_from_k(lattice, n_electron, n_band, k_gamma)
+    electron = FreeElectron.create_from_k(lattice, n_electron, n_band, k)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
     electron_phonon = ElectronPhonon(electron, phonon)
