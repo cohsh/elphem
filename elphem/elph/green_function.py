@@ -11,9 +11,15 @@ class GreenFunction:
         self.gaussian_coefficient_a = 2.0 * self.sigma ** 2
         self.gaussian_coefficient_b = np.sqrt(2.0 * np.pi) * self.sigma
 
-        self.poles = np.array([electron.eigenenergies + phonon.eigenenergies, electron.eigenenergies - phonon.eigenenergies])
+        self.poles = np.array([
+            electron.eigenenergies + phonon.eigenenergies,
+            electron.eigenenergies - phonon.eigenenergies
+            ])
         
-        self.weights = np.array([1.0 - electron.occupations + phonon.occupations, electron.occupations + phonon.occupations])
+        self.weights = np.array([
+            1.0 - electron.occupations + phonon.occupations,
+            electron.occupations + phonon.occupations
+            ])
     
     def calculate(self, omega: float) -> np.ndarray:
         omega_minus_poles = omega - self.poles
