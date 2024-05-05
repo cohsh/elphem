@@ -10,15 +10,15 @@ def main():
     n_band = 1
     n_q_array = np.full(3, 40)
 
-    lattice = Lattice('bcc', 'Li', a, debye_temperature * 1.5)
+    lattice = Lattice('bcc', 'Li', a, debye_temperature * 1.2)
 
     k = lattice.reciprocal.calculate_special_k('N')
     
     electron = FreeElectron.create_from_k(lattice, n_electron, n_band, k)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q_array)
 
-    n_omega = 400
-    range_omega = [1.4 * Energy.EV["->"], 1.5 * Energy.EV["->"]]
+    n_omega = 1000
+    range_omega = [1.3 * Energy.EV["->"], 1.6 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
     
     electron_phonon = ElectronPhonon(electron, phonon)
@@ -30,8 +30,8 @@ def main():
 
     ax.plot(omega_array * Energy.EV["<-"], np.abs(spectrum[0]) / Energy.EV["<-"])
 
-    ax.set_yscale('log')
-    ax.set_ylim(bottom=1)
+#    ax.set_yscale('log')
+#    ax.set_ylim(bottom=1)
     ax.set_xlabel("$\omega$ ($\mathrm{eV}$)")
     ax.set_ylabel("$A(\mathbf{k}_\mathrm{N}, \omega)$ ($\mathrm{eV}^{-1}$)")
     ax.set_title("Spectral function of bcc-Li")
