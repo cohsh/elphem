@@ -10,21 +10,18 @@ def main():
     
     k_path = lattice.reciprocal.get_path(k_names, 40)
 
-    electron = FreeElectron.create_from_path(lattice, 1, 50, k_path)
+    electron = FreeElectron.create_from_path(lattice, 1, 2, k_path)
 
-    eigenenergies = electron.eigenenergies
+    eigenenergies = electron.eigenenergies * Energy.EV['<-']
 
     fig, ax = plt.subplots()
     for band in eigenenergies:
-        ax.plot(k_path.minor_scales, band * Energy.EV["<-"], color="tab:blue")
+        ax.plot(k_path.minor_scales, band, color="tab:blue")
     
-    y_range = [-10, 100]
-
-    ax.vlines(k_path.major_scales, ymin=y_range[0], ymax=y_range[1], color="black", linewidth=0.3)
+    ax.vlines(k_path.major_scales, ymin=np.amin(eigenenergies), ymax=np.amax(eigenenergies), color="black", linewidth=0.3)
     ax.set_xticks(k_path.major_scales)
     ax.set_xticklabels(k_names)
     ax.set_ylabel("Energy ($\mathrm{eV}$)")
-    ax.set_ylim(y_range)
 
     fig.savefig("band_structure.png")
 
