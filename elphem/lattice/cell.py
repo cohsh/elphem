@@ -2,70 +2,31 @@ import numpy as np
 from dataclasses import dataclass
 
 from elphem.lattice.rotation import LatticeRotation
-from elphem.lattice.lattice_constant import LatticeConstant
+from elphem.lattice.lattice_constant import LatticeConstant3D
 from elphem.lattice.path import PathValues
-from elphem.common.brillouin import SpecialPoints
+from elphem.common.brillouin import SpecialPoints3D
 
-class Cell:
-    """Base class for a crystal cell, providing basic structure and methods."""
+class Cell3D:
     def __init__(self):
-        """Initializes the Cell with a basis matrix."""
-        self.basis = self.build()
+        self.basis = None
     
-    def build(self) -> np.ndarray:
-        """Builds the default identity matrix for the cell basis.
-
-        Returns:
-            np.ndarray: A 3x3 identity matrix.
-        """
-        return np.identity(3)
-    
-    def get_volume(self) -> float:
+    def calculate_volume(self) -> float:
         """Calculates the volume of the cell.
 
         Returns:
             float: The volume calculated using the determinant of the basis vectors.
         """
-        volume = np.dot(self.basis[0], np.cross(self.basis[1], self.basis[2]))
-        return volume
-    
-    def element(self, a: np.ndarray) -> np.ndarray:
-        """Transforms a vector a by the basis matrix.
-
-        Args:
-            a (np.ndarray): The vector to transform.
-
-        Returns:
-            np.ndarray: The transformed vector.
-        """
-        x = np.dot(a, self.basis)
-        return x
-
-    @staticmethod
-    def optimize(basis: np.ndarray) -> np.ndarray:
-        """Optimizes the cell basis using the LatticeRotation utility.
-
-        Args:
-            basis (np.ndarray): The basis matrix to optimize.
-
-        Returns:
-            np.ndarray: The optimized basis matrix.
-        """
-        axis = np.array([1.0] * 3)
-        
-        basis = LatticeRotation.optimize(basis, axis)
-        
-        return basis
+        return np.dot(self.basis[0], np.cross(self.basis[1], self.basis[2]))
 
 @dataclass
-class PrimitiveCell(Cell):
+class PrimitiveCell3D(Cell3D):
     """Defines the primitive cell for a crystal based on the lattice constants."""
-    lattice_constant: LatticeConstant
+    lattice_constant: LatticeConstant3D
     
     def __post_init__(self):
         """Initializes and builds the basis for the primitive cell."""
         self.basis = self.build()
-        self.volume = self.get_volume()
+        self.volume = self.calculate_volume()
     
     def build(self) -> np.ndarray:
         """Constructs the basis matrix for the primitive cell from lattice constants and angles.
@@ -89,15 +50,29 @@ class PrimitiveCell(Cell):
         
         return basis
 
+    @staticmethod
+    def optimize(basis: np.ndarray) -> np.ndarray:
+        """Optimizes the cell basis using the LatticeRotation utility.
+
+        Args:
+            basis (np.ndarray): The basis matrix to optimize.
+
+        Returns:
+            np.ndarray: The optimized basis matrix.
+        """
+        axis = np.array([1.0] * 3)
+        
+        return LatticeRotation.optimize(basis, axis)
+
 @dataclass
-class ReciprocalCell(Cell):
+class ReciprocalCell3D(Cell3D):
     """Defines the reciprocal cell for a crystal based on the lattice constants of the primitive cell."""
-    lattice_constant: LatticeConstant
+    lattice_constant: LatticeConstant3D
     
     def __post_init__(self):
         """Initializes and builds the basis for the reciprocal cell."""
         self.basis = self.build()
-        self.volume = self.get_volume()
+        self.volume = self.calculate_volume()
     
     def build(self) -> np.ndarray:
         """Constructs the basis matrix for the reciprocal cell from the primitive cell.
@@ -105,7 +80,7 @@ class ReciprocalCell(Cell):
         Returns:
             np.ndarray: The basis matrix of the reciprocal cell.
         """
-        primitive_cell = PrimitiveCell(self.lattice_constant)
+        primitive_cell = PrimitiveCell3D(self.lattice_constant)
 
         basis = np.zeros((3,3))
         
@@ -211,11 +186,11 @@ class ReciprocalCell(Cell):
             ValueError: If an invalid crystal structure name is provided.
         """
         if self.lattice_constant.crystal_structure == 'bcc':
-            special_point = SpecialPoints.BCC[k_name]
+            special_point = SpecialPoints3D.BCC[k_name]
         elif self.lattice_constant.crystal_structure == 'fcc':
-            special_point = SpecialPoints.FCC[k_name]
+            special_point = SpecialPoints3D.FCC[k_name]
         elif self.lattice_constant.crystal_structure == 'sc':
-            special_point = SpecialPoints.SC[k_name]
+            special_point = SpecialPoints3D.SC[k_name]
         else:
             raise ValueError("Invalid name specified.")
         

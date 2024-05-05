@@ -26,14 +26,6 @@ class LatticeConstant3D:
         """Converts angles to radians and stores lengths and angles as numpy arrays."""
         self.length = np.array([self.a, self.b, self.c])
         self.angle = np.radians(np.array([self.alpha, self.beta, self.gamma]))
-        
-    def rescale(self, factor: float) -> None:
-        """Rescales the lattice constants by a given factor.
-
-        Args:
-            factor (float): The factor by which the lattice lengths are multiplied.
-        """
-        self.length *= factor
 
 @dataclass
 class LatticeConstant2D:
@@ -57,14 +49,6 @@ class LatticeConstant2D:
         """Converts angles to radians and stores lengths and angles as numpy arrays."""
         self.length = np.array([self.a, self.b])
         self.angle = np.radians(np.array([self.alpha]))
-        
-    def rescale(self, factor: float) -> None:
-        """Rescales the lattice constants by a given factor.
-
-        Args:
-            factor (float): The factor by which the lattice lengths are multiplied.
-        """
-        self.length *= factor
 
 @dataclass
 class LatticeConstant1D:
@@ -85,11 +69,3 @@ class LatticeConstant1D:
     def __post_init__(self):
         """Converts angles to radians and stores lengths and angles as numpy arrays."""
         self.length = np.array([self.a])
-        
-    def rescale(self, factor: float) -> None:
-        """Rescales the lattice constants by a given factor.
-
-        Args:
-            factor (float): The factor by which the lattice lengths are multiplied.
-        """
-        self.length *= factor
