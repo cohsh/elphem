@@ -13,7 +13,7 @@ class GreenFunction:
 
         self.poles = np.array([electron.eigenenergies + phonon.eigenenergies, electron.eigenenergies - phonon.eigenenergies])
         
-        self.weights = np.array([electron.occupations + phonon.occupations, 1.0 - electron.occupations + phonon.occupations])
+        self.weights = np.array([1.0 - electron.occupations + phonon.occupations, electron.occupations + phonon.occupations])
     
     def calculate(self, omega: float) -> np.ndarray:
         omega_minus_poles = omega - self.poles
