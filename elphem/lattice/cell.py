@@ -18,6 +18,20 @@ class Cell3D:
         """
         return np.dot(self.basis[0], np.cross(self.basis[1], self.basis[2]))
 
+class Cell2D:
+    def __init__(self):
+        self.basis = None
+    
+    def calculate_volume(self) -> float:
+        return np.linalg.norm(np.cross(self.basis[0], self.basis[1]))
+
+class Cell1D:
+    def __init__(self):
+        self.basis = None
+    
+    def calculate_volume(self) -> float:
+        return self.basis
+
 @dataclass
 class PrimitiveCell3D(Cell3D):
     """Defines the primitive cell for a crystal based on the lattice constants."""
