@@ -3,7 +3,8 @@ import numpy as np
 
 from elphem.common.atomic_weight import AtomicWeight
 from elphem.common.unit import Mass
-from elphem.lattice.cell import PrimitiveCell, ReciprocalCell
+from elphem.lattice.primitive_cell import PrimitiveCell3D
+from elphem.lattice.reciprocal_cell import ReciprocalCell3D
 from elphem.lattice.lattice_constant import LatticeConstant3D
 
 @dataclass
