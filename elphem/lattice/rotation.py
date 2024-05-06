@@ -39,20 +39,20 @@ class LatticeRotation3D(LatticeRotation):
         Raises:
             ValueError: If the axis vector is zero.
         """
-        basis_rotated = cls.match(basis, axis)
+        basis_rotated = cls.search_optimized_direction(basis, axis)
         basis_rotated = cls.search_optimized_posture(basis_rotated, axis)
         return basis_rotated
 
     @classmethod
-    def match(cls, basis: np.ndarray, axis: np.ndarray) -> np.ndarray:
-        """Match the given basis direction to the specified axis using quaternion rotation.
+    def search_optimized_direction(cls, basis: np.ndarray, axis: np.ndarray) -> np.ndarray:
+        """search_optimized_direction the given basis direction to the specified axis using quaternion rotation.
 
         Args:
             basis (np.ndarray): The initial basis vectors.
             axis (np.ndarray): The axis to align the basis vectors to.
 
         Returns:
-            np.ndarray: The basis vectors rotated to match the direction of the axis.
+            np.ndarray: The basis vectors rotated to search_optimized_direction the direction of the axis.
 
         Raises:
             ValueError: If the axis vector is zero.
@@ -147,3 +147,58 @@ class LatticeRotation3D(LatticeRotation):
                 basis_searched = basis_rotated
 
         return basis_searched
+
+class LatticeRotation2D(LatticeRotation):
+    """Provides methods to optimize and adjust lattice orientations through rotation operations."""
+    
+    @classmethod
+    def calculate_optimized_basis(cls, basis: np.ndarray, axis: np.ndarray) -> np.ndarray:
+        """Optimize the rotation of the given basis to align with the specified axis.
+
+        Args:
+            basis (np.ndarray): The basis vectors of the lattice to be rotated.
+            axis (np.ndarray): The target axis for alignment.
+
+        Returns:
+            np.ndarray: The optimized basis vectors aligned as closely as possible to the target axis.
+
+        Raises:
+            ValueError: If the axis vector is zero.
+        """
+        basis_rotated = cls.search_optimized_direction(basis, axis)
+        return basis_rotated
+
+    @classmethod
+    def search_optimized_direction(cls, basis: np.ndarray, axis: np.ndarray) -> np.ndarray:
+        """search_optimized_direction the given basis direction to the specified axis using quaternion rotation.
+
+        Args:
+            basis (np.ndarray): The initial basis vectors.
+            axis (np.ndarray): The axis to align the basis vectors to.
+
+        Returns:
+            np.ndarray: The basis vectors rotated to search_optimized_direction the direction of the axis.
+
+        Raises:
+            ValueError: If the axis vector is zero.
+        """
+        if np.linalg.norm(axis) == 0.0:
+            raise ValueError("Axis vector should not be zero.")
+        
+        direction = cls.normalize(basis[0] + basis[1])
+        n = cls.normalize(axis)
+
+        dot = np.dot(direction, n)
+
+        theta = np.arccos(dot)
+        sin_theta = np.sin(theta)
+        cos_theta = np.cos(theta)
+        
+        rotation_matrix = np.array([
+            [cos_theta, -sin_theta],
+            [sin_theta, cos_theta]
+        ])
+
+        basis_rotated = rotation_matrix @ basis
+        
+        return basis_rotated
