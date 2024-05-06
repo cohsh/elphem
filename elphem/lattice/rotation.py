@@ -1,11 +1,32 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-class LatticeRotation3D:
+class LatticeRotation:
+    @staticmethod
+    def normalize(v: np.ndarray) -> np.ndarray:
+        """Normalize the given vector.
+
+        Args:
+            v (np.ndarray): The vector to normalize.
+
+        Returns:
+            np.ndarray: The normalized vector.
+
+        Raises:
+            ValueError: If the input vector is zero.
+        """
+        v_norm = np.linalg.norm(v)
+
+        if v_norm == 0.0:
+            return v
+
+        return v / v_norm
+
+class LatticeRotation3D(LatticeRotation):
     """Provides methods to optimize and adjust lattice orientations through rotation operations."""
     
     @classmethod
-    def optimize(cls, basis: np.ndarray, axis: np.ndarray) -> np.ndarray:
+    def calculate_optimized_basis(cls, basis: np.ndarray, axis: np.ndarray) -> np.ndarray:
         """Optimize the rotation of the given basis to align with the specified axis.
 
         Args:
@@ -19,7 +40,7 @@ class LatticeRotation3D:
             ValueError: If the axis vector is zero.
         """
         basis_rotated = cls.match(basis, axis)
-        basis_rotated = cls.search_posture(basis_rotated, axis)
+        basis_rotated = cls.search_optimized_posture(basis_rotated, axis)
         return basis_rotated
 
     @classmethod
@@ -60,7 +81,7 @@ class LatticeRotation3D:
         return basis_rotated
 
     @classmethod
-    def around_axis(cls, axis: np.ndarray, v: np.ndarray, theta: float) -> np.ndarray:
+    def rotate_vector_around_axis(cls, axis: np.ndarray, v: np.ndarray, theta: float) -> np.ndarray:
         """Rotate vector v around the given axis by angle theta.
 
         Args:
@@ -86,7 +107,7 @@ class LatticeRotation3D:
         return v_rotated
 
     @classmethod
-    def search_posture(cls, basis: np.ndarray, axis: np.ndarray, angle_max: float = 360.0) -> np.ndarray:
+    def search_optimized_posture(cls, basis: np.ndarray, axis: np.ndarray, angle_max: float = 360.0) -> np.ndarray:
         """Search for the best posture of the basis aligned with the given axis.
 
         Args:
@@ -112,7 +133,7 @@ class LatticeRotation3D:
                     
         axis_normalized = cls.normalize(axis)
         for theta in angle:
-            basis_rotated = cls.around_axis(axis_normalized, basis, theta)
+            basis_rotated = cls.rotate_vector_around_axis(axis_normalized, basis, theta)
             
             s = 0.0
             for i in range(3):
@@ -126,23 +147,3 @@ class LatticeRotation3D:
                 basis_searched = basis_rotated
 
         return basis_searched
-
-    @staticmethod
-    def normalize(v: np.ndarray) -> np.ndarray:
-        """Normalize the given vector.
-
-        Args:
-            v (np.ndarray): The vector to normalize.
-
-        Returns:
-            np.ndarray: The normalized vector.
-
-        Raises:
-            ValueError: If the input vector is zero.
-        """
-        v_norm = np.linalg.norm(v)
-
-        if v_norm == 0.0:
-            return v
-
-        return v / v_norm
