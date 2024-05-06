@@ -270,3 +270,115 @@ class ReciprocalCell2D(Cell2D):
             raise ValueError("Invalid name specified.")
         
         return np.array(special_point) @ self.basis
+
+@dataclass
+class ReciprocalCell1D(Cell1D):
+    """Defines the reciprocal cell for a crystal based on the lattice constants of the primitive cell."""
+    lattice_constant: LatticeConstant1D
+    
+    def __post_init__(self):
+        """Initializes and builds the basis for the reciprocal cell."""
+        self.basis = self.build()
+        self.volume = self.calculate_volume()
+    
+    def build(self) -> np.ndarray:
+        """Constructs the basis matrix for the reciprocal cell from the primitive cell.
+
+        Returns:
+            np.ndarray: The basis matrix of the reciprocal cell.
+        """
+        primitive_cell = PrimitiveCell1D(self.lattice_constant)
+        
+        primitive_vector = primitive_cell.basis
+
+        basis = 2.0 * np.pi / primitive_vector
+        
+        return basis
+
+    def get_reciprocal_vectors(self, n_g: int) -> np.ndarray:
+        """Generate the reciprocal lattice vectors used to define the Brillouin zone boundaries.
+
+        Returns:
+            np.ndarray: An array of reciprocal lattice vectors.
+        """
+
+        n_cut = np.ceil(np.cbrt(n_g))
+
+        n_1d = np.arange(-n_cut, n_cut + 1)
+        
+        g = n_1d * self.basis
+        g_norm = abs(g).round(decimals=5)
+        g_norm_unique = np.unique(g_norm)
+
+        g_list = []
+
+        for g_ref in g_norm_unique:
+            count = 0
+            for g_compare in g_norm:
+                if g_compare == g_ref:
+                    g_list.append(g[count])
+                count += 1
+
+        return np.array(g_list[0:n_g])
+
+    def get_monkhorst_pack_grid(self, n_x: int) -> np.ndarray:
+        x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
+
+        aligned_k = x * self.basis
+
+        return aligned_k
+
+    def get_path(self, k_names: list[str], n_split: int) -> PathValues:
+        """Calculates a path through specified special points in the Brillouin zone.
+
+        Args:
+            k_names (list[str]): List of special point names to form the path.
+            n (int): Number of points between each special point.
+
+        Returns:
+            tuple: Returns the total length of the path, the path coordinates, and the lengths at special points.
+        """
+        k_via = [self.calculate_special_k(s) for s in k_names]
+        n_via = len(k_via) - 1
+
+        major_scales = np.empty((n_via+1,))
+        minor_scales = np.empty((n_via * n_split,))
+        k = np.empty((n_via * n_split,))
+
+        count = 0
+        length_part = 0.0
+        major_scales[0] = 0.0
+
+        for i in range(n_via):
+            direction = k_via[i+1] - k_via[i]
+            length = np.linalg.norm(direction)
+
+            x = np.linspace(0.0, 1.0, n_split)
+            
+            for j in range(n_split):
+                k[count] = k_via[i] + x[j] * direction
+                minor_scales[count] = x[j] * length + length_part
+                count += 1
+            
+            length_part += length
+            major_scales[i+1] = length_part
+
+        k_path = PathValues(major_scales, minor_scales, k)
+
+        return k_path
+
+    def calculate_special_k(self, k_name: str) -> np.ndarray:
+        """Retrieves the coordinates of special k-points based on the crystal structure.
+
+        Args:
+            k_name (str): The name of the special point.
+
+        Returns:
+            np.ndarray: The coordinates of the special point.
+
+        Raises:
+            ValueError: If an invalid crystal structure name is provided.
+        """
+        special_point = SpecialPoints1D.Line[k_name]
+        
+        return special_point * self.basis

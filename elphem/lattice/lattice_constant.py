@@ -64,7 +64,6 @@ class LatticeConstant1D:
         crystal_structure (str): The type of crystal structure (e.g., 'bcc', 'fcc', 'sc').
     """
     a: float
-    crystal_structure: str
     
     def __post_init__(self):
         """Converts angles to radians and stores lengths and angles as numpy arrays."""

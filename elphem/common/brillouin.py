@@ -77,12 +77,12 @@ class SpecialPoints2D:
 class SpecialPoints1D:
     # Gamma Point
     _Gamma = {
-        "G": (0)
+        "G": 0
     }
     Gamma = MappingProxyType(_Gamma)
     
     _Line = {**_Gamma}
     _Line.update({
-        "X": (1/2)
+        "X": 1/2
     })
     Line = MappingProxyType(_Line)
