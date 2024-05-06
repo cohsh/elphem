@@ -8,11 +8,11 @@ def main():
     debye_temperature = 344.0
     n_q = np.full(3, 20)
     k_names = ["G", "H", "N", "G", "P", "H"]
-    n_split = 40
+    n_split = 20
     n_electron = 1
     n_band = 1
 
-    lattice = Lattice('bcc', 'Li', a, debye_temperature)
+    lattice = Lattice3D('bcc', 'Li', a, debye_temperature)
 
     k_path = lattice.reciprocal.get_path(k_names, n_split)
 

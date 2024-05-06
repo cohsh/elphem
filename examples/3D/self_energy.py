@@ -11,7 +11,7 @@ def main():
     n_electron = 1
     n_band = 1
 
-    lattice = Lattice('bcc', 'Li', a, debye_temperature)
+    lattice = Lattice3D('bcc', 'Li', a, debye_temperature)
     
     k = lattice.reciprocal.calculate_special_k('N')
 

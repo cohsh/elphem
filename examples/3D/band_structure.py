@@ -5,7 +5,7 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM['->']
 
-    lattice = Lattice('bcc', 'Li', a)
+    lattice = Lattice3D('bcc', 'Li', a)
     k_names = ["G", "H", "N", "G", "P", "H"]
     
     k_path = lattice.reciprocal.get_path(k_names, 40)
