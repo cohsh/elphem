@@ -3,7 +3,7 @@ import numpy as np
 from elphem.common.unit import Energy
 from elphem.common.function import safe_divide
 from elphem.common.distribution import bose_distribution
-from elphem.lattice.lattice import Lattice
+from elphem.lattice.lattice import Lattice3D, Lattice2D, Lattice1D
 from elphem.lattice.path import PathValues
 
 class DebyePhonon:
@@ -16,7 +16,7 @@ class DebyePhonon:
         mass (float): The mass of the crystal's atoms.
     """
 
-    def __init__(self, lattice: Lattice, debye_temperature: float) -> None:
+    def __init__(self, lattice: Lattice3D | Lattice2D | Lattice1D, debye_temperature: float) -> None:
         """Validate initial model parameters."""
         self.lattice = lattice
         self.debye_temperature = debye_temperature
@@ -31,7 +31,7 @@ class DebyePhonon:
         self.occupations = None
     
     @classmethod
-    def create_from_q(cls, lattice: Lattice, debye_temperature: float, q_array: np.ndarray) -> 'DebyePhonon':
+    def create_from_q(cls, lattice: Lattice3D | Lattice2D | Lattice1D, debye_temperature: float, q_array: np.ndarray) -> 'DebyePhonon':
         debye_phonon = DebyePhonon(lattice, debye_temperature)
     
         debye_phonon.n_q = len(q_array)
@@ -45,7 +45,7 @@ class DebyePhonon:
         return debye_phonon
     
     @classmethod
-    def create_from_n(cls, lattice: Lattice, debye_temperature: float, n_q_array: np.ndarray | list[int]) -> 'DebyePhonon':
+    def create_from_n(cls, lattice: Lattice3D | Lattice2D | Lattice1D, debye_temperature: float, n_q_array: np.ndarray | list[int]) -> 'DebyePhonon':
         debye_phonon = DebyePhonon(lattice, debye_temperature)
 
         debye_phonon.n_q = np.prod(n_q_array)
@@ -59,7 +59,7 @@ class DebyePhonon:
         return debye_phonon
     
     @classmethod
-    def create_from_path(cls, lattice: Lattice, debye_temperature: float, q_path: PathValues) -> 'DebyePhonon':
+    def create_from_path(cls, lattice: Lattice3D | Lattice2D | Lattice1D, debye_temperature: float, q_path: PathValues) -> 'DebyePhonon':
         debye_phonon = DebyePhonon.create_from_q(lattice, debye_temperature, q_path.values)
         
         return debye_phonon
@@ -133,6 +133,11 @@ class DebyePhonon:
 
         debye_frequency = self.debye_temperature * Energy.KELVIN["->"]
 
-        speed_of_sound = debye_frequency * (6.0 * np.pi ** 2 * number_density) ** (-1.0/3.0)
+        if lattice.n_dim == 3:
+            speed_of_sound = debye_frequency * (6.0 * np.pi ** 2 * number_density) ** (-1.0/3.0)
+        elif lattice.n_dim == 2:
+            speed_of_sound = debye_frequency * (4.0 * np.pi * number_density) ** (-1.0/2.0)
+        elif lattice.n_dim == 1:
+            speed_of_sound = debye_frequency / (np.pi * number_density)
         
         return speed_of_sound
