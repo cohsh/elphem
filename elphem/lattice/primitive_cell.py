@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from elphem.lattice.rotation import LatticeRotation3D, LatticeRotation2D
 from elphem.lattice.cell import Cell1D, Cell2D, Cell3D
-from elphem.lattice.lattice_constant import LatticeConstant3D
+from elphem.lattice.lattice_constant import LatticeConstant3D, LatticeConstant2D, LatticeConstant1D
 
 @dataclass
 class PrimitiveCell3D(Cell3D):
@@ -53,7 +53,7 @@ class PrimitiveCell3D(Cell3D):
 
 @dataclass
 class PrimitiveCell2D(Cell2D):
-    lattice_constant: LatticeRotation2D
+    lattice_constant: LatticeConstant2D
 
     def __post_init__(self):
         """Initializes and builds the basis for the primitive cell."""
@@ -92,3 +92,24 @@ class PrimitiveCell2D(Cell2D):
         axis = np.array([1.0, 1.0])
         
         return LatticeRotation2D.calculate_optimized_basis(basis, axis)
+
+@dataclass
+class PrimitiveCell1D(Cell1D):
+    lattice_constant: LatticeConstant1D
+
+    def __post_init__(self):
+        """Initializes and builds the basis for the primitive cell."""
+        self.basis = self.build()
+        self.volume = self.calculate_volume()
+    
+    def build(self) -> np.ndarray:
+        """Constructs the basis matrix for the primitive cell from lattice constants and angles.
+
+        Returns:
+            np.ndarray: The basis matrix of the primitive cell.
+        """
+        length = self.lattice_constant.length
+
+        basis = np.array([length])
+        
+        return basis
