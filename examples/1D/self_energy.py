@@ -15,8 +15,6 @@ def main():
     
     k = lattice.reciprocal.calculate_special_k('G')
     
-    print(k)
-
     electron = FreeElectron.create_from_k(lattice, n_electron, n_band, k)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
@@ -24,7 +22,7 @@ def main():
     range_omega = [-10 * Energy.EV["->"], 10 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
 
-    sigma = (range_omega[1] - range_omega[0]) / n_omega * 0.1
+    sigma = (range_omega[1] - range_omega[0]) / n_omega
     
     print("sigma: {} meV".format(sigma * Energy.EV["->"] * 1e+3))
     time.sleep(3)

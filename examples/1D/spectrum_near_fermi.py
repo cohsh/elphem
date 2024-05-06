@@ -10,7 +10,7 @@ def main():
     k_names = ["X", "G"]
     n_split = 400
     n_electron = 1
-    n_band = 2
+    n_band = 1
 
     lattice = Lattice1D('Li', a, debye_temperature)
 
@@ -19,7 +19,7 @@ def main():
     electron = FreeElectron.create_from_path(lattice, n_electron, n_band, k_path)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
-    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.001, eta=0.001)
+    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.001)
 
     n_omega = 5000
     range_omega = [-0.05 * Energy.EV["->"], 0.05 * Energy.EV["->"]]
