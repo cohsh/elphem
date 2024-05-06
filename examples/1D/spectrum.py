@@ -6,13 +6,13 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM['->']
     debye_temperature = 344.0
-    n_q = np.full(2, 30)
-    k_names = ["G", "X", "G", "M", "X"]
+    n_q = np.full(1, 50)
+    k_names = ["X", "G", "X"]
     n_split = 100
     n_electron = 1
     n_band = 1
 
-    lattice = Lattice2D('square', 'Li', a, debye_temperature)
+    lattice = Lattice1D('Li', a, debye_temperature)
 
     k_path = lattice.reciprocal.get_path(k_names, n_split)
 
