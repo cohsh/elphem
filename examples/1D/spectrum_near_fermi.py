@@ -6,9 +6,9 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM['->']
     debye_temperature = 344.0
-    n_q = np.full(1, 30)
-    k_names = ["X", "G"]
-    n_split = 400
+    n_q = np.full(1, 50)
+    k_names = ["G", "X"]
+    n_split = 1000
     n_electron = 1
     n_band = 1
 

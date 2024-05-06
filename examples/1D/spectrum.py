@@ -6,9 +6,9 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM['->']
     debye_temperature = 344.0
-    n_q = np.full(1, 30)
-    k_names = ["X", "G", "X"]
-    n_split = 200
+    n_q = np.full(1, 50)
+    k_names = ["G", "X"]
+    n_split = 500
     n_electron = 1
     n_band = 1
 
@@ -20,12 +20,10 @@ def main():
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
     n_omega = 10000
-    range_omega = [-1.5 * Energy.EV["->"], 1 * Energy.EV["->"]]
+    range_omega = [-2 * Energy.EV["->"], 10 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
     
-    sigma = (range_omega[1] - range_omega[0]) / n_omega * 10
-
-    electron_phonon = ElectronPhonon(electron, phonon, sigma=sigma)
+    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.001, eta=0.01)
     
     spectrum = electron_phonon.calculate_spectrum_over_range(omega_array)
     
