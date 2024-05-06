@@ -76,7 +76,7 @@ class PrimitiveCell3D(Cell3D):
         """
         axis = np.array([1.0] * 3)
         
-        return LatticeRotation.optimize(basis, axis)
+        return LatticeRotation3D.optimize(basis, axis)
 
 @dataclass
 class ReciprocalCell3D(Cell3D):

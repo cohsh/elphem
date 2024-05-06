@@ -40,8 +40,8 @@ class Lattice3D(Lattice):
         super().__init__(crystal_structure, atoms, a, temperature)
         self.set_constants()
 
-        self.primitive = PrimitiveCell(self.constants)
-        self.reciprocal = ReciprocalCell(self.constants)
+        self.primitive = PrimitiveCell3D(self.constants)
+        self.reciprocal = ReciprocalCell3D(self.constants)
 
     def set_constants(self) -> None:
         """Determines lattice constants based on the crystal structure.

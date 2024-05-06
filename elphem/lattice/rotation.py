@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-class LatticeRotation:
+class LatticeRotation3D:
     """Provides methods to optimize and adjust lattice orientations through rotation operations."""
     
     @classmethod
