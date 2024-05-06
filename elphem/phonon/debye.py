@@ -86,20 +86,6 @@ class DebyePhonon:
         
         return eigenenergies
 
-    def get_eigenenergies_with_path(self, q_path: PathValues) -> PathValues:
-        """Calculate the phonon dispersion curves along specified paths in reciprocal space.
-
-        Args:
-            q_names (list[np.ndarray]): List of special points defining the path through the Brillouin zone.
-            n_split (int): Number of points between each special point to compute the dispersion curve.
-
-        Returns:
-            tuple: A tuple containing the x-coordinates for plotting, omega (eigenenergy values), and x-coordinates of special points.
-        """
-        eigenenergies = self.calculate_eigenenergies(q_path.values)
-        
-        return q_path.derive(eigenenergies)
-
     def calculate_eigenvectors(self, q_array: np.ndarray) -> np.ndarray:
         """Calculate phonon eigenvectors at wave vector q.
 
@@ -109,8 +95,11 @@ class DebyePhonon:
         Returns:
             np.ndarray: The phonon eigenvectors at each wave vector, represented as complex numbers.
         """
-
-        q_norm = np.repeat(np.linalg.norm(q_array, axis=-1, keepdims=True), q_array.shape[-1], axis=-1)
+        if self.lattice.n_dim != 1:
+            q_norm = np.repeat(np.linalg.norm(q_array, axis=-1, keepdims=True), q_array.shape[-1], axis=-1)
+        else:
+            q_norm = np.abs(q_array)
+            
         eigenvectors = 1.0j * safe_divide(q_array, q_norm)
 
         return eigenvectors
