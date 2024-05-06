@@ -14,7 +14,8 @@ def main():
 
     eigenenergies = electron.eigenenergies * Energy.EV['<-']
     
-
+    print(electron.g.shape)
+    
     fig, ax = plt.subplots()
     for band in eigenenergies:
         ax.plot(k_path.minor_scales, band, color="tab:blue")

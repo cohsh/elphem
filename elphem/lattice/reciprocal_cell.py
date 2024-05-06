@@ -180,7 +180,7 @@ class ReciprocalCell2D(Cell2D):
             np.ndarray: An array of reciprocal lattice vectors.
         """
 
-        n_cut = np.ceil(np.cbrt(n_g))
+        n_cut = np.ceil(np.sqrt(n_g))
 
         n_1d = np.arange(-n_cut, n_cut + 1)
         n_2d = np.array(np.meshgrid(n_1d, n_1d)).T.reshape(-1, 2)
@@ -302,7 +302,7 @@ class ReciprocalCell1D(Cell1D):
             np.ndarray: An array of reciprocal lattice vectors.
         """
 
-        n_cut = np.ceil(np.cbrt(n_g))
+        n_cut = np.ceil(np.abs(n_g))
 
         n_1d = np.arange(-n_cut, n_cut + 1)
         
