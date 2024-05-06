@@ -20,6 +20,7 @@ class ElectronPhonon:
     effective_potential: float = 1.0 / 16.0
 
     def __init__(self, electron: FreeElectron, phonon: DebyePhonon, sigma: float = 0.00001, eta: float = 0.0001):
+        self.n_dim = electron.lattice.n_dim
         self.eigenenergies = electron.eigenenergies
         
         g1, g2, k, q = self.create_ggkq_grid(electron, phonon)
@@ -33,7 +34,7 @@ class ElectronPhonon:
         self.coupling2 = np.abs(self.calculate_couplings()) ** 2
 
     def create_ggkq_grid(self, electron: FreeElectron, phonon: DebyePhonon) -> tuple:
-        shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q, 3)
+        shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q, self.n_dim)
         
         g1 = np.broadcast_to(electron.g[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
         g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
