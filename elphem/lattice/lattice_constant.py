@@ -48,7 +48,7 @@ class LatticeConstant2D:
     def __post_init__(self):
         """Converts angles to radians and stores lengths and angles as numpy arrays."""
         self.length = np.array([self.a, self.b])
-        self.angle = np.radians(np.array([self.alpha]))
+        self.angle = np.radians(self.alpha)
 
 @dataclass
 class LatticeConstant1D:
