@@ -6,11 +6,11 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM["->"]
     debye_temperature = 344.0
-    n_band = 5
+    n_band = 2
     n_electron = 1
     n_q = np.full(1, 30)
-    k_names = ["X", "G", "X"]
-    n_split = 40
+    k_names = ["G", "X"]
+    n_split = 500
 
     lattice = Lattice1D('Li', a, debye_temperature)
     k_path = lattice.reciprocal.get_path(k_names, n_split)
@@ -18,7 +18,7 @@ def main():
     electron = FreeElectron.create_from_path(lattice, n_electron, n_band, k_path)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
-    electron_phonon = ElectronPhonon(electron, phonon)
+    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.001, eta=1)
     
     eig = electron.eigenenergies
     epr = np.empty(electron.eigenenergies.shape)
