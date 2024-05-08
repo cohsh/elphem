@@ -130,6 +130,6 @@ class DebyePhonon:
         elif lattice.n_dim == 2:
             speed_of_sound = debye_frequency * (4.0 * np.pi * number_density) ** (-1.0/2.0)
         elif lattice.n_dim == 1:
-            speed_of_sound = debye_frequency / (np.pi * number_density)
+            speed_of_sound = debye_frequency / (2.0 * np.pi * number_density)
         
         return speed_of_sound
