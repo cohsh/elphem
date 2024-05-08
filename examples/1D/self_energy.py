@@ -7,45 +7,40 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM['->']
     debye_temperature = 344.0
-    n_q = np.full(1, 30)
+    n_q = np.full(1, 50)
     n_electron = 1
     n_band = 1
 
     lattice = Lattice1D('Li', a, debye_temperature)
     
-    k = lattice.reciprocal.calculate_special_k('G')
-    
+    k = lattice.reciprocal.calculate_special_k('X')
+
     electron = FreeElectron.create_from_k(lattice, n_electron, n_band, k)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
     n_omega = 10000
-    range_omega = [-10 * Energy.EV["->"], 10 * Energy.EV["->"]]
+    range_omega = [-10 * Energy.EV["->"], 4 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
 
-    sigma = (range_omega[1] - range_omega[0]) / n_omega
-    
-    print("sigma: {} meV".format(sigma * Energy.EV["->"] * 1e+3))
-    time.sleep(3)
-    
-    print(electron.k)
-    print(electron.g.shape)
-
-    electron_phonon = ElectronPhonon(electron, phonon, sigma=sigma, eta=sigma)
+    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.001, eta=0.01)
     
     
     self_energies = electron_phonon.calculate_self_energies_over_range(omega_array)
-    
+
     fig = plt.figure()
     ax = {'real': fig.add_subplot(211), 'imag': fig.add_subplot(212)}
 
     ax['real'].plot(omega_array * Energy.EV["<-"], self_energies[0, 0].real * Energy.EV["<-"] * 1000.0)
     ax['imag'].plot(omega_array * Energy.EV["<-"], self_energies[0, 0].imag * Energy.EV["<-"] * 1000.0)
+    ax['real'].plot(omega_array * Energy.EV["<-"], (omega_array - electron.eigenenergies[0, 0]) * Energy.EV["<-"] * 1000.0 )
 
     ax['imag'].set_xlabel("$\omega$ ($\mathrm{eV}$)")
     ax['real'].set_ylabel("$\mathrm{Re}\Sigma_{n=0}(\mathbf{k}_\Gamma, \omega)$ ($\mathrm{meV}$)")
     ax['imag'].set_ylabel("$\mathrm{Im}\Sigma_{n=0}(\mathbf{k}_\Gamma, \omega)$ ($\mathrm{meV}$)")
 
     ax['real'].set_title("Self-energy of bcc-Li")
+
+    ax['real'].set_ylim([np.nanmin(self_energies[0,0].real * Energy.EV['<-'] * 1000.0) * 1.1, np.nanmax(self_energies[0,0].real * Energy.EV['<-'] * 1000.0) * 1.1])
 
     fig.savefig("self_energy.png")
 
