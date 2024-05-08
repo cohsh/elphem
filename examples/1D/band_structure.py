@@ -6,15 +6,13 @@ def main():
     a = 2.98 * Length.ANGSTROM['->']
 
     lattice = Lattice1D('Li', a)
-    k_names = ["X", "G", "X"]
+    k_names = ["G", "X"]
     
-    k_path = lattice.reciprocal.get_path(k_names, 40)
+    k_path = lattice.reciprocal.get_path(k_names, 1000)
 
-    electron = FreeElectron.create_from_path(lattice, 1, 50, k_path)
+    electron = FreeElectron.create_from_path(lattice, 1, 5, k_path)
 
     eigenenergies = electron.eigenenergies * Energy.EV['<-']
-    
-    print(electron.g.shape)
     
     fig, ax = plt.subplots()
     for band in eigenenergies:

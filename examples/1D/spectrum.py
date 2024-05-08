@@ -6,7 +6,7 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM['->']
     debye_temperature = 344.0
-    n_q = np.full(1, 50)
+    n_q = np.full(1, 30)
     k_names = ["G", "X"]
     n_split = 500
     n_electron = 1
@@ -43,7 +43,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(-5.0, 0.0)
+    mappable.set_clim(-3.0, 0.0)
 
     fig.savefig("spectrum.png")
 
