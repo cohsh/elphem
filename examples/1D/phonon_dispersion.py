@@ -7,7 +7,7 @@ def main():
     lattice = Lattice1D('Li', a)
 
     q_names = ["X", "G", "X"]
-    q_path = lattice.reciprocal.get_path(q_names, 40)
+    q_path = lattice.reciprocal.get_path(q_names, 100)
 
     debye_temperature = 344.0
     phonon = DebyePhonon.create_from_path(lattice, debye_temperature, q_path)

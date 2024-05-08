@@ -10,7 +10,7 @@ def main():
     
     k_path = lattice.reciprocal.get_path(k_names, 1000)
 
-    electron = FreeElectron.create_from_path(lattice, 1, 5, k_path)
+    electron = FreeElectron.create_from_path(lattice, 1, 4, k_path)
 
     eigenenergies = electron.eigenenergies * Energy.EV['<-']
     
