@@ -10,7 +10,9 @@ from elphem.common.brillouin import SpecialPoints3D, SpecialPoints2D, SpecialPoi
 
 @dataclass
 class ReciprocalCell:
-    def split_fractional_k_name(fractional_k_name: str):
+    n_dim: int = None
+    
+    def split_fractional_k_name(fractional_k_name: str) -> tuple:
         match = re.match(r"([0-9.]*)([A-Z]+)", fractional_k_name)
         
         if match:
@@ -23,13 +25,58 @@ class ReciprocalCell:
         else:
             raise ValueError("Invalid input string format. Ensure the input contains only a combination of numbers and k-names.")
 
+    def get_path(self, fractional_k_names: list[str], n_split: int) -> PathValues:
+        """Calculates a path through specified special points in the Brillouin zone.
+
+        Args:
+            k_names (list[str]): List of special point names to form the path.
+            n (int): Number of points between each special point.
+
+        Returns:
+            tuple: Returns the total length of the path, the path coordinates, and the lengths at special points.
+        """
+        fractional_k_names_tuple = [self.split_fractional_k_name(fractional_k_name) for fractional_k_name in fractional_k_names]
+        
+        k_via = [fractional_k_name[0] * self.calculate_special_k(fractional_k_name[1]) for fractional_k_name in fractional_k_names_tuple]
+        n_via = len(k_via) - 1
+
+        major_scales = np.empty((n_via+1,))
+        minor_scales = np.empty((n_via * n_split,))
+        k = np.empty((n_via * n_split, self.n_dim))
+
+        count = 0
+        length_part = 0.0
+        major_scales[0] = 0.0
+
+        for i in range(n_via):
+            direction = k_via[i+1] - k_via[i]
+            length = np.linalg.norm(direction)
+
+            x = np.linspace(0.0, 1.0, n_split)
+            
+            for j in range(n_split):
+                k[count] = k_via[i] + x[j] * direction
+                minor_scales[count] = x[j] * length + length_part
+                count += 1
+            
+            length_part += length
+            major_scales[i+1] = length_part
+
+        k_path = PathValues(major_scales, minor_scales, k)
+
+        return k_path
+    
+    def calculate_special_k(k_name: str) -> None:
+        pass
+
 @dataclass
-class ReciprocalCell3D(Cell3D):
+class ReciprocalCell3D(ReciprocalCell, Cell3D):
     """Defines the reciprocal cell for a crystal based on the lattice constants of the primitive cell."""
     lattice_constant: LatticeConstant3D
     
     def __post_init__(self):
         """Initializes and builds the basis for the reciprocal cell."""
+        Cell3D.__init__()
         self.basis = self.build()
         self.volume = self.calculate_volume()
     
@@ -93,45 +140,6 @@ class ReciprocalCell3D(Cell3D):
 
         return aligned_k
 
-    def get_path(self, k_names: list[str], n_split: int) -> PathValues:
-        """Calculates a path through specified special points in the Brillouin zone.
-
-        Args:
-            k_names (list[str]): List of special point names to form the path.
-            n (int): Number of points between each special point.
-
-        Returns:
-            tuple: Returns the total length of the path, the path coordinates, and the lengths at special points.
-        """
-        k_via = [self.calculate_special_k(s) for s in k_names]
-        n_via = len(k_via) - 1
-
-        major_scales = np.empty((n_via+1,))
-        minor_scales = np.empty((n_via * n_split,))
-        k = np.empty((n_via * n_split, 3))
-
-        count = 0
-        length_part = 0.0
-        major_scales[0] = 0.0
-
-        for i in range(n_via):
-            direction = k_via[i+1] - k_via[i]
-            length = np.linalg.norm(direction)
-
-            x = np.linspace(0.0, 1.0, n_split)
-            
-            for j in range(n_split):
-                k[count] = k_via[i] + x[j] * direction
-                minor_scales[count] = x[j] * length + length_part
-                count += 1
-            
-            length_part += length
-            major_scales[i+1] = length_part
-
-        k_path = PathValues(major_scales, minor_scales, k)
-
-        return k_path
-
     def calculate_special_k(self, k_name: str) -> np.ndarray:
         """Retrieves the coordinates of special k-points based on the crystal structure.
 
@@ -156,12 +164,13 @@ class ReciprocalCell3D(Cell3D):
         return np.array(special_point) @ self.basis
 
 @dataclass
-class ReciprocalCell2D(Cell2D):
+class ReciprocalCell2D(ReciprocalCell, Cell2D):
     """Defines the reciprocal cell for a crystal based on the lattice constants of the primitive cell."""
     lattice_constant: LatticeConstant2D
     
     def __post_init__(self):
         """Initializes and builds the basis for the reciprocal cell."""
+        Cell2D.__init__()
         self.basis = self.build()
         self.volume = self.calculate_volume()
     
@@ -227,45 +236,6 @@ class ReciprocalCell2D(Cell2D):
 
         return aligned_k
 
-    def get_path(self, k_names: list[str], n_split: int) -> PathValues:
-        """Calculates a path through specified special points in the Brillouin zone.
-
-        Args:
-            k_names (list[str]): List of special point names to form the path.
-            n (int): Number of points between each special point.
-
-        Returns:
-            tuple: Returns the total length of the path, the path coordinates, and the lengths at special points.
-        """
-        k_via = [self.calculate_special_k(s) for s in k_names]
-        n_via = len(k_via) - 1
-
-        major_scales = np.empty((n_via+1,))
-        minor_scales = np.empty((n_via * n_split,))
-        k = np.empty((n_via * n_split, 2))
-
-        count = 0
-        length_part = 0.0
-        major_scales[0] = 0.0
-
-        for i in range(n_via):
-            direction = k_via[i+1] - k_via[i]
-            length = np.linalg.norm(direction)
-
-            x = np.linspace(0.0, 1.0, n_split)
-            
-            for j in range(n_split):
-                k[count] = k_via[i] + x[j] * direction
-                minor_scales[count] = x[j] * length + length_part
-                count += 1
-            
-            length_part += length
-            major_scales[i+1] = length_part
-
-        k_path = PathValues(major_scales, minor_scales, k)
-
-        return k_path
-
     def calculate_special_k(self, k_name: str) -> np.ndarray:
         """Retrieves the coordinates of special k-points based on the crystal structure.
 
@@ -288,12 +258,13 @@ class ReciprocalCell2D(Cell2D):
         return np.array(special_point) @ self.basis
 
 @dataclass
-class ReciprocalCell1D(Cell1D):
+class ReciprocalCell1D(ReciprocalCell, Cell1D):
     """Defines the reciprocal cell for a crystal based on the lattice constants of the primitive cell."""
     lattice_constant: LatticeConstant1D
     
     def __post_init__(self):
         """Initializes and builds the basis for the reciprocal cell."""
+        Cell1D.__init__()
         self.basis = self.build()
         self.volume = self.calculate_volume()
     
@@ -343,45 +314,6 @@ class ReciprocalCell1D(Cell1D):
         aligned_k = x * self.basis
 
         return aligned_k
-
-    def get_path(self, k_names: list[str], n_split: int) -> PathValues:
-        """Calculates a path through specified special points in the Brillouin zone.
-
-        Args:
-            k_names (list[str]): List of special point names to form the path.
-            n (int): Number of points between each special point.
-
-        Returns:
-            tuple: Returns the total length of the path, the path coordinates, and the lengths at special points.
-        """
-        k_via = [self.calculate_special_k(s) for s in k_names]
-        n_via = len(k_via) - 1
-
-        major_scales = np.empty((n_via+1,))
-        minor_scales = np.empty((n_via * n_split,))
-        k = np.empty((n_via * n_split,))
-
-        count = 0
-        length_part = 0.0
-        major_scales[0] = 0.0
-
-        for i in range(n_via):
-            direction = k_via[i+1] - k_via[i]
-            length = np.linalg.norm(direction)
-
-            x = np.linspace(0.0, 1.0, n_split)
-            
-            for j in range(n_split):
-                k[count] = k_via[i] + x[j] * direction
-                minor_scales[count] = x[j] * length + length_part
-                count += 1
-            
-            length_part += length
-            major_scales[i+1] = length_part
-
-        k_path = PathValues(major_scales, minor_scales, k)
-
-        return k_path
 
     def calculate_special_k(self, k_name: str) -> np.ndarray:
         """Retrieves the coordinates of special k-points based on the crystal structure.

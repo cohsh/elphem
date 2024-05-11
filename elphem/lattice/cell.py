@@ -2,6 +2,7 @@ import numpy as np
 
 class Cell3D:
     def __init__(self):
+        self.n_dim = 3
         self.basis = None
     
     def calculate_volume(self) -> float:
@@ -14,6 +15,7 @@ class Cell3D:
 
 class Cell2D:
     def __init__(self):
+        self.n_dim = 2
         self.basis = None
     
     def calculate_volume(self) -> float:
@@ -21,6 +23,7 @@ class Cell2D:
 
 class Cell1D:
     def __init__(self):
+        self.n_dim = 1
         self.basis = None
     
     def calculate_volume(self) -> float:
