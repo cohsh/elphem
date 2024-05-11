@@ -88,8 +88,6 @@ class ReciprocalCell:
         
         grid_points = np.stack(grids, axis=-1).reshape(-1, self.n_dim)
         
-        print(grid_points)
-        
         g = grid_points @ self.basis
         g_norm = np.linalg.norm(g, axis=-1).round(decimals=5)
         g_norm_unique = np.unique(g_norm)

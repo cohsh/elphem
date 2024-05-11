@@ -11,7 +11,7 @@ def main():
     k_names = ["G", "X"]
     n_split = 200
     n_electron = 1
-    n_band = 2
+    n_band = 1
 
     lattice = Lattice1D('Li', a, 0.1 * debye_temperature)
 
