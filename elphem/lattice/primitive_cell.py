@@ -108,6 +108,6 @@ class PrimitiveCell1D(Cell1D):
         Returns:
             np.ndarray: The basis matrix of the primitive cell.
         """
-        basis = np.array([[self.lattice_constant.length]])
+        basis = self.lattice_constant.length
         
         return basis

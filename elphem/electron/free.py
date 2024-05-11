@@ -46,12 +46,17 @@ class FreeElectron:
         if isinstance(k_array, list):
             k_array = np.array(k_array)
 
-        if k_array.shape == (lattice.n_dim,):
-            k_array = np.array([k_array])
+        if lattice.n_dim != 1:
+            if k_array.shape == (lattice.n_dim,):
+                k_array = np.array([k_array])
+            
+        else:
+            if isinstance(k_array, float) or isinstance(k_array, int):
+                k_array = np.array([k_array])
 
         free_electron.n_k = len(k_array)
         free_electron.k = k_array
-        
+
         free_electron.update_band(lattice, n_band)
         free_electron.update_eigenenergies_and_occupations()
         
@@ -91,10 +96,15 @@ class FreeElectron:
             np.ndarray: The electron eigenenergies at each wave vector.
         """
         if g_array is None:
-            eigenenergies =  0.5 * np.linalg.norm(k_array, axis=-1) ** 2 - self.fermi_energy
+            if self.lattice.n_dim != 1:
+                eigenenergies =  0.5 * np.linalg.norm(k_array, axis=-1) ** 2 - self.fermi_energy
+            else:
+                eigenenergies = 0.5 * k_array ** 2 - self.fermi_energy
         else:
-            eigenenergies = np.array([0.5 * np.linalg.norm(k_array + g, axis=-1) ** 2 for g in g_array])
-            eigenenergies -= self.fermi_energy
+            if self.lattice.n_dim != 1:
+                eigenenergies = np.array([0.5 * np.linalg.norm(k_array + g, axis=-1) ** 2 - self.fermi_energy for g in g_array])
+            else:
+                eigenenergies = np.array([0.5 * (k_array + g) ** 2 - self.fermi_energy for g in g_array])
         
         return eigenenergies
 

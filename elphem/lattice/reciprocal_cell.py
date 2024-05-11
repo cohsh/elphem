@@ -67,43 +67,6 @@ class ReciprocalCell:
 
         return k_path
     
-    def get_reciprocal_vectors(self, n_g: int) -> np.ndarray:
-        """Generate the reciprocal lattice vectors used to define the Brillouin zone boundaries.
-
-        Returns:
-            np.ndarray: An array of reciprocal lattice vectors.
-        """
-        if self.n_dim == 3:
-            n_cut = np.ceil(np.cbrt(n_g))
-        elif self.n_dim == 2:
-            n_cut = np.ceil(np.sqrt(n_g))
-        elif self.n_dim == 1:
-            n_cut = np.ceil(np.abs(n_g))
-        else:
-            raise ValueError("n_cut = 1, 2, 3")
-
-        n_array = np.arange(-n_cut, n_cut + 1)
-
-        grids = np.meshgrid(*([n_array] * self.n_dim), indexing='ij')
-        
-        grid_points = np.stack(grids, axis=-1).reshape(-1, self.n_dim)
-        
-        g = grid_points @ self.basis
-        g_norm = np.linalg.norm(g, axis=-1).round(decimals=5)
-        g_norm_unique = np.unique(g_norm)
-
-        g_list = []
-
-        for g_ref in g_norm_unique:
-            count = 0
-            for g_compare in g_norm:
-                if g_compare == g_ref:
-                    g_list.append(g[count])
-                count += 1
-
-        return np.array(g_list[0:n_g])
-
-    
     def calculate_special_k(k_name: str) -> None:
         pass
 
@@ -137,6 +100,33 @@ class ReciprocalCell3D(ReciprocalCell, Cell3D):
         basis *= 2.0 * np.pi / primitive_cell.volume
         
         return basis
+
+    def get_reciprocal_vectors(self, n_g: int) -> np.ndarray:
+        """Generate the reciprocal lattice vectors used to define the Brillouin zone boundaries.
+
+        Returns:
+            np.ndarray: An array of reciprocal lattice vectors.
+        """
+
+        n_cut = np.ceil(np.cbrt(n_g))
+
+        n_1d = np.arange(-n_cut, n_cut + 1)
+        n_3d = np.array(np.meshgrid(n_1d, n_1d, n_1d)).T.reshape(-1, 3)
+        
+        g = n_3d @ self.basis
+        g_norm = np.linalg.norm(g, axis=-1).round(decimals=5)
+        g_norm_unique = np.unique(g_norm)
+
+        g_list = []
+
+        for g_ref in g_norm_unique:
+            count = 0
+            for g_compare in g_norm:
+                if g_compare == g_ref:
+                    g_list.append(g[count])
+                count += 1
+
+        return np.array(g_list[0:n_g])
 
     def get_monkhorst_pack_grid(self, n_x: int, n_y: int, n_z: int) -> np.ndarray:
         x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
@@ -209,6 +199,33 @@ class ReciprocalCell2D(ReciprocalCell, Cell2D):
         
         return basis
 
+    def get_reciprocal_vectors(self, n_g: int) -> np.ndarray:
+        """Generate the reciprocal lattice vectors used to define the Brillouin zone boundaries.
+
+        Returns:
+            np.ndarray: An array of reciprocal lattice vectors.
+        """
+
+        n_cut = np.ceil(np.sqrt(n_g))
+
+        n_1d = np.arange(-n_cut, n_cut + 1)
+        n_2d = np.array(np.meshgrid(n_1d, n_1d)).T.reshape(-1, 2)
+        
+        g = n_2d @ self.basis
+        g_norm = np.linalg.norm(g, axis=-1).round(decimals=5)
+        g_norm_unique = np.unique(g_norm)
+
+        g_list = []
+
+        for g_ref in g_norm_unique:
+            count = 0
+            for g_compare in g_norm:
+                if g_compare == g_ref:
+                    g_list.append(g[count])
+                count += 1
+
+        return np.array(g_list[0:n_g])
+
     def get_monkhorst_pack_grid(self, n_x: int, n_y: int) -> np.ndarray:
         x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
         y = (2 * np.arange(1, n_y + 1) - n_y - 1) / (2 * n_y)
@@ -266,11 +283,37 @@ class ReciprocalCell1D(ReciprocalCell, Cell1D):
         
         return basis
 
+    def get_reciprocal_vectors(self, n_g: int) -> np.ndarray:
+        """Generate the reciprocal lattice vectors used to define the Brillouin zone boundaries.
+
+        Returns:
+            np.ndarray: An array of reciprocal lattice vectors.
+        """
+
+        n_cut = np.ceil(np.abs(n_g))
+
+        n_1d = np.arange(-n_cut, n_cut + 1)
+        
+        g = n_1d * self.basis
+        g_norm = abs(g).round(decimals=5)
+        g_norm_unique = np.unique(g_norm)
+
+        g_list = []
+
+        for g_ref in g_norm_unique:
+            count = 0
+            for g_compare in g_norm:
+                if g_compare == g_ref:
+                    g_list.append(g[count])
+                count += 1
+
+        return np.array(g_list[0:n_g])
+
     def get_monkhorst_pack_grid(self, n_x: int) -> np.ndarray:
         x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
 
-        aligned_k = np.stack([x], axis=-1).reshape(-1, 1) @ self.basis
-        
+        aligned_k = x * self.basis
+
         return aligned_k
 
     def calculate_special_k(self, k_name: str) -> np.ndarray:

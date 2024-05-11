@@ -34,11 +34,18 @@ class ElectronPhonon:
         self.coupling2 = np.abs(self.calculate_couplings()) ** 2
 
     def create_ggkq_grid(self, electron: FreeElectron, phonon: DebyePhonon) -> tuple:
-        shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q, self.n_dim)
-        g1 = np.broadcast_to(electron.g[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
-        g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
-        k = np.broadcast_to(electron.k[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
-        q = np.broadcast_to(phonon.q[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
+        if self.n_dim != 1:
+            shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q, self.n_dim)
+            g1 = np.broadcast_to(electron.g[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
+            g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
+            k = np.broadcast_to(electron.k[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
+            q = np.broadcast_to(phonon.q[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
+        else:
+            shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q)
+            g1 = np.broadcast_to(electron.g[:, np.newaxis, np.newaxis, np.newaxis], shape)
+            g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis], shape)
+            k = np.broadcast_to(electron.k[np.newaxis, np.newaxis, :, np.newaxis], shape)
+            q = np.broadcast_to(phonon.q[np.newaxis, np.newaxis, np.newaxis, :], shape)
         
         return g1, g2, k, q
 
@@ -48,7 +55,10 @@ class ElectronPhonon:
         Returns:
             np.ndarray: The electron-phonon coupling strength for the given vectors.
         """
-        couplings = -1.0j * self.effective_potential * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        if self.n_dim != 1:
+            couplings = -1.0j * self.effective_potential * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        else:
+            couplings = -1.0j * self.effective_potential * (self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors * self.phonon.zero_point_lengths
 
         return couplings
 
@@ -66,7 +76,7 @@ class ElectronPhonon:
 
     def calculate_spectrum(self, omega: float) -> np.ndarray:
         self_energies = self.calculate_self_energies(omega)
-        
+
         numerator = - self_energies.imag / np.pi
         
         denominator = (omega - self.eigenenergies - self_energies.real) ** 2 + self_energies.imag ** 2
