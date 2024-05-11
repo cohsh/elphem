@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from elphem.lattice.cell import Cell3D, Cell2D, Cell1D
 from elphem.lattice.primitive_cell import PrimitiveCell3D, PrimitiveCell2D, PrimitiveCell1D
 from elphem.lattice.lattice_constant import LatticeConstant3D, LatticeConstant2D, LatticeConstant1D
-from elphem.lattice.path import PathValues
 from elphem.common.brillouin import SpecialPoints3D, SpecialPoints2D, SpecialPoints1D
+from elphem.lattice.path import PathValues
 
 class ReciprocalCell:
     def __init__(self):
