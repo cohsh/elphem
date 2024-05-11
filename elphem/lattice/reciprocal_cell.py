@@ -8,10 +8,11 @@ from elphem.lattice.lattice_constant import LatticeConstant3D, LatticeConstant2D
 from elphem.lattice.path import PathValues
 from elphem.common.brillouin import SpecialPoints3D, SpecialPoints2D, SpecialPoints1D
 
-@dataclass
 class ReciprocalCell:
-    n_dim: int = None
+    def __init__(self):
+        self.n_dim = None
     
+    @staticmethod
     def split_fractional_k_name(fractional_k_name: str) -> tuple:
         match = re.match(r"([0-9.]*)([A-Z]+)", fractional_k_name)
         
@@ -76,7 +77,7 @@ class ReciprocalCell3D(ReciprocalCell, Cell3D):
     
     def __post_init__(self):
         """Initializes and builds the basis for the reciprocal cell."""
-        Cell3D.__init__()
+        Cell3D.__init__(self)
         self.basis = self.build()
         self.volume = self.calculate_volume()
     
@@ -170,7 +171,7 @@ class ReciprocalCell2D(ReciprocalCell, Cell2D):
     
     def __post_init__(self):
         """Initializes and builds the basis for the reciprocal cell."""
-        Cell2D.__init__()
+        Cell2D.__init__(self)
         self.basis = self.build()
         self.volume = self.calculate_volume()
     
@@ -264,7 +265,7 @@ class ReciprocalCell1D(ReciprocalCell, Cell1D):
     
     def __post_init__(self):
         """Initializes and builds the basis for the reciprocal cell."""
-        Cell1D.__init__()
+        Cell1D.__init__(self)
         self.basis = self.build()
         self.volume = self.calculate_volume()
     

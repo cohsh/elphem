@@ -6,7 +6,7 @@ def main():
     a = 2.98 * Length.ANGSTROM['->']
 
     lattice = Lattice1D('Li', a)
-    k_names = ["G", "X"]
+    k_names = ["G", "0.6X"]
     
     k_path = lattice.reciprocal.get_path(k_names, 1000)
 
