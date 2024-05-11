@@ -88,6 +88,8 @@ class ReciprocalCell:
         
         grid_points = np.stack(grids, axis=-1).reshape(-1, self.n_dim)
         
+        print(grid_points)
+        
         g = grid_points @ self.basis
         g_norm = np.linalg.norm(g, axis=-1).round(decimals=5)
         g_norm_unique = np.unique(g_norm)
@@ -269,8 +271,8 @@ class ReciprocalCell1D(ReciprocalCell, Cell1D):
     def get_monkhorst_pack_grid(self, n_x: int) -> np.ndarray:
         x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
 
-        aligned_k = x * self.basis
-
+        aligned_k = np.stack([x], axis=-1).reshape(-1, 1) @ self.basis
+        
         return aligned_k
 
     def calculate_special_k(self, k_name: str) -> np.ndarray:

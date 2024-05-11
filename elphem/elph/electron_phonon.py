@@ -34,18 +34,11 @@ class ElectronPhonon:
         self.coupling2 = np.abs(self.calculate_couplings()) ** 2
 
     def create_ggkq_grid(self, electron: FreeElectron, phonon: DebyePhonon) -> tuple:
-        if self.n_dim != 1:
-            shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q, self.n_dim)
-            g1 = np.broadcast_to(electron.g[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
-            g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
-            k = np.broadcast_to(electron.k[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
-            q = np.broadcast_to(phonon.q[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
-        else:
-            shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q)
-            g1 = np.broadcast_to(electron.g[:, np.newaxis, np.newaxis, np.newaxis], shape)
-            g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis], shape)
-            k = np.broadcast_to(electron.k[np.newaxis, np.newaxis, :, np.newaxis], shape)
-            q = np.broadcast_to(phonon.q[np.newaxis, np.newaxis, np.newaxis, :], shape)
+        shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q, self.n_dim)
+        g1 = np.broadcast_to(electron.g[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
+        g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
+        k = np.broadcast_to(electron.k[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
+        q = np.broadcast_to(phonon.q[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
         
         return g1, g2, k, q
 

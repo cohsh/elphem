@@ -17,8 +17,6 @@ def main():
 
     k_path = lattice.reciprocal.get_path(k_names, n_split)
     
-    print(k_path.values.shape)
-
     electron = FreeElectron.create_from_path(lattice, n_electron, n_band, k_path)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
     
