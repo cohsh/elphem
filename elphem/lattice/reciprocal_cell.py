@@ -1,4 +1,5 @@
 import numpy as np
+import re
 from dataclasses import dataclass
 
 from elphem.lattice.cell import Cell3D, Cell2D, Cell1D
@@ -6,6 +7,21 @@ from elphem.lattice.primitive_cell import PrimitiveCell3D, PrimitiveCell2D, Prim
 from elphem.lattice.lattice_constant import LatticeConstant3D, LatticeConstant2D, LatticeConstant1D
 from elphem.lattice.path import PathValues
 from elphem.common.brillouin import SpecialPoints3D, SpecialPoints2D, SpecialPoints1D
+
+@dataclass
+class ReciprocalCell:
+    def split_fractional_k_name(fractional_k_name: str):
+        match = re.match(r"([0-9.]*)([A-Z]+)", fractional_k_name)
+        
+        if match:
+            fraction_str = match.group(1)
+            k_name = match.group(2)
+
+            number = float(fraction_str) if fraction_str else 1.0
+            
+            return number, k_name
+        else:
+            raise ValueError("Invalid input string format. Ensure the input contains only a combination of numbers and k-names.")
 
 @dataclass
 class ReciprocalCell3D(Cell3D):
