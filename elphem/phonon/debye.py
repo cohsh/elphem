@@ -79,10 +79,7 @@ class DebyePhonon:
         Returns:
             np.ndarray: The phonon eigenenergies at each wave vector.
         """
-        if self.lattice.n_dim != 1:
-            eigenenergies = self.speed_of_sound * np.linalg.norm(q_array, axis=-1)
-        else:
-            eigenenergies = self.speed_of_sound * np.abs(q_array)
+        eigenenergies = self.speed_of_sound * np.linalg.norm(q_array, axis=-1)
         
         return eigenenergies
 
@@ -95,10 +92,7 @@ class DebyePhonon:
         Returns:
             np.ndarray: The phonon eigenvectors at each wave vector, represented as complex numbers.
         """
-        if self.lattice.n_dim != 1:
-            q_norm = np.repeat(np.linalg.norm(q_array, axis=-1, keepdims=True), q_array.shape[-1], axis=-1)
-        else:
-            q_norm = np.abs(q_array)
+        q_norm = np.repeat(np.linalg.norm(q_array, axis=-1, keepdims=True), q_array.shape[-1], axis=-1)
             
         eigenvectors = 1.0j * safe_divide(q_array, q_norm)
 
