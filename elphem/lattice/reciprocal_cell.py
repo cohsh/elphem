@@ -43,7 +43,10 @@ class ReciprocalCell:
 
         major_scales = np.empty((n_via+1,))
         minor_scales = np.empty((n_via * n_split,))
-        k = np.empty((n_via * n_split, self.n_dim))
+        if self.n_dim != 1:
+            k = np.empty((n_via * n_split, self.n_dim))
+        else:
+            k = np.empty((n_via * n_split,))
 
         count = 0
         length_part = 0.0
