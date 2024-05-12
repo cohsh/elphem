@@ -6,7 +6,7 @@ def main():
     a = 2.98 * Length.ANGSTROM['->']
 
     lattice = Lattice2D('hexagonal', 'C', a)
-    k_names = ["K", "G", "M", "K"]
+    k_names = ["M", "G", "K"]
     
     k_path = lattice.reciprocal.get_path(k_names, 40)
 
