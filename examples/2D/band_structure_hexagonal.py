@@ -6,11 +6,11 @@ def main():
     a = 2.98 * Length.ANGSTROM['->']
 
     lattice = Lattice2D('hexagonal', 'C', a)
-    k_names = ["M", "G", "K"]
+    k_names = ["M", "G", "K", "M"]
     
     k_path = lattice.reciprocal.get_path(k_names, 40)
 
-    electron = FreeElectron.create_from_path(lattice, 4, 2, k_path)
+    electron = FreeElectron.create_from_path(lattice, 4, 8, k_path)
 
     eigenenergies = electron.eigenenergies * Energy.EV['<-']
 

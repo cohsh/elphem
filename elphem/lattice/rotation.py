@@ -191,6 +191,7 @@ class LatticeRotation2D(LatticeRotation):
         dot = np.dot(direction, n)
 
         theta = np.arccos(dot)
+        
         sin_theta = np.sin(theta)
         cos_theta = np.cos(theta)
         
@@ -199,6 +200,6 @@ class LatticeRotation2D(LatticeRotation):
             [sin_theta, cos_theta]
         ])
 
-        basis_rotated = rotation_matrix @ basis
+        basis_rotated = basis @ rotation_matrix
         
         return basis_rotated

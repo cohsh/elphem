@@ -69,8 +69,8 @@ class SpecialPoints2D:
     
     _Hexagonal = {**_Gamma}
     _Hexagonal.update({
-        "M": (1/4, 1/4),
-        "K": (1/2, 0)
+        "M": (1/2, 0),
+        "K": (-1/3, 2/3)
     })
     Hexagonal = MappingProxyType(_Hexagonal)
 
