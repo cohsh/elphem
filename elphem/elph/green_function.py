@@ -31,6 +31,6 @@ class GreenFunction:
         return real_part
     
     def calculate_imag_part(self, omega_minus_poles: np.ndarray) -> np.ndarray:
-        imag_part = np.nansum(self.weights * np.exp(- omega_minus_poles ** 2 / self.gaussian_coefficient_a), axis=0) / self.gaussian_coefficient_b * np.pi
+        imag_part = - np.nansum(self.weights * np.exp(- omega_minus_poles ** 2 / self.gaussian_coefficient_a), axis=0) / self.gaussian_coefficient_b * np.pi
         
         return imag_part

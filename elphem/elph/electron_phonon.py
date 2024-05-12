@@ -32,6 +32,8 @@ class ElectronPhonon:
         self.green_function = GreenFunction(self.electron_inter, self.phonon, sigma, eta)
 
         self.coupling2 = np.abs(self.calculate_couplings()) ** 2
+        
+        self.self_energy_zero = self.calculate_self_energies(0.0)
 
     def create_ggkq_grid(self, electron: FreeElectron, phonon: DebyePhonon) -> tuple:
         shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q, self.n_dim)
@@ -65,7 +67,7 @@ class ElectronPhonon:
         return np.nansum(self.coupling2 * self.green_function.calculate(omega), axis=(1, 3)) / self.phonon.n_q
 
     def calculate_spectrum(self, omega: float) -> np.ndarray:
-        self_energies = self.calculate_self_energies(omega)
+        self_energies = self.calculate_self_energies(omega)# - self.self_energy_zero
         
         numerator = - self_energies.imag / np.pi
         
