@@ -19,7 +19,7 @@ def main():
     electron = FreeElectron.create_from_path(lattice, n_electron, n_band, k_path)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
-    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.01)
+    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.0005)
 
     n_omega = 1000
     range_omega = [-4 * Energy.EV["->"], 6 * Energy.EV["->"]]
@@ -43,7 +43,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(-5.0, 0.0)
+    mappable.set_clim(0.0, 5.0)
 
     fig.savefig("spectrum.png")
 
