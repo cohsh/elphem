@@ -6,13 +6,13 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM['->']
     debye_temperature = 344.0
-    n_q = np.full(1, 100)
-    k_names = ["G", "X"]
-    n_split = 100
+    n_q = np.full(3, 20)
+    k_names = ["H", "N"]
+    n_split = 150
     n_electron = 1
     n_band = 1
 
-    lattice = Lattice1D('Li', a, 100.0)
+    lattice = Lattice3D('bcc', 'Li', a, 100.0)
 
     k_path = lattice.reciprocal.get_path(k_names, n_split)
 
@@ -21,8 +21,8 @@ def main():
 
     electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.0001)
 
-    n_omega = 1000
-    range_omega = [-0.5 * Energy.EV["->"], 0.5 * Energy.EV["->"]]
+    n_omega = 100
+    range_omega = [1 * Energy.EV["->"], 2 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
     
     spectrum = electron_phonon.calculate_spectrum_over_range(omega_array)
@@ -43,9 +43,9 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(0.0, 1.0)
+    mappable.set_clim(0.0, 20.0)
 
-    fig.savefig("spectrum_near_fermi.png")
+    fig.savefig("spectrum_near_N.png")
 
 if __name__ == "__main__":
     main()

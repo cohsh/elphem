@@ -6,7 +6,7 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM['->']
     debye_temperature = 344.0
-    n_q = np.full(3, 10)
+    n_q = np.full(3, 20)
     k_names = ["G", "H", "N", "G", "P", "H"]
     n_split = 20
     n_electron = 1
@@ -19,7 +19,7 @@ def main():
     electron = FreeElectron.create_from_path(lattice, n_electron, n_band, k_path)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
-    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.001, eta=0.005)
+    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.0001)
 
     n_omega = 100
     range_omega = [-6 * Energy.EV["->"], 5 * Energy.EV["->"]]
@@ -43,7 +43,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(-5.0, 0.0)
+    mappable.set_clim(0.0, 1.0)
 
     fig.savefig("spectrum.png")
 

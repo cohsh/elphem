@@ -19,7 +19,7 @@ def main():
     electron = FreeElectron.create_from_path(lattice, n_electron, n_band, k_path)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
-    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.0005)
+    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.0001)
 
     n_omega = 1000
     range_omega = [-4 * Energy.EV["->"], 6 * Energy.EV["->"]]

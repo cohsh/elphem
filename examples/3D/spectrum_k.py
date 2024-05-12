@@ -10,7 +10,7 @@ def main():
     n_band = 1
     n_q_array = np.full(3, 40)
 
-    lattice = Lattice('bcc', 'Li', a, debye_temperature * 1.2)
+    lattice = Lattice3D('bcc', 'Li', a, 100.0)
 
     k = lattice.reciprocal.calculate_special_k('N')
     
@@ -18,10 +18,10 @@ def main():
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q_array)
 
     n_omega = 1000
-    range_omega = [1.3 * Energy.EV["->"], 1.6 * Energy.EV["->"]]
+    range_omega = [1 * Energy.EV["->"], 2 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0], range_omega[1], n_omega)
     
-    electron_phonon = ElectronPhonon(electron, phonon)
+    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.0001)
     
     spectrum = electron_phonon.calculate_spectrum_over_range(omega_array)
 
