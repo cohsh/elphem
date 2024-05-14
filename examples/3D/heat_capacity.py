@@ -13,7 +13,7 @@ def main():
     n_electron = 1
     n_band = 1
 
-    temperatures = np.arange(0.0, 300.0, 5)
+    temperatures = np.arange(0.0, 3000.0, 100)
 
     heat_capacities = np.empty(temperatures.shape)
 
