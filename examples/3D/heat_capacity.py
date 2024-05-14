@@ -13,9 +13,10 @@ def main():
     n_electron = 1
     n_band = 1
 
-    temperatures = np.arange(0.0, 3000.0, 100)
+    temperatures = np.arange(0.0, 300.0, 10)
 
     heat_capacities = np.empty(temperatures.shape)
+    heat_capacities_ref = np.empty(temperatures.shape)
 
     i = 0
     for temperature in temperatures:
@@ -26,15 +27,20 @@ def main():
         electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.0001)
 
         heat_capacities[i] = electron_phonon.calculate_heat_capacity()
+        heat_capacities_ref[i] = electron_phonon.calculate_heat_capacity(include_coupling=False)
         print(i)
         i += 1
 
     fig = plt.figure()
-    ax = fig.add_subplot(111)
+    ax = {'upper': fig.add_subplot(211), 'lower': fig.add_subplot(212)}
     
-    ax.plot(temperatures, heat_capacities * n_a * Energy.SI['<-'])
-    
-    ax.set_ylabel("Heat Capacity ($\mathrm{J}/(\mathrm{K}\cdot \mathrm{mol})$)")
+    ax['upper'].plot(temperatures, heat_capacities * n_a * Energy.SI['<-'] * 1000.0, color='tab:blue')
+    ax['upper'].plot(temperatures, heat_capacities_ref * n_a * Energy.SI['<-'] * 1000.0, color='tab:orange')
+
+    ax['lower'].plot(temperatures, (heat_capacities - heat_capacities_ref) * n_a * Energy.SI['<-'] * 1000.0)
+
+    ax['upper'].set_ylabel("Heat Capacity ($\mathrm{mJ}/(\mathrm{K}\cdot \mathrm{mol})$)")
+    ax['lower'].set_ylabel("Difference ($\mathrm{mJ}/(\mathrm{K}\cdot \mathrm{mol})$)")
 
     fig.savefig("heat_capacity.png")
 

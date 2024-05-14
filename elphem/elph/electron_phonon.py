@@ -113,9 +113,13 @@ class ElectronPhonon:
                 coupling_strengths[i,j] = - (self_energies_plus[i,j].real - self_energies_minus[i,j].real) / (2.0 * delta_omega)
         return coupling_strengths
 
-    def calculate_heat_capacity(self) -> float:
+    def calculate_heat_capacity(self, include_coupling: bool = True) -> float:
         coefficient = 2.0 * (np.pi * Energy.KELVIN['->']) ** 2 * self.electron.calculate_dos(0.0) / 3.0
-        heat_capacity = coefficient * (1.0 + np.nansum(self.calculate_coupling_strengths()) / self.electron.n_k) * self.electron.temperature
+        if include_coupling:
+            heat_capacity = coefficient * (1.0 + np.nansum(self.calculate_coupling_strengths()) / self.electron.n_k) * self.electron.temperature
+        else:
+            heat_capacity = coefficient * self.electron.temperature
+
         return heat_capacity
 
     def calculate_entropy(self, n_omega: int, omega_max: float = 10.0) -> np.ndarray:
