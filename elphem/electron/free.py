@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-from elphem.common.distribution import fermi_distribution
+from elphem.common.distribution import fermi_distribution, gaussian_distribution
 from elphem.lattice.lattice import Lattice3D, Lattice2D, Lattice1D
 from elphem.lattice.path import PathValues
 
@@ -101,6 +101,17 @@ class FreeElectron:
     def calculate_occupations(self, eigenenergies: np.ndarray) -> np.ndarray:
         return fermi_distribution(self.temperature, eigenenergies)
     
+    def calculate_dos(self, omega: float | np.ndarray, sigma: float) -> np.ndarray:
+        if isinstance(omega, np.ndarray):
+            shape = omega.shape + self.eigenenergies.shape
+            omega_broadcast = np.broadcast_to(omega[:, np.newaxis, np.newaxis], shape)
+            eigenenergies_broadcast = np.broadcast_to(self.eigenenergies[np.newaxis, :, :], shape)
+            omega_minus_eigenenergies = omega_broadcast - eigenenergies_broadcast
+            return np.nansum(gaussian_distribution(sigma, omega_minus_eigenenergies), axis=(1,2)) / self.n_k
+        else:
+            omega_minus_eigenenergies = omega - self.eigenenergies
+            return np.nansum(gaussian_distribution(sigma, omega_minus_eigenenergies)) / self.n_k
+
     def calculate_eigenenergies_with_path(self, k_path: PathValues) -> PathValues:
         eigenenergies = self.calculate_eigenenergies(k_path.values, self.g)
         
