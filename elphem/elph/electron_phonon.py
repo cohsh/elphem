@@ -103,7 +103,16 @@ class ElectronPhonon:
             progress_bar.print(count)
 
         return spectrum
-    
+
+    def calculate_coupling_strengths(self, omega: float, delta_omega: float = 0.000001) -> np.ndarray:
+        coupling_strengths = np.empty(self.eigenenergies.shape)
+        for i in range(self.electron.n_band):
+            for j in range(self.electron.n_k):
+                self_energies_plus = self.calculate_self_energies(self.eigenenergies[i,j] + delta_omega)
+                self_energies_minus = self.calculate_self_energies(self.eigenenergies[i,j] - delta_omega)
+                coupling_strengths[i,j] = (self_energies_plus[i,j] - self_energies_minus[i,j]) / (2.0 * delta_omega)
+        return coupling_strengths
+
     def calculate_entropy(self, n_omega: int, omega_max: float = 10.0) -> np.ndarray:
         omega_array = np.linspace(0.0, omega_max, n_omega)
         self_energies = self.calculate_self_energies_over_range(omega_array)
