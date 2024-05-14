@@ -21,7 +21,7 @@ def main():
 
     sigma = 0.0001
     
-    dos_fermi = electron.calculate_dos(0.0, sigma)
+    dos_fermi = electron.calculate_dos_at_fermi_energy()
     print(dos_fermi)
     
     dos = electron.calculate_dos(omega_array, sigma)
