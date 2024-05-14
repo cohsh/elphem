@@ -119,10 +119,10 @@ class ElectronPhonon:
 
     def calculate_entropy(self, temperature: float, n_omega: int) -> np.ndarray:
         kbt = temperature * Energy.KELVIN['->']
-        omega_cut = kbt * 10.0
+        omega_cut = kbt
 
         omega_array = np.linspace(0.0, omega_cut, n_omega)
-        delta_omega = (omega_cut - 0.0) / n_omega
+        delta_omega = omega_cut / n_omega
 
         self_energies = self.calculate_self_energies_over_range(temperature, omega_array)
         
@@ -131,7 +131,7 @@ class ElectronPhonon:
         omega_array_broadcast = np.broadcast_to(omega_array[np.newaxis, np.newaxis, :], shape)
         self_energies_broadcast = np.broadcast_to(self_energies[:, :, np.newaxis], shape)
         
-        cosh2 = np.cosh(omega_array_broadcast / kbt) ** 2
+        cosh2 = np.cosh(omega_array_broadcast / (2 * kbt)) ** 2
         
         coefficient = self.electron.calculate_dos(0.0) * Energy.KELVIN['->'] / kbt ** 2 / self.electron.n_k * delta_omega
         
@@ -153,11 +153,11 @@ class ElectronPhonon:
         omega_cut = kbt * 10.0
 
         omega_array = np.linspace(0.0, omega_cut, n_omega)
-        delta_omega = (omega_cut - 0.0) / n_omega
+        delta_omega = omega_cut / n_omega
         
-        cosh2 = np.cosh(omega_array / kbt) ** 2
+        cosh2 = np.cosh(omega_array / (2 * kbt)) ** 2
         
-        coefficient = self.electron.calculate_dos(0.0) * Energy.KELVIN['->'] / kbt ** 2 / self.electron.n_k * delta_omega
+        coefficient = self.electron.calculate_dos(0.0) * Energy.KELVIN['->'] / kbt ** 2 * delta_omega
         
         entropy = coefficient * np.nansum(omega_array ** 2 / cosh2)
         
