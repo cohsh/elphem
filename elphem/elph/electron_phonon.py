@@ -1,5 +1,6 @@
 import numpy as np
 
+from elphem.common.unit import Energy
 from elphem.common.stdout import ProgressBar
 from elphem.common.function import safe_divide
 from elphem.electron.free import FreeElectron
@@ -102,3 +103,22 @@ class ElectronPhonon:
             progress_bar.print(count)
 
         return spectrum
+    
+    def calculate_entropy(self, n_omega: int, omega_max: float = 10.0) -> np.ndarray:
+        omega_array = np.linspace(0.0, omega_max, n_omega)
+        self_energies = self.calculate_self_energies_over_range(omega_array)
+        
+        shape = self_energies.shape + (n_omega,)
+        
+        omega_array_broadcast = np.broadcast_to(omega_array[np.newaxis, np.newaxis, :], shape)
+        self_energies_broadcast = np.broadcast_to(self_energies[:, :, np.newaxis], shape)
+        
+        kbt = self.electron.temperature * Energy.KELVIN['->']
+        
+        cosh2 = np.cosh(omega_array_broadcast / kbt) ** 2
+        
+        coefficient = self.electron.calculate_dos(0.0) * Energy.KELVIN['->'] / kbt ** 2 / self.electron.n_k
+        
+        entropy = coefficient * np.nansum(omega_array_broadcast * (omega_array_broadcast - self_energies_broadcast.real) / cosh2)
+        
+        return entropy

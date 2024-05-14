@@ -18,8 +18,6 @@ def main():
     n_omega = 10000
     range_omega = [-10 * Energy.EV["->"], 10 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
-
-    sigma = 0.0001
     
     dos_fermi = electron.calculate_dos(0.0)
     print(dos_fermi)
