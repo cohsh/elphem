@@ -12,7 +12,7 @@ def main():
     n_electron = 1
     n_band = 1
 
-    lattice = Lattice3D('bcc', 'Li', a, debye_temperature)
+    lattice = Lattice3D('bcc', 'Li', a)
 
     k_path = lattice.reciprocal.get_path(k_names, n_split)
 
@@ -25,7 +25,7 @@ def main():
     range_omega = [-6 * Energy.EV["->"], 5 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
     
-    spectrum = electron_phonon.calculate_spectrum_over_range(omega_array)
+    spectrum = electron_phonon.calculate_spectrum_over_range(300.0, omega_array)
     
     y, x = np.meshgrid(omega_array, k_path.minor_scales)
 
@@ -43,7 +43,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(0.0, 1.0)
+    mappable.set_clim(0.0, 0.1)
 
     fig.savefig("spectrum.png")
 
