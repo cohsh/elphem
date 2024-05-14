@@ -14,10 +14,11 @@ def main():
     n_band = 1
     n_omega = 100
 
-    temperatures = np.arange(0.0, 300.0, 50)
+    temperatures = np.arange(0.0, 100.0, 20)
 
     heat_capacities = np.empty(temperatures.shape)
     heat_capacities_ref = np.empty(temperatures.shape)
+    heat_capacities_ref_analytical = np.empty(temperatures.shape)
 
     i = 0
     for temperature in temperatures:
@@ -28,7 +29,8 @@ def main():
         electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.0001)
 
         heat_capacities[i] = electron_phonon.calculate_heat_capacity(temperature, n_omega)
-        heat_capacities_ref[i] = electron_phonon.calculate_heat_capacity_without_couplings(temperature)
+        heat_capacities_ref[i] = electron_phonon.calculate_heat_capacity_without_couplings(temperature, n_omega)
+        heat_capacities_ref_analytical[i] = electron_phonon.calculate_heat_capacity_without_couplings_analytical(temperature)
         print(i)
         i += 1
 
@@ -37,6 +39,7 @@ def main():
     
     ax['upper'].plot(temperatures, heat_capacities * n_a * Energy.SI['<-'] * 1000.0, color='tab:blue')
     ax['upper'].plot(temperatures, heat_capacities_ref * n_a * Energy.SI['<-'] * 1000.0, color='tab:orange')
+    ax['upper'].plot(temperatures, heat_capacities_ref * n_a * Energy.SI['<-'] * 1000.0, color='tab:green')
 
     ax['lower'].plot(temperatures, (heat_capacities - heat_capacities_ref) * n_a * Energy.SI['<-'] * 1000.0)
 

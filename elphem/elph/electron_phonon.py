@@ -111,17 +111,19 @@ class ElectronPhonon:
                 coupling_strengths[i,j] = - (self_energies_plus[i,j].real - self_energies_minus[i,j].real) / (2.0 * delta_omega)
         return coupling_strengths
 
-    def calculate_heat_capacity(self, temperature: float, n_omega: int, omega_max: float = 10.0, delta_temperature: float = 0.000001) -> float:
-        entropy_plus = self.calculate_entropy(temperature + delta_temperature, n_omega, omega_max=omega_max)
-        entropy_minus = self.calculate_entropy(temperature - delta_temperature, n_omega, omega_max=omega_max)
+    def calculate_heat_capacity(self, temperature: float, n_omega: int, delta_temperature: float = 0.01) -> float:
+        entropy_plus = self.calculate_entropy(temperature + delta_temperature, n_omega)
+        entropy_minus = self.calculate_entropy(temperature - delta_temperature, n_omega)
 
         return (entropy_plus - entropy_minus) / (2.0 * delta_temperature) * temperature
 
-    def calculate_heat_capacity_without_couplings(self, temperature: float) -> float:
-        return 2.0 * (np.pi * Energy.KELVIN['->']) ** 2 * self.electron.calculate_dos(0.0) * temperature / 3.0
+    def calculate_entropy(self, temperature: float, n_omega: int) -> np.ndarray:
+        kbt = temperature * Energy.KELVIN['->']
+        omega_cut = kbt * 10.0
 
-    def calculate_entropy(self, temperature: float, n_omega: int, omega_max: float = 10.0) -> np.ndarray:
-        omega_array = np.linspace(0.0, omega_max, n_omega)
+        omega_array = np.linspace(0.0, omega_cut, n_omega)
+        delta_omega = (omega_cut - 0.0) / n_omega
+
         self_energies = self.calculate_self_energies_over_range(temperature, omega_array)
         
         shape = self_energies.shape + (n_omega,)
@@ -129,12 +131,34 @@ class ElectronPhonon:
         omega_array_broadcast = np.broadcast_to(omega_array[np.newaxis, np.newaxis, :], shape)
         self_energies_broadcast = np.broadcast_to(self_energies[:, :, np.newaxis], shape)
         
-        kbt = temperature * Energy.KELVIN['->']
-        
         cosh2 = np.cosh(omega_array_broadcast / kbt) ** 2
         
-        coefficient = self.electron.calculate_dos(0.0) * Energy.KELVIN['->'] / kbt ** 2 / self.electron.n_k
+        coefficient = self.electron.calculate_dos(0.0) * Energy.KELVIN['->'] / kbt ** 2 / self.electron.n_k * delta_omega
         
         entropy = coefficient * np.nansum(omega_array_broadcast * (omega_array_broadcast - self_energies_broadcast.real) / cosh2)
+        
+        return entropy
+
+    def calculate_heat_capacity_without_couplings_analytical(self, temperature: float) -> float:
+        return 2.0 * (np.pi * Energy.KELVIN['->']) ** 2 * self.electron.calculate_dos(0.0) * temperature / 3.0
+
+    def calculate_heat_capacity_without_couplings(self, temperature: float, n_omega: int, delta_temperature: float = 0.01) -> float:
+        entropy_plus = self.calculate_entropy_without_couplings(temperature + delta_temperature, n_omega)
+        entropy_minus = self.calculate_entropy_without_couplings(temperature - delta_temperature, n_omega)
+        
+        return (entropy_plus - entropy_minus) / (2.0 * delta_temperature) * temperature
+
+    def calculate_entropy_without_couplings(self, temperature: float, n_omega: int) -> float:
+        kbt = temperature * Energy.KELVIN['->']
+        omega_cut = kbt * 10.0
+
+        omega_array = np.linspace(0.0, omega_cut, n_omega)
+        delta_omega = (omega_cut - 0.0) / n_omega
+        
+        cosh2 = np.cosh(omega_array / kbt) ** 2
+        
+        coefficient = self.electron.calculate_dos(0.0) * Energy.KELVIN['->'] / kbt ** 2 / self.electron.n_k * delta_omega
+        
+        entropy = coefficient * np.nansum(omega_array ** 2 / cosh2)
         
         return entropy
