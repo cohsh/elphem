@@ -77,6 +77,7 @@ class FreeElectron:
     def clone_with_gk_grid(self, g_array: np.ndarray, k_array: np.ndarray) -> 'FreeElectron':
         free_electron = self.create_from_gk_grid(self.lattice, self.n_electron, g_array, k_array)
         free_electron.n_k = self.n_k
+        free_electron.n_band = self.n_band
         
         return free_electron
 

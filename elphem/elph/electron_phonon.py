@@ -110,7 +110,7 @@ class ElectronPhonon:
             for j in range(self.electron.n_k):
                 self_energies_plus = self.calculate_self_energies(self.eigenenergies[i,j] + delta_omega)
                 self_energies_minus = self.calculate_self_energies(self.eigenenergies[i,j] - delta_omega)
-                coupling_strengths[i,j] = (self_energies_plus[i,j] - self_energies_minus[i,j]) / (2.0 * delta_omega)
+                coupling_strengths[i,j] = - (self_energies_plus[i,j].real - self_energies_minus[i,j].real) / (2.0 * delta_omega)
         return coupling_strengths
 
     def calculate_heat_capacity(self) -> float:
