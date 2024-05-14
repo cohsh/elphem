@@ -16,15 +16,15 @@ def main():
     electron = FreeElectron.create_from_n(lattice, n_electron, n_band, n_k)
 
     n_omega = 10000
-    range_omega = [-1 * Energy.EV["->"], 1 * Energy.EV["->"]]
+    range_omega = [-10 * Energy.EV["->"], 10 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
 
     sigma = 0.0001
     
-    dos_fermi = electron.calculate_dos_at_fermi_energy()
+    dos_fermi = electron.calculate_dos(0.0)
     print(dos_fermi)
     
-    dos = electron.calculate_dos(omega_array, sigma)
+    dos = electron.calculate_dos(omega_array)
     
     fig = plt.figure()
     ax = fig.add_subplot(111)

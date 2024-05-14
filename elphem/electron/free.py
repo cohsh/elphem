@@ -101,16 +101,17 @@ class FreeElectron:
     def calculate_occupations(self, eigenenergies: np.ndarray) -> np.ndarray:
         return fermi_distribution(self.temperature, eigenenergies)
     
-    def calculate_dos(self, omega: float | np.ndarray, sigma: float) -> np.ndarray:
-        if isinstance(omega, np.ndarray):
-            shape = omega.shape + self.eigenenergies.shape
-            omega_broadcast = np.broadcast_to(omega[:, np.newaxis, np.newaxis], shape)
-            eigenenergies_broadcast = np.broadcast_to(self.eigenenergies[np.newaxis, :, :], shape)
-            omega_minus_eigenenergies = omega_broadcast - eigenenergies_broadcast
-            return np.nansum(gaussian_distribution(sigma, omega_minus_eigenenergies), axis=(1,2)) / self.n_k
+    def calculate_dos(self, omega: float | np.ndarray) -> np.ndarray:
+        omega_plus_fermi_energy = omega + self.fermi_energy
+        if self.lattice.n_dim == 3:
+            coefficient = 8.0 * np.pi / self.lattice.reciprocal.volume
+            return coefficient * np.sqrt(2.0 * omega_plus_fermi_energy)
+        elif self.lattice.n_dim == 2:
+            coefficient = 4.0 * np.pi / self.lattice.reciprocal.volume
+            return coefficient
         else:
-            omega_minus_eigenenergies = omega - self.eigenenergies
-            return np.nansum(gaussian_distribution(sigma, omega_minus_eigenenergies)) / self.n_k
+            coefficient = 2.0 / self.lattice.reciprocal.volume
+            return coefficient / np.sqrt(2.0 * omega_plus_fermi_energy)
 
     def calculate_eigenenergies_with_path(self, k_path: PathValues) -> PathValues:
         eigenenergies = self.calculate_eigenenergies(k_path.values, self.g)
@@ -134,17 +135,6 @@ class FreeElectron:
         self.g = g
         
         self.update_eigenenergies_and_occupations(expand_g)
-    
-    def calculate_dos_at_fermi_energy(self) -> float:
-        if self.lattice.n_dim == 3:
-            coefficient = 8.0 * np.pi / self.lattice.reciprocal.volume
-            return coefficient * np.sqrt(2.0 * self.fermi_energy)
-        elif self.lattice.n_dim == 2:
-            coefficient = 4.0 * np.pi / self.lattice.reciprocal.volume
-            return coefficient * 1.0
-        else:
-            coefficient = 2.0 / self.lattice.reciprocal.volume
-            return coefficient / np.sqrt(2.0 * self.fermi_energy)
     
     def calculate_fermi_energy(self, lattice: Lattice3D | Lattice2D | Lattice1D) -> float:
         """Calculate the Fermi energy of the electron system.
