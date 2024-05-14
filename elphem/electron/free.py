@@ -17,7 +17,6 @@ class FreeElectron:
     def __init__(self, lattice: Lattice3D | Lattice2D | Lattice1D, n_electron: int):
         self.lattice = lattice
         self.n_electron = n_electron
-        self.temperature = lattice.temperature
         self.fermi_energy = self.calculate_fermi_energy(lattice)
 
         self.n_band = None
@@ -25,7 +24,6 @@ class FreeElectron:
         self.k = None
         self.n_k = None
         self.eigenenergies = None
-        self.occupations = None
         
     @classmethod
     def create_from_n(cls, lattice: Lattice3D | Lattice2D | Lattice1D, n_electron: int, n_band: int, n_k_array: np.ndarray) -> 'FreeElectron':
@@ -35,7 +33,7 @@ class FreeElectron:
         free_electron.n_k = np.prod(n_k_array)
 
         free_electron.update_band(lattice, n_band)
-        free_electron.update_eigenenergies_and_occupations()
+        free_electron.update_eigenenergies()
         
         return free_electron
 
@@ -53,7 +51,7 @@ class FreeElectron:
         free_electron.k = k_array
         
         free_electron.update_band(lattice, n_band)
-        free_electron.update_eigenenergies_and_occupations()
+        free_electron.update_eigenenergies()
         
         return free_electron
 
@@ -64,7 +62,7 @@ class FreeElectron:
         free_electron.g = g_array
         free_electron.k = k_array
         
-        free_electron.update_eigenenergies_and_occupations(expand_g=False)
+        free_electron.update_eigenenergies(expand_g=False)
         
         return free_electron
     
@@ -99,9 +97,6 @@ class FreeElectron:
         
         return eigenenergies
 
-    def calculate_occupations(self, eigenenergies: np.ndarray) -> np.ndarray:
-        return fermi_distribution(self.temperature, eigenenergies)
-    
     def calculate_dos(self, omega: float | np.ndarray) -> np.ndarray:
         omega_plus_fermi_energy = omega + self.fermi_energy
         if self.lattice.n_dim == 3:
@@ -123,19 +118,17 @@ class FreeElectron:
         self.n_band = n_band
         self.g = lattice.reciprocal.get_reciprocal_vectors(self.n_band)
 
-    def update_eigenenergies_and_occupations(self, expand_g: bool = True) -> None:
+    def update_eigenenergies(self, expand_g: bool = True) -> None:
         if expand_g:
             self.eigenenergies = self.calculate_eigenenergies(self.k, self.g)
         else:
             self.eigenenergies = self.calculate_eigenenergies(self.k + self.g)
 
-        self.occupations = self.calculate_occupations(self.eigenenergies)
-
     def update(self, g: np.ndarray, k: np.ndarray, expand_g: bool = False) -> None:
         self.k = k
         self.g = g
         
-        self.update_eigenenergies_and_occupations(expand_g)
+        self.update_eigenenergies(expand_g)
     
     def calculate_fermi_energy(self, lattice: Lattice3D | Lattice2D | Lattice1D) -> float:
         """Calculate the Fermi energy of the electron system.

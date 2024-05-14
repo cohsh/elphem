@@ -12,22 +12,23 @@ def main():
     n_q = np.full(3, 8)
     n_electron = 1
     n_band = 1
+    n_omega = 100
 
-    temperatures = np.arange(0.0, 300.0, 10)
+    temperatures = np.arange(0.0, 300.0, 50)
 
     heat_capacities = np.empty(temperatures.shape)
     heat_capacities_ref = np.empty(temperatures.shape)
 
     i = 0
     for temperature in temperatures:
-        lattice = Lattice3D('bcc', 'Li', a, temperature)
+        lattice = Lattice3D('bcc', 'Li', a)
         electron = FreeElectron.create_from_n(lattice, n_electron, n_band, n_k)
         phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
         electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.0001)
 
-        heat_capacities[i] = electron_phonon.calculate_heat_capacity()
-        heat_capacities_ref[i] = electron_phonon.calculate_heat_capacity(include_coupling=False)
+        heat_capacities[i] = electron_phonon.calculate_heat_capacity(temperature, n_omega)
+        heat_capacities_ref[i] = electron_phonon.calculate_heat_capacity_without_couplings(temperature)
         print(i)
         i += 1
 

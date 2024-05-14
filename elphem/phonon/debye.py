@@ -20,7 +20,6 @@ class DebyePhonon:
         """Validate initial model parameters."""
         self.lattice = lattice
         self.debye_temperature = debye_temperature
-        self.temperature = lattice.temperature
         self.speed_of_sound = self.calculate_speed_of_sound(lattice)
         
         self.q = None
@@ -28,7 +27,6 @@ class DebyePhonon:
         self.eigenenergies = None
         self.eigenvectors = None
         self.zero_point_lengths = None
-        self.occupations = None
     
     @classmethod
     def create_from_q(cls, lattice: Lattice3D | Lattice2D | Lattice1D, debye_temperature: float, q_array: np.ndarray) -> 'DebyePhonon':
@@ -40,7 +38,6 @@ class DebyePhonon:
         debye_phonon.eigenenergies = debye_phonon.calculate_eigenenergies(debye_phonon.q)
         debye_phonon.eigenvectors = debye_phonon.calculate_eigenvectors(debye_phonon.q)
         debye_phonon.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * lattice.mass * debye_phonon.eigenenergies))
-        debye_phonon.occupations = bose_distribution(debye_phonon.temperature, debye_phonon.eigenenergies)
         
         return debye_phonon
     
@@ -54,7 +51,6 @@ class DebyePhonon:
         debye_phonon.eigenenergies = debye_phonon.calculate_eigenenergies(debye_phonon.q)
         debye_phonon.eigenvectors = debye_phonon.calculate_eigenvectors(debye_phonon.q)
         debye_phonon.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * lattice.mass * debye_phonon.eigenenergies))
-        debye_phonon.occupations = bose_distribution(debye_phonon.temperature, debye_phonon.eigenenergies)
         
         return debye_phonon
     
@@ -103,7 +99,6 @@ class DebyePhonon:
         self.eigenenergies = self.get_eigenenergies(q)
         self.eigenvectors = self.get_eigenvectors(q)
         self.zero_point_lengths = safe_divide(1.0, np.sqrt(2.0 * self.lattice.mass * self.eigenenergies))
-        self.occupations = bose_distribution(self.temperature, self.eigenenergies)
 
     def calculate_speed_of_sound(self, lattice) -> float:
         """Calculate the speed of sound in the lattice based on Debye model.

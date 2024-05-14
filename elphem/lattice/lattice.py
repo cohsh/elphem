@@ -13,15 +13,11 @@ class Lattice:
     crystal_structure: str
     atoms: str | list[str] | np.ndarray
     a: float
-    temperature: float = None
 
     def __post_init__(self):
         """Initializes the lattice constants, primitive, and reciprocal cells along with their volumes and bases."""
         self.correct_atoms()
         self.set_about_atoms()
-        
-        if self.temperature is None:
-            self.temperature = 0.0
 
     def set_about_atoms(self) -> None:
         self.n_atoms = len(self.atoms)
@@ -36,9 +32,9 @@ class Lattice:
             self.atoms = self.atoms.tolist()
 
 class Lattice3D(Lattice):
-    def __init__(self, crystal_structure: str, atoms: str | list[str] | np.ndarray, a: float, temperature: float = None):
+    def __init__(self, crystal_structure: str, atoms: str | list[str] | np.ndarray, a: float):
         """Initializes the lattice constants, primitive, and reciprocal cells along with their volumes and bases."""
-        super().__init__(crystal_structure, atoms, a, temperature)
+        super().__init__(crystal_structure, atoms, a)
         self.n_dim = 3
         self.set_constants()
 
@@ -70,9 +66,9 @@ class Lattice3D(Lattice):
             raise ValueError("Invalid crystal structure specified.")
 
 class Lattice2D(Lattice):
-    def __init__(self, crystal_structure: str, atoms: str | list[str] | np.ndarray, a: float, temperature: float = None):
+    def __init__(self, crystal_structure: str, atoms: str | list[str] | np.ndarray, a: float):
         """Initializes the lattice constants, primitive, and reciprocal cells along with their volumes and bases."""
-        super().__init__(crystal_structure, atoms, a, temperature)
+        super().__init__(crystal_structure, atoms, a)
         self.n_dim = 2
         self.set_constants()
 
@@ -103,9 +99,9 @@ class Lattice2D(Lattice):
             raise ValueError("Invalid crystal structure specified.")
 
 class Lattice1D(Lattice):
-    def __init__(self, atoms: str | list[str] | np.ndarray, a: float, temperature: float = None):
+    def __init__(self, atoms: str | list[str] | np.ndarray, a: float):
         """Initializes the lattice constants, primitive, and reciprocal cells along with their volumes and bases."""
-        super().__init__('', atoms, a, temperature)
+        super().__init__('', atoms, a)
         self.n_dim = 1
         self.set_constants()
 
