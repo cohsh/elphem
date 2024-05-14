@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from elphem import *
 
+n_a = 6.02214085774 * 10 ** 23
+
 def main():
     a = 2.98 * Length.ANGSTROM['->']
     debye_temperature = 344.0
@@ -11,19 +13,30 @@ def main():
     n_electron = 1
     n_band = 1
 
-    lattice = Lattice3D('bcc', 'Li', a, 100.0)
+    temperatures = np.arange(0.0, 300.0, 5)
 
-    electron = FreeElectron.create_from_n(lattice, n_electron, n_band, n_k)
+    heat_capacities = np.empty(temperatures.shape)
 
-    phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
+    i = 0
+    for temperature in temperatures:
+        lattice = Lattice3D('bcc', 'Li', a, temperature)
+        electron = FreeElectron.create_from_n(lattice, n_electron, n_band, n_k)
+        phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
-    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.0001)
+        electron_phonon = ElectronPhonon(electron, phonon, sigma=0.0001, eta=0.0001)
 
-    print(electron_phonon.electron.n_band)
+        heat_capacities[i] = electron_phonon.calculate_heat_capacity()
+        print(i)
+        i += 1
 
-    heat_capacity = electron_phonon.calculate_heat_capacity()
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    
+    ax.plot(temperatures, heat_capacities * n_a * Energy.SI['<-'])
+    
+    ax.set_ylabel("Heat Capacity ($\mathrm{J}/(\mathrm{K}\cdot \mathrm{mol})$)")
 
-    print(heat_capacity)
+    fig.savefig("heat_capacity.png")
 
 if __name__ == "__main__":
     main()

@@ -115,7 +115,7 @@ class ElectronPhonon:
 
     def calculate_heat_capacity(self) -> float:
         coefficient = 2.0 * (np.pi * Energy.KELVIN['->']) ** 2 * self.electron.calculate_dos(0.0) / 3.0
-        heat_capacity = coefficient * (1.0 + np.nansum(self.calculate_coupling_strengths())) * self.electron.temperature
+        heat_capacity = coefficient * (1.0 + np.nansum(self.calculate_coupling_strengths()) / self.electron.n_k) * self.electron.temperature
         return heat_capacity
 
     def calculate_entropy(self, n_omega: int, omega_max: float = 10.0) -> np.ndarray:
