@@ -101,11 +101,6 @@ class ElectronPhonon:
             count += 1
             progress_bar.print(count)
 
-        spectrum_sum = np.nansum(spectrum, axis=1)
-
-        for i in range(n_omega):
-            spectrum[..., i] = spectrum[..., i] / spectrum_sum
-
         return spectrum
 
     def calculate_coupling_strengths(self, delta_omega: float = 0.000001) -> np.ndarray:
