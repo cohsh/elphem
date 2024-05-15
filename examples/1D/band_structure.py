@@ -3,14 +3,16 @@ import matplotlib.pyplot as plt
 from elphem import *
 
 def main():
-    a = 2.98 * Length.ANGSTROM['->']
+    a = 2.46 * Length.ANGSTROM['->']
+    n_electron = 4
+    n_band = 3
 
-    lattice = Lattice1D('Li', a)
-    k_names = ["G", "0.6X"]
+    lattice = Lattice1D('C', a)
+    k_names = ["G", "X"]
     
     k_path = lattice.reciprocal.get_path(k_names, 1000)
 
-    electron = FreeElectron.create_from_path(lattice, 1, 4, k_path)
+    electron = FreeElectron.create_from_path(lattice, n_electron, n_band, k_path)
 
     eigenenergies = electron.eigenenergies * Energy.EV['<-']
     
