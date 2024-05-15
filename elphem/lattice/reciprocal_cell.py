@@ -96,10 +96,13 @@ class ReciprocalCell:
 
         for g_ref in g_norm_unique:
             count = 0
+            degeneracy = 0
             for g_compare in g_norm:
                 if g_compare == g_ref:
                     g_list.append(g[count])
+                    degeneracy += 1
                 count += 1
+            print(degeneracy)
 
         return np.array(g_list[0:n_g])
 
