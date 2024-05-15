@@ -20,13 +20,13 @@ def calculate_3d():
     electron = FreeElectron.create_from_path(lattice, n_electron, n_band, k_path)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
-    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.001, eta=0.0005)
+    electron_phonon = ElectronPhonon(electron, phonon, 300.0, sigma=0.001, eta=0.0005)
 
     n_omega = 100
     range_omega = [-6 * Energy.EV["->"], 20 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
     
-    spectrum = electron_phonon.calculate_spectrum_over_range(300.0, omega_array)
+    spectrum = electron_phonon.calculate_spectrum_over_range(omega_array)
     
     y, x = np.meshgrid(omega_array, k_path.minor_scales)
 
@@ -67,13 +67,13 @@ def calculate_1d():
     electron = FreeElectron.create_from_path(lattice, n_electron, n_band, k_path)
     phonon = DebyePhonon.create_from_n(lattice, debye_temperature, n_q)
 
-    electron_phonon = ElectronPhonon(electron, phonon, sigma=0.001, eta=0.0005)
+    electron_phonon = ElectronPhonon(electron, phonon, 50.0, sigma=0.001, eta=0.0005)
 
     n_omega = 100
     range_omega = [-6 * Energy.EV["->"], 20 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
     
-    spectrum = electron_phonon.calculate_spectrum_over_range(100.0, omega_array)
+    spectrum = electron_phonon.calculate_spectrum_over_range(omega_array)
     
     y, x = np.meshgrid(omega_array, k_path.minor_scales)
 

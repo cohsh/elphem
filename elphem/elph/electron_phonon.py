@@ -19,7 +19,8 @@ class ElectronPhonon:
     """
     effective_potential: float = 1.0 / 16.0
 
-    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, sigma: float = 0.00001, eta: float = 0.0001, n_band: int = 1):
+    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, temperature: float, sigma: float = 0.00001, eta: float = 0.0001, n_band: int = 1):
+        self.temperature = temperature
         self.n_band = n_band
         self.n_dim = electron.lattice.n_dim
         self.eigenenergies = electron.eigenenergies[0:self.n_band, :]
@@ -30,7 +31,7 @@ class ElectronPhonon:
         self.electron_inter = electron.clone_with_gk_grid(g2, k + q)
         self.phonon = phonon.clone_with_q_grid(q)
         
-        self.green_function = GreenFunction(self.electron_inter, self.phonon, sigma, eta)
+        self.green_function = GreenFunction(self.electron_inter, self.phonon, self.temperature, sigma, eta)
 
         self.coupling2 = np.abs(self.calculate_couplings()) ** 2
 
@@ -53,7 +54,7 @@ class ElectronPhonon:
 
         return couplings
 
-    def calculate_self_energies(self, temperature: float, omega: float) -> np.ndarray:
+    def calculate_self_energies(self, omega: float) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
 
         Args:
@@ -63,10 +64,10 @@ class ElectronPhonon:
             complex: The Fan self-energy term as a complex number.
         """
         
-        return np.nansum(self.coupling2 * self.green_function.calculate(temperature, omega), axis=(1, 3)) / self.phonon.n_q
+        return np.nansum(self.coupling2 * self.green_function.calculate(omega), axis=(1, 3)) / self.phonon.n_q
 
-    def calculate_spectrum(self, temperature: float, omega: float) -> np.ndarray:
-        self_energies = self.calculate_self_energies(temperature, omega)
+    def calculate_spectrum(self, omega: float) -> np.ndarray:
+        self_energies = self.calculate_self_energies(omega)
         
         numerator = - self_energies.imag / np.pi
         
@@ -74,28 +75,28 @@ class ElectronPhonon:
         
         return np.nansum(safe_divide(numerator, denominator), axis=0)
 
-    def calculate_self_energies_over_range(self, temperature: float, omega_array: np.ndarray | list[float]) -> np.ndarray:
+    def calculate_self_energies_over_range(self, omega_array: np.ndarray | list[float]) -> np.ndarray:
         n_omega = len(omega_array)
         self_energies = np.empty(self.eigenenergies.shape + (n_omega,), dtype='complex')
         
         count = 0
         progress_bar = ProgressBar('Self Energy', n_omega)
         for omega in omega_array:
-            self_energies[..., count] = self.calculate_self_energies(temperature, omega)
+            self_energies[..., count] = self.calculate_self_energies(omega)
             
             count += 1
             progress_bar.print(count)
 
         return self_energies
         
-    def calculate_spectrum_over_range(self, temperature: float, omega_array: np.ndarray | list[float]) -> np.ndarray:
+    def calculate_spectrum_over_range(self, omega_array: np.ndarray | list[float]) -> np.ndarray:
         n_omega = len(omega_array)
         spectrum = np.empty((self.electron.n_k, n_omega))
         
         count = 0
         progress_bar = ProgressBar('Spectrum', n_omega)
         for omega in omega_array:
-            spectrum[..., count] = self.calculate_spectrum(temperature, omega)
+            spectrum[..., count] = self.calculate_spectrum(omega)
             
             count += 1
             progress_bar.print(count)
@@ -107,11 +108,11 @@ class ElectronPhonon:
 
         return spectrum
 
-    def calculate_coupling_strengths(self, temperature: float, delta_omega: float = 0.000001) -> np.ndarray:
+    def calculate_coupling_strengths(self, delta_omega: float = 0.000001) -> np.ndarray:
         coupling_strengths = np.empty(self.eigenenergies.shape)
         for i in range(self.electron.n_band):
             for j in range(self.electron.n_k):
-                self_energies_plus = self.calculate_self_energies(temperature, self.eigenenergies[i,j] + delta_omega)
-                self_energies_minus = self.calculate_self_energies(temperature, self.eigenenergies[i,j] - delta_omega)
+                self_energies_plus = self.calculate_self_energies(self.eigenenergies[i,j] + delta_omega)
+                self_energies_minus = self.calculate_self_energies(self.eigenenergies[i,j] - delta_omega)
                 coupling_strengths[i,j] = - (self_energies_plus[i,j].real - self_energies_minus[i,j].real) / (2.0 * delta_omega)
         return coupling_strengths
