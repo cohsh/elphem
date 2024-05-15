@@ -1,6 +1,5 @@
 import numpy as np
 
-from elphem.common.unit import Energy
 from elphem.common.stdout import ProgressBar
 from elphem.common.function import safe_divide
 from elphem.electron.free import FreeElectron
@@ -20,9 +19,10 @@ class ElectronPhonon:
     """
     effective_potential: float = 1.0 / 16.0
 
-    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, sigma: float = 0.00001, eta: float = 0.0001):
+    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, sigma: float = 0.00001, eta: float = 0.0001, n_band: int = 1):
+        self.n_band = n_band
         self.n_dim = electron.lattice.n_dim
-        self.eigenenergies = electron.eigenenergies
+        self.eigenenergies = electron.eigenenergies[0:self.n_band, :]
         
         g1, g2, k, q = self.create_ggkq_grid(electron, phonon)
 
@@ -35,8 +35,8 @@ class ElectronPhonon:
         self.coupling2 = np.abs(self.calculate_couplings()) ** 2
 
     def create_ggkq_grid(self, electron: FreeElectron, phonon: DebyePhonon) -> tuple:
-        shape = (electron.n_band, electron.n_band, electron.n_k, phonon.n_q, self.n_dim)
-        g1 = np.broadcast_to(electron.g[:, np.newaxis, np.newaxis, np.newaxis, :], shape)
+        shape = (self.n_band, electron.n_band, electron.n_k, phonon.n_q, self.n_dim)
+        g1 = np.broadcast_to(electron.g[:self.n_band, np.newaxis, np.newaxis, np.newaxis, :], shape)
         g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
         k = np.broadcast_to(electron.k[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
         q = np.broadcast_to(phonon.q[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
