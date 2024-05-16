@@ -43,6 +43,7 @@ def fermi_distribution(temperature: float, energy: float | np.ndarray) -> float 
     """
     boltzmann_factor = boltzmann_distribution(temperature, energy)
     inv_boltzmann_factor = safe_divide(1.0, boltzmann_factor)
+
     return safe_divide(1.0, inv_boltzmann_factor + 1.0)
 
 def bose_distribution(temperature: float, energy: float | np.ndarray) -> float | np.ndarray:
@@ -58,6 +59,7 @@ def bose_distribution(temperature: float, energy: float | np.ndarray) -> float |
     """
     boltzmann_factor = boltzmann_distribution(temperature, energy)
     inv_boltzmann_factor = safe_divide(1.0, boltzmann_factor)
+    
     return safe_divide(1.0, inv_boltzmann_factor - 1.0)
 
 def gaussian_distribution(sigma: float, energy: float | np.ndarray) -> float | np.ndarray:
@@ -71,4 +73,5 @@ def gaussian_distribution(sigma: float, energy: float | np.ndarray) -> float | n
     Returns:
         float | np.ndarray: Probability density(s) based on the Gaussian distribution.
     """
+    
     return np.exp(- energy ** 2 / (2.0 * sigma ** 2)) / (np.sqrt(2.0 * np.pi) * sigma)
