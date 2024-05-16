@@ -1,29 +1,32 @@
 import numpy as np
 
+from elphem.electron.electron import Electron
+from elphem.phonon.phonon import Phonon
+from elphem.elph.green_function import GreenFunction
+
 from elphem.common.stdout import ProgressBar
 from elphem.common.function import safe_divide
-from elphem.electron.free import FreeElectron
-from elphem.phonon.debye import DebyePhonon
-from elphem.elph.green_function import GreenFunction
+
 
 class ElectronPhonon:
     """Calculate the electron-phonon components for electronic states in a lattice.
 
     Attributes:
-        electron (FreeElectron): Free electron model for the lattice.
-        phonon (DebyeModel): Phonon model using Debye approximation.
+        electron (Electron): Free electron in a given empty lattice.
+        phonon (Phonon): Debye Phonon.
         temperature (float): Temperature of the system in Kelvin.
         sigma (float): Smearing parameter for the Gaussian distribution, defaults to 0.01.
         eta (float): Small positive constant to ensure numerical stability, defaults to 0.01.
         effective_potential (float): Effective potential used in electron-phonon coupling calculation, defaults to 1.0 / 16.0.
     """
-    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, temperature: float, 
-                sigma: float = 0.00001, eta: float = 0.0001, effective_potential: float = 1.0 / 16.0, n_band: int = 1):
+    def __init__(self, electron: Electron, phonon: Phonon, temperature: float, 
+                sigma: float = 0.00001, eta: float = 0.0001,
+                effective_potential: float = 1.0 / 16.0, n_bands: int = 1):
         self.temperature = temperature
         self.effective_potential = effective_potential
-        self.n_band = n_band
+        self.n_bands = n_bands
         self.n_dim = electron.lattice.n_dim
-        self.eigenenergies = electron.eigenenergies[0:self.n_band, :]
+        self.eigenenergies = electron.eigenenergies[0:self.n_bands, :]
         
         g1, g2, k, q = self.create_ggkq_grid(electron, phonon)
 
@@ -36,8 +39,8 @@ class ElectronPhonon:
         self.coupling2 = np.abs(self.calculate_couplings()) ** 2
 
     def create_ggkq_grid(self, electron: FreeElectron, phonon: DebyePhonon) -> tuple:
-        shape = (self.n_band, electron.n_band, electron.n_k, phonon.n_q, self.n_dim)
-        g1 = np.broadcast_to(electron.g[:self.n_band, np.newaxis, np.newaxis, np.newaxis, :], shape)
+        shape = (self.n_bands, electron.n_bands, electron.n_k, phonon.n_q, self.n_dim)
+        g1 = np.broadcast_to(electron.g[:self.n_bands, np.newaxis, np.newaxis, np.newaxis, :], shape)
         g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
         k = np.broadcast_to(electron.k[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
         q = np.broadcast_to(phonon.q[np.newaxis, np.newaxis, np.newaxis, :, :], shape)
@@ -69,7 +72,7 @@ class ElectronPhonon:
     def calculate_electron_phonon_renormalization(self) -> np.ndarray:
         epr = np.empty(self.eigenenergies.shape)
         
-        for i in range(self.n_band):
+        for i in range(self.n_bands):
             for j in range(self.electron.n_k):
                 epr[i, j] = (self.calculate_self_energies(self.eigenenergies[i, j])).real
         
@@ -114,7 +117,7 @@ class ElectronPhonon:
 
     def calculate_coupling_strengths(self, delta_omega: float = 0.000001) -> np.ndarray:
         coupling_strengths = np.empty(self.eigenenergies.shape)
-        for i in range(self.electron.n_band):
+        for i in range(self.electron.n_bands):
             for j in range(self.electron.n_k):
                 self_energies_plus = self.calculate_self_energies(self.eigenenergies[i,j] + delta_omega)
                 self_energies_minus = self.calculate_self_energies(self.eigenenergies[i,j] - delta_omega)
