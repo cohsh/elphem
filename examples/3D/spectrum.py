@@ -91,7 +91,7 @@ def calculate_1d():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(0.0, 0.01)
+    mappable.set_clim(0.0, 1.0)
 
     fig.savefig("spectrum_1d.png")
 
