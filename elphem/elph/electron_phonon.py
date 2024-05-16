@@ -20,7 +20,7 @@ class ElectronPhonon:
         effective_potential (float): Effective potential used in electron-phonon coupling calculation, defaults to 1.0 / 16.0.
     """
     def __init__(self, electron: Electron, phonon: Phonon, temperature: float, 
-                sigma: float = 0.00001, eta: float = 0.0001,
+                sigma: float = 0.001, eta: float = 0.0005,
                 effective_potential: float = 1.0 / 16.0, n_bands: int = 1):
         self.temperature = temperature
         self.effective_potential = effective_potential
@@ -38,8 +38,9 @@ class ElectronPhonon:
 
         self.coupling2 = np.abs(self.calculate_couplings()) ** 2
 
-    def create_ggkq_grid(self, electron: FreeElectron, phonon: DebyePhonon) -> tuple:
+    def create_ggkq_grid(self, electron: Electron, phonon: Phonon) -> tuple:
         shape = (self.n_bands, electron.n_bands, electron.n_k, phonon.n_q, self.n_dim)
+        
         g1 = np.broadcast_to(electron.g[:self.n_bands, np.newaxis, np.newaxis, np.newaxis, :], shape)
         g2 = np.broadcast_to(electron.g[np.newaxis, :, np.newaxis, np.newaxis, :], shape)
         k = np.broadcast_to(electron.k[np.newaxis, np.newaxis, :, np.newaxis, :], shape)
@@ -53,9 +54,7 @@ class ElectronPhonon:
         Returns:
             np.ndarray: The electron-phonon coupling strength for the given vectors.
         """
-        couplings = -1.0j * self.effective_potential * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
-
-        return couplings
+        return -1.0j * self.effective_potential * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
 
     def calculate_self_energies(self, omega: float) -> np.ndarray:
         """Calculate a single value of Fan self-energy for given wave vectors.
@@ -72,10 +71,14 @@ class ElectronPhonon:
     def calculate_electron_phonon_renormalization(self) -> np.ndarray:
         epr = np.empty(self.eigenenergies.shape)
         
+        count = 0
+        progress_bar = ProgressBar('Electron Phonon Renormalization', self.n_bands * self.electron.n_k)
         for i in range(self.n_bands):
             for j in range(self.electron.n_k):
                 epr[i, j] = (self.calculate_self_energies(self.eigenenergies[i, j])).real
-        
+                count += 1
+                progress_bar.print(count)
+
         return epr
 
     def calculate_spectrum(self, omega: float) -> np.ndarray:
@@ -117,9 +120,16 @@ class ElectronPhonon:
 
     def calculate_coupling_strengths(self, delta_omega: float = 0.000001) -> np.ndarray:
         coupling_strengths = np.empty(self.eigenenergies.shape)
-        for i in range(self.electron.n_bands):
+        
+        count = 0
+        progress_bar = ProgressBar('Coupling Strength', self.n_bands * self.electron.n_k)
+        for i in range(self.n_bands):
             for j in range(self.electron.n_k):
                 self_energies_plus = self.calculate_self_energies(self.eigenenergies[i,j] + delta_omega)
                 self_energies_minus = self.calculate_self_energies(self.eigenenergies[i,j] - delta_omega)
                 coupling_strengths[i,j] = - (self_energies_plus[i,j].real - self_energies_minus[i,j].real) / (2.0 * delta_omega)
+                
+                count += 1
+                progress_bar.print(count)
+        
         return coupling_strengths
