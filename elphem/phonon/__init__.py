@@ -1,1 +1,1 @@
-from .debye import *
+from .phonon import *
