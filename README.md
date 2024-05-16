@@ -3,7 +3,6 @@
 [![Python package](https://github.com/cohsh/elphem/actions/workflows/python-package.yml/badge.svg)](https://github.com/cohsh/elphem/actions/workflows/python-package.yml)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/elphem)
 ![PyPI - Version](https://img.shields.io/pypi/v/elphem)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/elphem)
 [![Downloads](https://static.pepy.tech/badge/elphem/month)](https://pepy.tech/project/elphem)
 ![GitHub](https://img.shields.io/github/license/cohsh/elphem)
 
