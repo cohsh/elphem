@@ -66,6 +66,15 @@ class ElectronPhonon:
         
         return np.nansum(self.coupling2 * self.green_function.calculate(omega), axis=(1, 3)) / self.phonon.n_q
 
+    def calculate_electron_phonon_renormalization(self) -> np.ndarray:
+        epr = np.empty(self.eigenenergies.shape)
+        
+        for i in range(self.n_band):
+            for j in range(self.electron.n_k):
+                epr[i, j] = (self.calculate_self_energies(self.eigenenergies[i, j])).real
+        
+        return epr
+
     def calculate_spectrum(self, omega: float) -> np.ndarray:
         self_energies = self.calculate_self_energies(omega)
         
