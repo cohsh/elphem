@@ -1,23 +1,22 @@
 import math
 import numpy as np
 
-from elphem.common.distribution import fermi_distribution, gaussian_distribution
-from elphem.lattice.lattice import Lattice3D, Lattice2D, Lattice1D
+from elphem.lattice.lattice import Lattice
 from elphem.lattice.path import PathValues
 
-class FreeElectron:
-    """Represents a free electron model on a given crystal lattice.
+class Electron:
+    """Represents a free electron in a given empty lattice.
     
     Attributes:
         lattice (EmptyLattice): The lattice on which the free electron model is applied.
         n_band (int): Number of energy bands considered.
-        n_electron (int): Number of electrons per unit cell.
+        number (int): Number of electrons per unit cell.
     """
     
-    def __init__(self, lattice: Lattice3D | Lattice2D | Lattice1D, n_electron: int):
+    def __init__(self, lattice: Lattice, number: int):
         self.lattice = lattice
-        self.n_electron = n_electron
-        self.fermi_energy = self.calculate_fermi_energy(lattice)
+        self.number = number
+        self.fermi_energy = self.calculate_fermi_energy()
 
         self.n_band = None
         self.g = None
@@ -26,20 +25,20 @@ class FreeElectron:
         self.eigenenergies = None
         
     @classmethod
-    def create_from_n(cls, lattice: Lattice3D | Lattice2D | Lattice1D, n_electron: int, n_band: int, n_k_array: np.ndarray) -> 'FreeElectron':
-        free_electron = FreeElectron(lattice, n_electron)
+    def create_from_n(cls, lattice: Lattice, number: int, n_band: int, n_k_array: np.ndarray) -> 'Electron':
+        electron = Electron(lattice, number)
 
-        free_electron.k = lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
-        free_electron.n_k = np.prod(n_k_array)
+        electron.k = lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
+        electron.n_k = np.prod(n_k_array)
 
-        free_electron.update_band(lattice, n_band)
-        free_electron.update_eigenenergies()
+        electron.update_band(n_band)
+        electron.update_eigenenergies()
         
-        return free_electron
+        return electron
 
     @classmethod
-    def create_from_k(cls, lattice: Lattice3D | Lattice2D | Lattice1D, n_electron: int, n_band: int, k_array: np.ndarray) -> 'FreeElectron':
-        free_electron = FreeElectron(lattice, n_electron)
+    def create_from_k(cls, lattice: Lattice, number: int, n_band: int, k_array: np.ndarray) -> 'Electron':
+        electron = Electron(lattice, number)
 
         if isinstance(k_array, list):
             k_array = np.array(k_array)
@@ -47,37 +46,37 @@ class FreeElectron:
         if k_array.shape == (lattice.n_dim,):
             k_array = np.array([k_array])
 
-        free_electron.n_k = len(k_array)
-        free_electron.k = k_array
+        electron.n_k = len(k_array)
+        electron.k = k_array
         
-        free_electron.update_band(lattice, n_band)
-        free_electron.update_eigenenergies()
+        electron.update_band(n_band)
+        electron.update_eigenenergies()
         
-        return free_electron
+        return electron
 
     @classmethod
-    def create_from_gk_grid(cls, lattice: Lattice3D | Lattice2D | Lattice1D, n_electron: int, g_array: np.ndarray, k_array: np.ndarray) -> 'FreeElectron':
-        free_electron = FreeElectron(lattice, n_electron)
+    def create_from_gk_grid(cls, lattice: Lattice, number: int, g_array: np.ndarray, k_array: np.ndarray) -> 'Electron':
+        electron = Electron(lattice, number)
         
-        free_electron.g = g_array
-        free_electron.k = k_array
+        electron.g = g_array
+        electron.k = k_array
         
-        free_electron.update_eigenenergies(expand_g=False)
+        electron.update_eigenenergies(expand_g=False)
         
-        return free_electron
+        return electron
     
     @classmethod
-    def create_from_path(cls, lattice: Lattice3D | Lattice2D | Lattice1D, n_electron: int, n_band: int, k_path: PathValues) -> 'FreeElectron':
-        free_electron = FreeElectron.create_from_k(lattice, n_electron, n_band, k_path.values)
+    def create_from_path(cls, lattice: Lattice, number: int, n_band: int, k_path: PathValues) -> 'Electron':
+        electron = Electron.create_from_k(lattice, number, n_band, k_path.values)
         
-        return free_electron
+        return electron
 
-    def clone_with_gk_grid(self, g_array: np.ndarray, k_array: np.ndarray) -> 'FreeElectron':
-        free_electron = self.create_from_gk_grid(self.lattice, self.n_electron, g_array, k_array)
-        free_electron.n_k = self.n_k
-        free_electron.n_band = self.n_band
+    def clone_with_gk_grid(self, g_array: np.ndarray, k_array: np.ndarray) -> 'Electron':
+        electron = self.create_from_gk_grid(self.lattice, self.number, g_array, k_array)
+        electron.n_k = self.n_k
+        electron.n_band = self.n_band
         
-        return free_electron
+        return electron
 
     def calculate_eigenenergies(self, k_array: np.ndarray, g_array: np.ndarray = None) -> np.ndarray:
         """Calculate the electron eigenenergies at wave vector k.
@@ -114,9 +113,9 @@ class FreeElectron:
         
         return k_path.derive(eigenenergies)
 
-    def update_band(self, lattice: Lattice3D | Lattice2D | Lattice1D, n_band: int) -> None:
+    def update_band(self, n_band: int) -> None:
         self.n_band = n_band
-        self.g = lattice.reciprocal.get_reciprocal_vectors(self.n_band)
+        self.g = self.lattice.reciprocal.get_reciprocal_vectors(self.n_band)
 
     def update_eigenenergies(self, expand_g: bool = True) -> None:
         if expand_g:
@@ -130,15 +129,15 @@ class FreeElectron:
         
         self.update_eigenenergies(expand_g)
     
-    def calculate_fermi_energy(self, lattice: Lattice3D | Lattice2D | Lattice1D) -> float:
+    def calculate_fermi_energy(self) -> float:
         """Calculate the Fermi energy of the electron system.
 
         Returns:
             float: The Fermi energy.
         """
-        gamma = math.gamma(lattice.n_dim / 2.0 + 1.0)
+        gamma = math.gamma(self.lattice.n_dim / 2.0 + 1.0)
         coefficient = 2.0 * np.pi
-        electron_density = self.n_electron / lattice.primitive.volume
+        electron_density = self.number / lattice.primitive.volume
         
         fermi_energy = coefficient * (0.5 * gamma * electron_density) ** (2.0 / lattice.n_dim)
         
