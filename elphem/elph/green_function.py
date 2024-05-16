@@ -2,11 +2,11 @@ import numpy as np
 
 from elphem.common.function import safe_divide
 from elphem.common.distribution import fermi_distribution, bose_distribution
-from elphem.electron.free import FreeElectron
-from elphem.phonon.debye import DebyePhonon
+from elphem.electron.electron import Electron
+from elphem.phonon.phonon import Phonon
 
 class GreenFunction:
-    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, temperature: float, sigma: float, eta: float):
+    def __init__(self, electron: Electron, phonon: Phonon, temperature: float, sigma: float, eta: float):
         self.sigma = sigma
         self.eta = eta
         self.gaussian_coefficient_a = 2.0 * self.sigma ** 2
