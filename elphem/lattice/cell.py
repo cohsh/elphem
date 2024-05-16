@@ -27,4 +27,4 @@ class Cell1D:
         self.basis = None
     
     def calculate_volume(self) -> float:
-        return self.basis
+        return np.linalg.norm(self.basis)
