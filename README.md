@@ -221,4 +221,4 @@ if __name__ == "__main__":
 MIT
 
 ## Author
-Kohei Ishii
+Kohei Ishii (The University of Tokyo, Japan)
