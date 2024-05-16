@@ -10,7 +10,7 @@ def safe_divide(a: np.ndarray | float | int, b: np.ndarray | float | int, defaul
         default (complex | float | int, optional): Value to use when division by zero occurs. Default is NaN.
 
     Returns:
-        np.ndarray: Result of the division, with division by zero handled gracefully.
+        np.ndarray: Result of the division (a / b), with division by zero handled gracefully.
     """
 
     dtype = np.result_type(a, b, default)
