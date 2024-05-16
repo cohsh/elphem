@@ -17,10 +17,10 @@ class ElectronPhonon:
         eta (float): Small positive constant to ensure numerical stability, defaults to 0.01.
         effective_potential (float): Effective potential used in electron-phonon coupling calculation, defaults to 1.0 / 16.0.
     """
-    effective_potential: float = 1.0 / 16.0
-
-    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, temperature: float, sigma: float = 0.00001, eta: float = 0.0001, n_band: int = 1):
+    def __init__(self, electron: FreeElectron, phonon: DebyePhonon, temperature: float, 
+                sigma: float = 0.00001, eta: float = 0.0001, effective_potential: float = 1.0 / 16.0, n_band: int = 1):
         self.temperature = temperature
+        self.effective_potential = effective_potential
         self.n_band = n_band
         self.n_dim = electron.lattice.n_dim
         self.eigenenergies = electron.eigenenergies[0:self.n_band, :]
