@@ -6,6 +6,7 @@ from elphem.common.unit import Mass
 from elphem.lattice.primitive_cell import PrimitiveCell3D, PrimitiveCell2D, PrimitiveCell1D
 from elphem.lattice.reciprocal_cell import ReciprocalCell3D, ReciprocalCell2D, ReciprocalCell1D
 from elphem.lattice.lattice_constant import LatticeConstant3D, LatticeConstant2D, LatticeConstant1D
+from elphem.lattice.path import PathValues
 
 @dataclass
 class Lattice:
@@ -13,6 +14,8 @@ class Lattice:
     crystal_structure: str
     atoms: str | list[str] | np.ndarray
     a: float
+    primitive = None
+    reciprocal = None
 
     def __post_init__(self):
         """Initializes the lattice constants, primitive, and reciprocal cells along with their volumes and bases."""
@@ -30,6 +33,9 @@ class Lattice:
             self.atoms = [self.atoms]
         elif isinstance(self.atoms, np.ndarray):
             self.atoms = self.atoms.tolist()
+    
+    def get_k_path(self, k_names: list[str], n_split: int) -> PathValues:
+        return self.reciprocal.get_path(k_names, n_split)
 
 class Lattice3D(Lattice):
     def __init__(self, crystal_structure: str, atoms: str | list[str] | np.ndarray, a: float):

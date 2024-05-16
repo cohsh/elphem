@@ -102,7 +102,6 @@ class ReciprocalCell:
                     g_list.append(g[count])
                     degeneracy += 1
                 count += 1
-            print(degeneracy)
 
         return np.array(g_list[0:n_g])
 

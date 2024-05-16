@@ -104,17 +104,20 @@ class ElectronPhonon:
 
         return self_energies
         
-    def calculate_spectrum_over_range(self, omega_array: np.ndarray | list[float]) -> np.ndarray:
+    def calculate_spectrum_over_range(self, omega_array: np.ndarray | list[float], normalize: bool = False) -> np.ndarray:
         n_omega = len(omega_array)
         spectrum = np.empty((self.electron.n_k, n_omega))
         
-        count = 0
         progress_bar = ProgressBar('Spectrum', n_omega)
-        for omega in omega_array:
-            spectrum[..., count] = self.calculate_spectrum(omega)
-            
-            count += 1
-            progress_bar.print(count)
+        for i in range(n_omega):
+            spectrum[..., i] = self.calculate_spectrum(omega_array[i])
+
+            progress_bar.print(i)
+        
+        if normalize:
+            spectrum_sum = np.nansum(spectrum, axis=1)
+            for i in range(n_omega):
+                spectrum[..., i] /= spectrum_sum
 
         return spectrum
 

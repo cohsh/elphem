@@ -136,8 +136,8 @@ class Electron:
         """
         gamma = math.gamma(self.lattice.n_dim / 2.0 + 1.0)
         coefficient = 2.0 * np.pi
-        electron_density = self.n_electrons / lattice.primitive.volume
+        electron_density = self.n_electrons / self.lattice.primitive.volume
         
-        fermi_energy = coefficient * (0.5 * gamma * electron_density) ** (2.0 / lattice.n_dim)
+        fermi_energy = coefficient * (0.5 * gamma * electron_density) ** (2.0 / self.lattice.n_dim)
         
         return fermi_energy
