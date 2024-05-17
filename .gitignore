@@ -73,7 +73,7 @@ docs/.nojekyll
 docs/build/.buildinfo
 docs/build/.doctrees
 docs/build/_sources
-!docs/build
+docs/build
 
 # PyBuilder
 .pybuilder/
