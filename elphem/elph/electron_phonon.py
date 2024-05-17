@@ -23,13 +23,17 @@ class ElectronPhonon:
         green_function (GreenFunction): Green function
         couplings (np.ndarray): electron-phonon coupling constants squared
     """
-    def __init__(self, electron: Electron, phonon: Phonon, temperature: float, 
+    def __init__(self, electron: Electron, phonon: Phonon, temperature: float, n_bands: int,
                 sigma: float = 0.001, eta: float = 0.0005,
-                effective_potential: float = 0.0625, n_bands: int = 1):
+                effective_potential: float = 0.0625):
         self.n_dim = electron.lattice.n_dim
         self.temperature = temperature
         self.effective_potential = effective_potential
-        self.n_bands = n_bands
+        if n_bands > electron.n_bands:
+            self.n_bands = electron.n_bands
+        else:
+            self.n_bands = n_bands
+
         self.eigenenergies = electron.eigenenergies[0:self.n_bands, :]
         
         g1, g2, k, q = self.create_ggkq_grid(electron, phonon)
