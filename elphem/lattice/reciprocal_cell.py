@@ -9,11 +9,26 @@ from elphem.common.brillouin import SpecialPoints3D, SpecialPoints2D, SpecialPoi
 from elphem.lattice.path import PathValues
 
 class ReciprocalCell:
+    """A class for reciprocal cells
+    Attributes:
+        n_dim (int): Number of dimensions
+    """
     def __init__(self):
         self.n_dim = None
     
     @staticmethod
     def split_fractional_k_name(fractional_k_name: str) -> tuple:
+        """Split fractional special k points.
+
+        Args:
+            fractional_k_name (str): A string of fractional special k points
+
+        Raises:
+            ValueError: If the string format is invalid.
+
+        Returns:
+            tuple: fraction and the name of a special k point.
+        """
         match = re.match(r"([0-9.]*)([A-Z]+)", fractional_k_name)
         
         if match:
@@ -30,11 +45,11 @@ class ReciprocalCell:
         """Calculates a path through specified special points in the Brillouin zone.
 
         Args:
-            k_names (list[str]): List of special point names to form the path.
-            n (int): Number of points between each special point.
+            fractional_k_names (list[str]): List of special point names to form the path.
+            n_split (int): Number of points between each special point.
 
         Returns:
-            tuple: Returns the total length of the path, the path coordinates, and the lengths at special points.
+            k_path (PathValue): Values with path.
         """
         fractional_k_names_tuple = [self.split_fractional_k_name(fractional_k_name) for fractional_k_name in fractional_k_names]
         
@@ -69,9 +84,12 @@ class ReciprocalCell:
     
     def get_reciprocal_vectors(self, n_g: int) -> np.ndarray:
         """Generate the reciprocal lattice vectors used to define the Brillouin zone boundaries.
+        
+        Args:
+            n_g: Number of reciprocal lattice vectors
 
         Returns:
-            np.ndarray: An array of reciprocal lattice vectors.
+            np.ndarray: A numpy array of reciprocal lattice vectors.
         """
         if self.n_dim == 3:
             n_cut = np.ceil(np.cbrt(n_g))
@@ -104,14 +122,19 @@ class ReciprocalCell:
                 count += 1
 
         return np.array(g_list[0:n_g])
-
     
     def calculate_special_k(k_name: str) -> None:
         pass
 
 @dataclass
 class ReciprocalCell3D(ReciprocalCell, Cell3D):
-    """Defines the reciprocal cell for a crystal based on the lattice constants of the primitive cell."""
+    """Class for the 3D reciprocal cell for a crystal based on the lattice constants of the primitive cell.
+    
+    Attributes:
+        lattice_constant (LatticeConstant3D): Lattice constants.
+        basis (np.ndarray): A numpy array of basis.
+        volume (float): The volume.
+    """
     lattice_constant: LatticeConstant3D
     
     def __post_init__(self):
@@ -124,7 +147,7 @@ class ReciprocalCell3D(ReciprocalCell, Cell3D):
         """Constructs the basis matrix for the reciprocal cell from the primitive cell.
 
         Returns:
-            np.ndarray: The basis matrix of the reciprocal cell.
+            basis (np.ndarray): The basis matrix of the reciprocal cell.
         """
         primitive_cell = PrimitiveCell3D(self.lattice_constant)
 
@@ -141,6 +164,16 @@ class ReciprocalCell3D(ReciprocalCell, Cell3D):
         return basis
 
     def get_monkhorst_pack_grid(self, n_x: int, n_y: int, n_z: int) -> np.ndarray:
+        """Get 3D Monkhorst and Pack grid
+
+        Args:
+            n_x (int): Number of x-direction points
+            n_y (int): Number of y-direction points
+            n_z (int): Number of z-direction points
+
+        Returns:
+            aligned_k (np.ndarray): A numpy array of k points
+        """
         x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
         y = (2 * np.arange(1, n_y + 1) - n_y - 1) / (2 * n_y)
         z = (2 * np.arange(1, n_z + 1) - n_z - 1) / (2 * n_z)
@@ -178,7 +211,13 @@ class ReciprocalCell3D(ReciprocalCell, Cell3D):
 
 @dataclass
 class ReciprocalCell2D(ReciprocalCell, Cell2D):
-    """Defines the reciprocal cell for a crystal based on the lattice constants of the primitive cell."""
+    """Class for the 2D reciprocal cell for a crystal based on the lattice constants of the primitive cell.
+    
+    Attributes:
+        lattice_constant (LatticeConstant2D): Lattice constants.
+        basis (np.ndarray): A numpy array of basis.
+        volume (float): The volume.
+    """
     lattice_constant: LatticeConstant2D
     
     def __post_init__(self):
@@ -191,7 +230,7 @@ class ReciprocalCell2D(ReciprocalCell, Cell2D):
         """Constructs the basis matrix for the reciprocal cell from the primitive cell.
 
         Returns:
-            np.ndarray: The basis matrix of the reciprocal cell.
+            basis (np.ndarray): The basis matrix of the reciprocal cell.
         """
         primitive_cell = PrimitiveCell2D(self.lattice_constant)
 
@@ -212,6 +251,16 @@ class ReciprocalCell2D(ReciprocalCell, Cell2D):
         return basis
 
     def get_monkhorst_pack_grid(self, n_x: int, n_y: int) -> np.ndarray:
+        """Get 2D Monkhorst and Pack grid
+
+        Args:
+            n_x (int): Number of x-direction points
+            n_y (int): Number of y-direction points
+
+        Returns:
+            aligned_k (np.ndarray): A numpy array of k points
+        """
+
         x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
         y = (2 * np.arange(1, n_y + 1) - n_y - 1) / (2 * n_y)
 
@@ -245,7 +294,14 @@ class ReciprocalCell2D(ReciprocalCell, Cell2D):
 
 @dataclass
 class ReciprocalCell1D(ReciprocalCell, Cell1D):
-    """Defines the reciprocal cell for a crystal based on the lattice constants of the primitive cell."""
+    """Class for the 1D reciprocal cell for a crystal based on the lattice constants of the primitive cell.
+    
+    Attributes:
+        lattice_constant (LatticeConstant1D): Lattice constants.
+        basis (np.ndarray): A numpy array of basis.
+        volume (float): The volume.
+    """
+
     lattice_constant: LatticeConstant1D
     
     def __post_init__(self):
@@ -269,6 +325,15 @@ class ReciprocalCell1D(ReciprocalCell, Cell1D):
         return basis
 
     def get_monkhorst_pack_grid(self, n_x: int) -> np.ndarray:
+        """Get 1D Monkhorst and Pack grid
+
+        Args:
+            n_x (int): Number of x-direction points
+
+        Returns:
+            aligned_k (np.ndarray): A numpy array of k points
+        """
+
         x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
 
         aligned_k = np.stack([x], axis=-1).reshape(-1, 1) @ self.basis
