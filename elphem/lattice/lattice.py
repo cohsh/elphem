@@ -10,7 +10,16 @@ from elphem.lattice.path import PathValues
 
 @dataclass
 class Lattice:
-    """A class to simulate an empty lattice for a given crystal structure and lattice constant a."""
+    """A class to simulate an empty lattice for a given crystal structure and lattice constant a.
+    Attributes:
+        crystal_structure (str): A string for crystal structures
+        atoms (str | list[str] | np.ndarray): Name(s) of atoms
+        n_atoms (int): Number of atoms
+        a (float): A lattice constant
+        primitive (PrimitiveCell): A primitive cell
+        reciprocal (ReciprocalCell): A reciprocal cell
+        mass (float): Mass of the empty lattice
+    """
     crystal_structure: str
     atoms: str | list[str] | np.ndarray
     a: float
@@ -18,28 +27,40 @@ class Lattice:
     reciprocal = None
 
     def __post_init__(self):
-        """Initializes the lattice constants, primitive, and reciprocal cells along with their volumes and bases."""
         self.correct_atoms()
         self.set_about_atoms()
 
     def set_about_atoms(self) -> None:
+        """Set number of atoms and mass.
+        """
         self.n_atoms = len(self.atoms)
 
         masses = np.array(AtomicWeight.get_from_list(self.atoms)) * Mass.DALTON["->"]
         self.mass = np.average(masses)
 
     def correct_atoms(self) -> None:
+        """Correct the type of atoms
+        """
         if isinstance(self.atoms, str):
             self.atoms = [self.atoms]
         elif isinstance(self.atoms, np.ndarray):
             self.atoms = self.atoms.tolist()
     
     def get_k_path(self, k_names: list[str], n_split: int) -> PathValues:
+        """Get a path in the reciprocal space
+
+        Args:
+            k_names (list[str]): A list for names of special k points.
+            n_split (int): Number of points between each special point.
+
+        Returns:
+            PathValues: Values with path
+        """
         return self.reciprocal.get_path(k_names, n_split)
 
 class Lattice3D(Lattice):
+    """A class for 3D lattice"""
     def __init__(self, crystal_structure: str, atoms: str | list[str] | np.ndarray, a: float):
-        """Initializes the lattice constants, primitive, and reciprocal cells along with their volumes and bases."""
         super().__init__(crystal_structure, atoms, a)
         self.n_dim = 3
         self.set_constants()
@@ -49,10 +70,7 @@ class Lattice3D(Lattice):
 
     def set_constants(self) -> None:
         """Determines lattice constants based on the crystal structure.
-
-        Returns:
-            LatticeConstant: The lattice constants and angles for the specified crystal structure.
-
+        
         Raises:
             ValueError: If an invalid crystal structure name is specified.
         """
@@ -72,8 +90,8 @@ class Lattice3D(Lattice):
             raise ValueError("Invalid crystal structure specified.")
 
 class Lattice2D(Lattice):
+    """A class for 2D lattice"""
     def __init__(self, crystal_structure: str, atoms: str | list[str] | np.ndarray, a: float):
-        """Initializes the lattice constants, primitive, and reciprocal cells along with their volumes and bases."""
         super().__init__(crystal_structure, atoms, a)
         self.n_dim = 2
         self.set_constants()
@@ -83,10 +101,7 @@ class Lattice2D(Lattice):
 
     def set_constants(self) -> None:
         """Determines lattice constants based on the crystal structure.
-
-        Returns:
-            LatticeConstant: The lattice constants and angles for the specified crystal structure.
-
+        
         Raises:
             ValueError: If an invalid crystal structure name is specified.
         """
@@ -105,8 +120,8 @@ class Lattice2D(Lattice):
             raise ValueError("Invalid crystal structure specified.")
 
 class Lattice1D(Lattice):
+    """A class for 1D lattice"""
     def __init__(self, atoms: str | list[str] | np.ndarray, a: float):
-        """Initializes the lattice constants, primitive, and reciprocal cells along with their volumes and bases."""
         super().__init__('', atoms, a)
         self.n_dim = 1
         self.set_constants()
@@ -116,10 +131,7 @@ class Lattice1D(Lattice):
 
     def set_constants(self) -> None:
         """Determines lattice constants based on the crystal structure.
-
-        Returns:
-            LatticeConstant: The lattice constants and angles for the specified crystal structure.
-
+        
         Raises:
             ValueError: If an invalid crystal structure name is specified.
         """
