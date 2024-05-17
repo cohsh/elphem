@@ -7,7 +7,7 @@ from elphem.lattice.lattice import *
 class TestUnit(TestCase):
     def setUp(self) -> None:
         a = 2.98 * Length.ANGSTROM["->"]
-        self.lattice = Lattice('bcc', 'Li', a)
+        self.lattice = Lattice3D('bcc', 'Li', a)
         self.basis_primitive = self.lattice.primitive.basis
         self.basis_reciprocal = self.lattice.reciprocal.basis
 
