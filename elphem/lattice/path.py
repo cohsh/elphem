@@ -3,10 +3,13 @@ import numpy as np
 
 @dataclass
 class PathValues:
+    """A class for values with path.
+    
+    Attributes:
+        major_scales (np.ndarray): A numpy array of major scales of path.
+        minor_scales (np.ndarray): A numpy array of minor scales of path.
+        values (np.ndarray): A numpy array of values.
+    """
     major_scales: np.ndarray
     minor_scales: np.ndarray
     values: np.ndarray
-    
-    def derive(self, values: np.ndarray) -> 'PathValues':
-        """Create a new PathValues object with the same scales but new values."""
-        return PathValues(self.major_scales, self.minor_scales, values)
