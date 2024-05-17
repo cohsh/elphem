@@ -102,7 +102,8 @@ class ElectronPhonon:
         progress_bar = ProgressBar('Electron Phonon Renormalization', self.n_bands * self.electron.n_k)
         for i in range(self.n_bands):
             for j in range(self.electron.n_k):
-                epr[i, j] = (self.calculate_self_energies(self.eigenenergies[i, j])).real
+                self_energies = self.calculate_self_energies(self.eigenenergies[i, j])
+                epr[i, j] = self_energies[i, j].real
                 count += 1
                 progress_bar.print(count)
 
