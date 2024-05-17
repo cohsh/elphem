@@ -23,7 +23,7 @@ class LatticeRotation:
         return v / v_norm
 
 class LatticeRotation3D(LatticeRotation):
-    """Provides methods to optimize and adjust lattice orientations through rotation operations."""
+    """Provides methods to optimize and adjust 3D lattice orientations through rotation operations."""
     
     @classmethod
     def calculate_optimized_basis(cls, basis: np.ndarray, axis: np.ndarray) -> np.ndarray:
@@ -149,7 +149,7 @@ class LatticeRotation3D(LatticeRotation):
         return basis_searched
 
 class LatticeRotation2D(LatticeRotation):
-    """Provides methods to optimize and adjust lattice orientations through rotation operations."""
+    """Provides methods to optimize and adjust 2D lattice orientations through rotation operations."""
     
     @classmethod
     def calculate_optimized_basis(cls, basis: np.ndarray, axis: np.ndarray) -> np.ndarray:
