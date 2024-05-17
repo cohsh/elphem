@@ -45,6 +45,13 @@ class Phonon:
         """
         phonon = Phonon(lattice, debye_temperature)
 
+        # check the type and shape fo k_array
+        if isinstance(q_array, list):
+            q_array = np.array(q_array)
+
+        if q_array.shape == (lattice.n_dim,):
+            q_array = np.array([q_array])
+
         # set about q vectors
         phonon.q = q_array
         phonon.n_q = len(q_array)
