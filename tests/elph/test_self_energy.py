@@ -25,7 +25,29 @@ class TestUnit(TestCase):
         self.phonon = Phonon.create_from_n(lattice, debye_temperature, n_q)
         self.electron_phonon = ElectronPhonon(self.electron, self.phonon, temperature, n_bands_elph)
     
+    def test_coupling(self):
+        coupling2 = self.electron_phonon.coupling2
+        
+        self.assertEqual(coupling2.shape, (self.electron_phonon.n_bands, self.electron.n_bands, self.electron.n_k, self.phonon.n_q))
+    
     def test_self_energies(self):
         self_energies = self.electron_phonon.calculate_self_energies(0.0)
         
         self.assertEqual(self_energies.shape, (self.electron_phonon.n_bands, self.electron.n_k))
+    
+    def test_spectrum(self):
+        spectrum = self.electron_phonon.calculate_spectrum(0.0)
+        
+        self.assertEqual(spectrum.shape, (self.electron.n_k))
+    
+    def test_self_energies_over_range(self):
+        omega_array = np.linspace(-1.0, 1.0, 50)
+        self_energies = self.electron_phonon.calculate_self_energies_over_range(omega_array)
+        
+        self.assertEqual(self_energies.shape, (self.electron_phonon.n_bands, self.electron.n_k, len(omega_array)))
+    
+    def test_spectrum_over_range(self):
+        omega_array = np.linspace(-1.0, 1.0, 50)
+        self_energies = self.electron_phonon.calculate_spectrum_over_range(omega_array)
+        
+        self.assertEqual(self_energies.shape, (self.electron.n_k, len(omega_array)))
