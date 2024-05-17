@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>elphem.common.unit &#8212; elphem 0.3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for elphem.common.unit</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">scipy.constants</span> <span class="k">as</span> <span class="nn">constants</span>
+
+<div class="viewcode-block" id="Prefix">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.unit.Prefix">[docs]</a>
+<span class="k">class</span> <span class="nc">Prefix</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Metric prefixes. &quot;&quot;&quot;</span>
+    <span class="n">EXA</span> <span class="o">=</span> <span class="mf">1.0e+18</span>
+    <span class="n">PETA</span> <span class="o">=</span> <span class="mf">1.0e+15</span>
+    <span class="n">TERA</span> <span class="o">=</span> <span class="mf">1.0e+12</span>
+    <span class="n">GIGA</span> <span class="o">=</span> <span class="mf">1.0e+9</span>
+    <span class="n">MEGA</span> <span class="o">=</span> <span class="mf">1.0e+6</span>
+    <span class="n">KILO</span> <span class="o">=</span> <span class="mf">1.0e+3</span>
+    <span class="n">HECTO</span> <span class="o">=</span> <span class="mf">1.0e+2</span>
+    <span class="n">DECA</span> <span class="o">=</span> <span class="mf">1.0e+1</span>
+    <span class="n">DECI</span> <span class="o">=</span> <span class="mf">1.0e-1</span>
+    <span class="n">CENTI</span> <span class="o">=</span> <span class="mf">1.0e-2</span>
+    <span class="n">MILLI</span> <span class="o">=</span> <span class="mf">1.0e-3</span>
+    <span class="n">MICRO</span> <span class="o">=</span> <span class="mf">1.0e-6</span>
+    <span class="n">NANO</span> <span class="o">=</span> <span class="mf">1.0e-9</span>
+    <span class="n">PICO</span> <span class="o">=</span> <span class="mf">1.0e-12</span>
+    <span class="n">FEMTO</span> <span class="o">=</span> <span class="mf">1.0e-15</span>
+    <span class="n">ATTO</span> <span class="o">=</span> <span class="mf">1.0e-18</span></div>
+
+
+<div class="viewcode-block" id="Byte">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.unit.Byte">[docs]</a>
+<span class="k">class</span> <span class="nc">Byte</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Digital information units based on powers of 2. &quot;&quot;&quot;</span>
+    <span class="n">KILO</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">10</span>
+    <span class="n">MEGA</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">20</span>
+    <span class="n">GIGA</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">30</span>
+    <span class="n">TERA</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">40</span>
+    <span class="n">PETA</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">50</span>
+    <span class="n">EXA</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">60</span>
+
+<div class="viewcode-block" id="Byte.get_str">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.unit.Byte.get_str">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_str</span><span class="p">(</span><span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a human-readable string representation of digital information sizes, scaled to appropriate unit.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            size (int): Size in bytes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Formatted string representing the size in appropriate unit (e.g., KB, MB).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If size is negative or too large to be represented.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Size should be a non-negative integer.&quot;</span><span class="p">)</span>
+        
+        <span class="n">units</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;KB&quot;</span><span class="p">,</span> <span class="s2">&quot;MB&quot;</span><span class="p">,</span> <span class="s2">&quot;GB&quot;</span><span class="p">,</span> <span class="s2">&quot;TB&quot;</span><span class="p">,</span> <span class="s2">&quot;PB&quot;</span><span class="p">,</span> <span class="s2">&quot;EB&quot;</span><span class="p">,</span> <span class="s2">&quot;ZB&quot;</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">1024</span><span class="p">))</span> <span class="k">if</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">units</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Size too large to represent in known units.&quot;</span><span class="p">)</span>
+        
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">**</span> <span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">units</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span></div>
+</div>
+
+
+<div class="viewcode-block" id="AtomicUnits">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.unit.AtomicUnits">[docs]</a>
+<span class="k">class</span> <span class="nc">AtomicUnits</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Utility class for atomic unit conversions. &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AtomicUnits.convert">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.unit.AtomicUnits.convert">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a value to and from a base unit to facilitate comparisons and calculations.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            unit (float): The unit to which the conversion is based.</span>
+<span class="sd">            value (float): The value to be converted.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary containing converted values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;-&gt;&quot;</span><span class="p">:</span> <span class="n">value</span> <span class="o">/</span> <span class="n">unit</span><span class="p">,</span>
+            <span class="s2">&quot;&lt;-&quot;</span><span class="p">:</span> <span class="n">unit</span> <span class="o">/</span> <span class="n">value</span>
+        <span class="p">}</span></div>
+</div>
+
+
+<div class="viewcode-block" id="Length">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.unit.Length">[docs]</a>
+<span class="k">class</span> <span class="nc">Length</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Atomic units of length. &quot;&quot;&quot;</span>
+    <span class="n">UNIT</span> <span class="o">=</span> <span class="mf">5.29177210903e-11</span>
+    <span class="n">SI</span> <span class="o">=</span> <span class="n">AtomicUnits</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">ANGSTROM</span> <span class="o">=</span> <span class="n">AtomicUnits</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="mf">1.0e-10</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Energy">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.unit.Energy">[docs]</a>
+<span class="k">class</span> <span class="nc">Energy</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Atomic units of energy. &quot;&quot;&quot;</span>
+    <span class="n">UNIT</span> <span class="o">=</span> <span class="mf">4.3597447222071e-18</span>
+    <span class="n">SI</span> <span class="o">=</span> <span class="n">AtomicUnits</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">EV</span> <span class="o">=</span> <span class="n">AtomicUnits</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">eV</span><span class="p">)</span>
+    <span class="n">KELVIN</span> <span class="o">=</span> <span class="n">AtomicUnits</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">k</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Mass">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.unit.Mass">[docs]</a>
+<span class="k">class</span> <span class="nc">Mass</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Atomic units of mass. &quot;&quot;&quot;</span>
+    <span class="n">UNIT</span> <span class="o">=</span> <span class="mf">9.1093837015e-31</span>
+    <span class="n">SI</span> <span class="o">=</span> <span class="n">AtomicUnits</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">DALTON</span> <span class="o">=</span> <span class="n">AtomicUnits</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="mf">1.66053906660e-27</span><span class="p">)</span>
+    <span class="n">PROTON</span> <span class="o">=</span> <span class="n">AtomicUnits</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="mf">1.672621898e-27</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Time">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.unit.Time">[docs]</a>
+<span class="k">class</span> <span class="nc">Time</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Atomic units of time. &quot;&quot;&quot;</span>
+    <span class="n">UNIT</span> <span class="o">=</span> <span class="mf">2.4188843265857e-17</span>
+    <span class="n">SI</span> <span class="o">=</span> <span class="n">AtomicUnits</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Velocity">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.unit.Velocity">[docs]</a>
+<span class="k">class</span> <span class="nc">Velocity</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Atomic units of velocity. &quot;&quot;&quot;</span>
+    <span class="n">UNIT</span> <span class="o">=</span> <span class="mf">2.18769126364e+6</span>
+    <span class="n">SI</span> <span class="o">=</span> <span class="n">AtomicUnits</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ElectricPotential">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.unit.ElectricPotential">[docs]</a>
+<span class="k">class</span> <span class="nc">ElectricPotential</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Atomic units of electric potential. &quot;&quot;&quot;</span>
+    <span class="n">UNIT</span> <span class="o">=</span> <span class="mf">27.211386245988</span>
+    <span class="n">SI</span> <span class="o">=</span> <span class="n">AtomicUnits</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">elphem</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2024, Kohei Ishii.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

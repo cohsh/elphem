@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>elphem.lattice package &mdash; elphem 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=e259d695"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            elphem
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">elphem.lattice package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-elphem.lattice.cell">elphem.lattice.cell module</a><ul>
+<li><a class="reference internal" href="#elphem.lattice.cell.Cell1D"><code class="docutils literal notranslate"><span class="pre">Cell1D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.cell.Cell1D.basis"><code class="docutils literal notranslate"><span class="pre">Cell1D.basis</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.cell.Cell1D.calculate_volume"><code class="docutils literal notranslate"><span class="pre">Cell1D.calculate_volume()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.cell.Cell2D"><code class="docutils literal notranslate"><span class="pre">Cell2D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.cell.Cell2D.basis"><code class="docutils literal notranslate"><span class="pre">Cell2D.basis</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.cell.Cell2D.calculate_volume"><code class="docutils literal notranslate"><span class="pre">Cell2D.calculate_volume()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.cell.Cell3D"><code class="docutils literal notranslate"><span class="pre">Cell3D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.cell.Cell3D.basis"><code class="docutils literal notranslate"><span class="pre">Cell3D.basis</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.cell.Cell3D.calculate_volume"><code class="docutils literal notranslate"><span class="pre">Cell3D.calculate_volume()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-elphem.lattice.lattice">elphem.lattice.lattice module</a><ul>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice"><code class="docutils literal notranslate"><span class="pre">Lattice</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice.atoms"><code class="docutils literal notranslate"><span class="pre">Lattice.atoms</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice.n_atoms"><code class="docutils literal notranslate"><span class="pre">Lattice.n_atoms</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice.a"><code class="docutils literal notranslate"><span class="pre">Lattice.a</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice.primitive"><code class="docutils literal notranslate"><span class="pre">Lattice.primitive</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice.reciprocal"><code class="docutils literal notranslate"><span class="pre">Lattice.reciprocal</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice.mass"><code class="docutils literal notranslate"><span class="pre">Lattice.mass</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Lattice.a</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Lattice.atoms</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice.correct_atoms"><code class="docutils literal notranslate"><span class="pre">Lattice.correct_atoms()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice.crystal_structure"><code class="docutils literal notranslate"><span class="pre">Lattice.crystal_structure</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice.get_k_path"><code class="docutils literal notranslate"><span class="pre">Lattice.get_k_path()</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">Lattice.primitive</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">Lattice.reciprocal</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice.set_about_atoms"><code class="docutils literal notranslate"><span class="pre">Lattice.set_about_atoms()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice1D"><code class="docutils literal notranslate"><span class="pre">Lattice1D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice1D.set_constants"><code class="docutils literal notranslate"><span class="pre">Lattice1D.set_constants()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice2D"><code class="docutils literal notranslate"><span class="pre">Lattice2D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice2D.set_constants"><code class="docutils literal notranslate"><span class="pre">Lattice2D.set_constants()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice3D"><code class="docutils literal notranslate"><span class="pre">Lattice3D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.lattice.Lattice3D.set_constants"><code class="docutils literal notranslate"><span class="pre">Lattice3D.set_constants()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-elphem.lattice.lattice_constant">elphem.lattice.lattice_constant module</a><ul>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant1D"><code class="docutils literal notranslate"><span class="pre">LatticeConstant1D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant1D.a"><code class="docutils literal notranslate"><span class="pre">LatticeConstant1D.a</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">LatticeConstant1D.a</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant2D"><code class="docutils literal notranslate"><span class="pre">LatticeConstant2D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant2D.a"><code class="docutils literal notranslate"><span class="pre">LatticeConstant2D.a</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant2D.b"><code class="docutils literal notranslate"><span class="pre">LatticeConstant2D.b</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant2D.alpha"><code class="docutils literal notranslate"><span class="pre">LatticeConstant2D.alpha</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant2D.crystal_structure"><code class="docutils literal notranslate"><span class="pre">LatticeConstant2D.crystal_structure</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">LatticeConstant2D.a</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">LatticeConstant2D.alpha</span></code></a></li>
+<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">LatticeConstant2D.b</span></code></a></li>
+<li><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">LatticeConstant2D.crystal_structure</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D.a"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.a</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D.b"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.b</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D.c"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.c</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D.alpha"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.alpha</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D.beta"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.beta</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D.gamma"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.gamma</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D.crystal_structure"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.crystal_structure</span></code></a></li>
+<li><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.a</span></code></a></li>
+<li><a class="reference internal" href="#id10"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.alpha</span></code></a></li>
+<li><a class="reference internal" href="#id11"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.b</span></code></a></li>
+<li><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.beta</span></code></a></li>
+<li><a class="reference internal" href="#id13"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.c</span></code></a></li>
+<li><a class="reference internal" href="#id14"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.crystal_structure</span></code></a></li>
+<li><a class="reference internal" href="#id15"><code class="docutils literal notranslate"><span class="pre">LatticeConstant3D.gamma</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-elphem.lattice.path">elphem.lattice.path module</a><ul>
+<li><a class="reference internal" href="#elphem.lattice.path.PathValues"><code class="docutils literal notranslate"><span class="pre">PathValues</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.path.PathValues.major_scales"><code class="docutils literal notranslate"><span class="pre">PathValues.major_scales</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.path.PathValues.minor_scales"><code class="docutils literal notranslate"><span class="pre">PathValues.minor_scales</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.path.PathValues.values"><code class="docutils literal notranslate"><span class="pre">PathValues.values</span></code></a></li>
+<li><a class="reference internal" href="#id16"><code class="docutils literal notranslate"><span class="pre">PathValues.major_scales</span></code></a></li>
+<li><a class="reference internal" href="#id17"><code class="docutils literal notranslate"><span class="pre">PathValues.minor_scales</span></code></a></li>
+<li><a class="reference internal" href="#id18"><code class="docutils literal notranslate"><span class="pre">PathValues.values</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-elphem.lattice.primitive_cell">elphem.lattice.primitive_cell module</a><ul>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell1D"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell1D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell1D.lattice_constant"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell1D.lattice_constant</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell1D.basis"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell1D.basis</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell1D.volume"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell1D.volume</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell1D.build"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell1D.build()</span></code></a></li>
+<li><a class="reference internal" href="#id19"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell1D.lattice_constant</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell2D"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell2D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell2D.lattice_constant"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell2D.lattice_constant</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell2D.basis"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell2D.basis</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell2D.volume"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell2D.volume</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell2D.build"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell2D.build()</span></code></a></li>
+<li><a class="reference internal" href="#id20"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell2D.lattice_constant</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell2D.optimize"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell2D.optimize()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell3D"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell3D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell3D.lattice_constant"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell3D.lattice_constant</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell3D.basis"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell3D.basis</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell3D.volume"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell3D.volume</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell3D.build"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell3D.build()</span></code></a></li>
+<li><a class="reference internal" href="#id21"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell3D.lattice_constant</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.primitive_cell.PrimitiveCell3D.optimize"><code class="docutils literal notranslate"><span class="pre">PrimitiveCell3D.optimize()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-elphem.lattice.reciprocal_cell">elphem.lattice.reciprocal_cell module</a><ul>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell.calculate_special_k"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell.calculate_special_k()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell.get_path"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell.get_path()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell.get_reciprocal_vectors"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell.get_reciprocal_vectors()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell.split_fractional_k_name"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell.split_fractional_k_name()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell1D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D.lattice_constant"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell1D.lattice_constant</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D.basis"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell1D.basis</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D.volume"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell1D.volume</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D.build"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell1D.build()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D.calculate_special_k"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell1D.calculate_special_k()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D.get_monkhorst_pack_grid"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell1D.get_monkhorst_pack_grid()</span></code></a></li>
+<li><a class="reference internal" href="#id22"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell1D.lattice_constant</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell2D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D.lattice_constant"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell2D.lattice_constant</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D.basis"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell2D.basis</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D.volume"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell2D.volume</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D.build"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell2D.build()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D.calculate_special_k"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell2D.calculate_special_k()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D.get_monkhorst_pack_grid"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell2D.get_monkhorst_pack_grid()</span></code></a></li>
+<li><a class="reference internal" href="#id23"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell2D.lattice_constant</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell3D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D.lattice_constant"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell3D.lattice_constant</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D.basis"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell3D.basis</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D.volume"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell3D.volume</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D.build"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell3D.build()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D.calculate_special_k"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell3D.calculate_special_k()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D.get_monkhorst_pack_grid"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell3D.get_monkhorst_pack_grid()</span></code></a></li>
+<li><a class="reference internal" href="#id24"><code class="docutils literal notranslate"><span class="pre">ReciprocalCell3D.lattice_constant</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-elphem.lattice.rotation">elphem.lattice.rotation module</a><ul>
+<li><a class="reference internal" href="#elphem.lattice.rotation.LatticeRotation"><code class="docutils literal notranslate"><span class="pre">LatticeRotation</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.rotation.LatticeRotation.normalize"><code class="docutils literal notranslate"><span class="pre">LatticeRotation.normalize()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.rotation.LatticeRotation2D"><code class="docutils literal notranslate"><span class="pre">LatticeRotation2D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.rotation.LatticeRotation2D.calculate_optimized_basis"><code class="docutils literal notranslate"><span class="pre">LatticeRotation2D.calculate_optimized_basis()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.rotation.LatticeRotation2D.search_optimized_direction"><code class="docutils literal notranslate"><span class="pre">LatticeRotation2D.search_optimized_direction()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elphem.lattice.rotation.LatticeRotation3D"><code class="docutils literal notranslate"><span class="pre">LatticeRotation3D</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.lattice.rotation.LatticeRotation3D.calculate_optimized_basis"><code class="docutils literal notranslate"><span class="pre">LatticeRotation3D.calculate_optimized_basis()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.rotation.LatticeRotation3D.rotate_vector_around_axis"><code class="docutils literal notranslate"><span class="pre">LatticeRotation3D.rotate_vector_around_axis()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.rotation.LatticeRotation3D.search_optimized_direction"><code class="docutils literal notranslate"><span class="pre">LatticeRotation3D.search_optimized_direction()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.lattice.rotation.LatticeRotation3D.search_optimized_posture"><code class="docutils literal notranslate"><span class="pre">LatticeRotation3D.search_optimized_posture()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-elphem.lattice">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">elphem</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">elphem.lattice package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="elphem-lattice-package">
+<h1>elphem.lattice package<a class="headerlink" href="#elphem-lattice-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-elphem.lattice.cell">
+<span id="elphem-lattice-cell-module"></span><h2>elphem.lattice.cell module<a class="headerlink" href="#module-elphem.lattice.cell" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.cell.Cell1D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.cell.</span></span><span class="sig-name descname"><span class="pre">Cell1D</span></span><a class="reference internal" href="../_modules/elphem/lattice/cell.html#Cell1D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.cell.Cell1D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for 1D cell
+.. attribute:: n_dim</p>
+<blockquote>
+<div><p>Number of dimension</p>
+<dl class="field-list simple">
+<dt class="field-odd">type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.cell.Cell1D.basis">
+<span class="sig-name descname"><span class="pre">basis</span></span><a class="headerlink" href="#elphem.lattice.cell.Cell1D.basis" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of basis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.cell.Cell1D.calculate_volume">
+<span class="sig-name descname"><span class="pre">calculate_volume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/cell.html#Cell1D.calculate_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.cell.Cell1D.calculate_volume" title="Link to this definition"></a></dt>
+<dd><p>Calculates the volume of the cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The volume.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.cell.Cell2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.cell.</span></span><span class="sig-name descname"><span class="pre">Cell2D</span></span><a class="reference internal" href="../_modules/elphem/lattice/cell.html#Cell2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.cell.Cell2D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for 2D cell
+.. attribute:: n_dim</p>
+<blockquote>
+<div><p>Number of dimension</p>
+<dl class="field-list simple">
+<dt class="field-odd">type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.cell.Cell2D.basis">
+<span class="sig-name descname"><span class="pre">basis</span></span><a class="headerlink" href="#elphem.lattice.cell.Cell2D.basis" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of basis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.cell.Cell2D.calculate_volume">
+<span class="sig-name descname"><span class="pre">calculate_volume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/cell.html#Cell2D.calculate_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.cell.Cell2D.calculate_volume" title="Link to this definition"></a></dt>
+<dd><p>Calculates the volume of the cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The volume.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.cell.Cell3D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.cell.</span></span><span class="sig-name descname"><span class="pre">Cell3D</span></span><a class="reference internal" href="../_modules/elphem/lattice/cell.html#Cell3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.cell.Cell3D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for 3D cell
+.. attribute:: n_dim</p>
+<blockquote>
+<div><p>Number of dimension</p>
+<dl class="field-list simple">
+<dt class="field-odd">type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.cell.Cell3D.basis">
+<span class="sig-name descname"><span class="pre">basis</span></span><a class="headerlink" href="#elphem.lattice.cell.Cell3D.basis" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of basis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.cell.Cell3D.calculate_volume">
+<span class="sig-name descname"><span class="pre">calculate_volume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/cell.html#Cell3D.calculate_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.cell.Cell3D.calculate_volume" title="Link to this definition"></a></dt>
+<dd><p>Calculates the volume of the cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The volume.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-elphem.lattice.lattice">
+<span id="elphem-lattice-lattice-module"></span><h2>elphem.lattice.lattice module<a class="headerlink" href="#module-elphem.lattice.lattice" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.lattice.</span></span><span class="sig-name descname"><span class="pre">Lattice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crystal_structure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/lattice.html#Lattice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice.Lattice" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to simulate an empty lattice for a given crystal structure and lattice constant a.
+.. attribute:: crystal_structure</p>
+<blockquote>
+<div><p>A string for crystal structures</p>
+<dl class="field-list simple">
+<dt class="field-odd">type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice.atoms">
+<span class="sig-name descname"><span class="pre">atoms</span></span><a class="headerlink" href="#elphem.lattice.lattice.Lattice.atoms" title="Link to this definition"></a></dt>
+<dd><p>Name(s) of atoms</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str | list[str] | np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice.n_atoms">
+<span class="sig-name descname"><span class="pre">n_atoms</span></span><a class="headerlink" href="#elphem.lattice.lattice.Lattice.n_atoms" title="Link to this definition"></a></dt>
+<dd><p>Number of atoms</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice.a">
+<span class="sig-name descname"><span class="pre">a</span></span><a class="headerlink" href="#elphem.lattice.lattice.Lattice.a" title="Link to this definition"></a></dt>
+<dd><p>A lattice constant</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice.primitive">
+<span class="sig-name descname"><span class="pre">primitive</span></span><a class="headerlink" href="#elphem.lattice.lattice.Lattice.primitive" title="Link to this definition"></a></dt>
+<dd><p>A primitive cell</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>PrimitiveCell</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice.reciprocal">
+<span class="sig-name descname"><span class="pre">reciprocal</span></span><a class="headerlink" href="#elphem.lattice.lattice.Lattice.reciprocal" title="Link to this definition"></a></dt>
+<dd><p>A reciprocal cell</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell" title="elphem.lattice.reciprocal_cell.ReciprocalCell">ReciprocalCell</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice.mass">
+<span class="sig-name descname"><span class="pre">mass</span></span><a class="headerlink" href="#elphem.lattice.lattice.Lattice.mass" title="Link to this definition"></a></dt>
+<dd><p>Mass of the empty lattice</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">a</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">atoms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice.correct_atoms">
+<span class="sig-name descname"><span class="pre">correct_atoms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/lattice.html#Lattice.correct_atoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice.Lattice.correct_atoms" title="Link to this definition"></a></dt>
+<dd><p>Correct the type of atoms</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice.crystal_structure">
+<span class="sig-name descname"><span class="pre">crystal_structure</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#elphem.lattice.lattice.Lattice.crystal_structure" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice.get_k_path">
+<span class="sig-name descname"><span class="pre">get_k_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#elphem.lattice.path.PathValues" title="elphem.lattice.path.PathValues"><span class="pre">PathValues</span></a></span></span><a class="reference internal" href="../_modules/elphem/lattice/lattice.html#Lattice.get_k_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice.Lattice.get_k_path" title="Link to this definition"></a></dt>
+<dd><p>Get a path in the reciprocal space</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – A list for names of special k points.</p></li>
+<li><p><strong>n_split</strong> (<em>int</em>) – Number of points between each special point.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Values with path</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#elphem.lattice.path.PathValues" title="elphem.lattice.path.PathValues">PathValues</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">primitive</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">reciprocal</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice.set_about_atoms">
+<span class="sig-name descname"><span class="pre">set_about_atoms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/lattice.html#Lattice.set_about_atoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice.Lattice.set_about_atoms" title="Link to this definition"></a></dt>
+<dd><p>Set number of atoms and mass.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice1D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.lattice.</span></span><span class="sig-name descname"><span class="pre">Lattice1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/lattice.html#Lattice1D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice.Lattice1D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#elphem.lattice.lattice.Lattice" title="elphem.lattice.lattice.Lattice"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lattice</span></code></a></p>
+<p>A class for 1D lattice</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice1D.set_constants">
+<span class="sig-name descname"><span class="pre">set_constants</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/lattice.html#Lattice1D.set_constants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice.Lattice1D.set_constants" title="Link to this definition"></a></dt>
+<dd><p>Determines lattice constants based on the crystal structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If an invalid crystal structure name is specified.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.lattice.</span></span><span class="sig-name descname"><span class="pre">Lattice2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crystal_structure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/lattice.html#Lattice2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice.Lattice2D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#elphem.lattice.lattice.Lattice" title="elphem.lattice.lattice.Lattice"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lattice</span></code></a></p>
+<p>A class for 2D lattice</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice2D.set_constants">
+<span class="sig-name descname"><span class="pre">set_constants</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/lattice.html#Lattice2D.set_constants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice.Lattice2D.set_constants" title="Link to this definition"></a></dt>
+<dd><p>Determines lattice constants based on the crystal structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If an invalid crystal structure name is specified.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice3D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.lattice.</span></span><span class="sig-name descname"><span class="pre">Lattice3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crystal_structure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/lattice.html#Lattice3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice.Lattice3D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#elphem.lattice.lattice.Lattice" title="elphem.lattice.lattice.Lattice"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lattice</span></code></a></p>
+<p>A class for 3D lattice</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.lattice.Lattice3D.set_constants">
+<span class="sig-name descname"><span class="pre">set_constants</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/lattice.html#Lattice3D.set_constants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice.Lattice3D.set_constants" title="Link to this definition"></a></dt>
+<dd><p>Determines lattice constants based on the crystal structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If an invalid crystal structure name is specified.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-elphem.lattice.lattice_constant">
+<span id="elphem-lattice-lattice-constant-module"></span><h2>elphem.lattice.lattice_constant module<a class="headerlink" href="#module-elphem.lattice.lattice_constant" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant1D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.lattice_constant.</span></span><span class="sig-name descname"><span class="pre">LatticeConstant1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/lattice_constant.html#LatticeConstant1D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant1D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Defines the lattice constants and angles for a crystal structure.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant1D.a">
+<span class="sig-name descname"><span class="pre">a</span></span><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant1D.a" title="Link to this definition"></a></dt>
+<dd><p>Length of the lattice vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">a</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.lattice_constant.</span></span><span class="sig-name descname"><span class="pre">LatticeConstant2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crystal_structure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/lattice_constant.html#LatticeConstant2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant2D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Defines the lattice constants and angles for a 2D crystal structure.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant2D.a">
+<span class="sig-name descname"><span class="pre">a</span></span><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant2D.a" title="Link to this definition"></a></dt>
+<dd><p>Length of the first lattice vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant2D.b">
+<span class="sig-name descname"><span class="pre">b</span></span><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant2D.b" title="Link to this definition"></a></dt>
+<dd><p>Length of the second lattice vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant2D.alpha">
+<span class="sig-name descname"><span class="pre">alpha</span></span><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant2D.alpha" title="Link to this definition"></a></dt>
+<dd><p>Angle between a and b lattice vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant2D.crystal_structure">
+<span class="sig-name descname"><span class="pre">crystal_structure</span></span><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant2D.crystal_structure" title="Link to this definition"></a></dt>
+<dd><p>The type of crystal structure (e.g., ‘square’, ‘hexagonal’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">a</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">b</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">crystal_structure</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant3D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.lattice_constant.</span></span><span class="sig-name descname"><span class="pre">LatticeConstant3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crystal_structure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/lattice_constant.html#LatticeConstant3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant3D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Defines the lattice constants and angles for a 3D crystal structure.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant3D.a">
+<span class="sig-name descname"><span class="pre">a</span></span><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant3D.a" title="Link to this definition"></a></dt>
+<dd><p>Length of the first lattice vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant3D.b">
+<span class="sig-name descname"><span class="pre">b</span></span><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant3D.b" title="Link to this definition"></a></dt>
+<dd><p>Length of the second lattice vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant3D.c">
+<span class="sig-name descname"><span class="pre">c</span></span><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant3D.c" title="Link to this definition"></a></dt>
+<dd><p>Length of the third lattice vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant3D.alpha">
+<span class="sig-name descname"><span class="pre">alpha</span></span><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant3D.alpha" title="Link to this definition"></a></dt>
+<dd><p>Angle between b and c lattice vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant3D.beta">
+<span class="sig-name descname"><span class="pre">beta</span></span><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant3D.beta" title="Link to this definition"></a></dt>
+<dd><p>Angle between a and c lattice vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant3D.gamma">
+<span class="sig-name descname"><span class="pre">gamma</span></span><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant3D.gamma" title="Link to this definition"></a></dt>
+<dd><p>Angle between a and b lattice vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.lattice_constant.LatticeConstant3D.crystal_structure">
+<span class="sig-name descname"><span class="pre">crystal_structure</span></span><a class="headerlink" href="#elphem.lattice.lattice_constant.LatticeConstant3D.crystal_structure" title="Link to this definition"></a></dt>
+<dd><p>The type of crystal structure (e.g., ‘bcc’, ‘fcc’, ‘sc’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">a</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">b</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">beta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">c</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">crystal_structure</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">gamma</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id15" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-elphem.lattice.path">
+<span id="elphem-lattice-path-module"></span><h2>elphem.lattice.path module<a class="headerlink" href="#module-elphem.lattice.path" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.path.PathValues">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.path.</span></span><span class="sig-name descname"><span class="pre">PathValues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">major_scales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minor_scales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/path.html#PathValues"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.path.PathValues" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for values with path.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.path.PathValues.major_scales">
+<span class="sig-name descname"><span class="pre">major_scales</span></span><a class="headerlink" href="#elphem.lattice.path.PathValues.major_scales" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of major scales of path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.path.PathValues.minor_scales">
+<span class="sig-name descname"><span class="pre">minor_scales</span></span><a class="headerlink" href="#elphem.lattice.path.PathValues.minor_scales" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of minor scales of path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.path.PathValues.values">
+<span class="sig-name descname"><span class="pre">values</span></span><a class="headerlink" href="#elphem.lattice.path.PathValues.values" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">major_scales</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#id16" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">minor_scales</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">values</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-elphem.lattice.primitive_cell">
+<span id="elphem-lattice-primitive-cell-module"></span><h2>elphem.lattice.primitive_cell module<a class="headerlink" href="#module-elphem.lattice.primitive_cell" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell1D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.primitive_cell.</span></span><span class="sig-name descname"><span class="pre">PrimitiveCell1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lattice_constant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant1D" title="elphem.lattice.lattice_constant.LatticeConstant1D"><span class="pre">LatticeConstant1D</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/primitive_cell.html#PrimitiveCell1D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell1D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#elphem.lattice.cell.Cell1D" title="elphem.lattice.cell.Cell1D"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cell1D</span></code></a></p>
+<p>Class for the 1D primitive cell based on the lattice constants.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell1D.lattice_constant">
+<span class="sig-name descname"><span class="pre">lattice_constant</span></span><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell1D.lattice_constant" title="Link to this definition"></a></dt>
+<dd><p>lattice constants</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D" title="elphem.lattice.lattice_constant.LatticeConstant3D">LatticeConstant3D</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell1D.basis">
+<span class="sig-name descname"><span class="pre">basis</span></span><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell1D.basis" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of basis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell1D.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell1D.volume" title="Link to this definition"></a></dt>
+<dd><p>The volume</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell1D.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/primitive_cell.html#PrimitiveCell1D.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell1D.build" title="Link to this definition"></a></dt>
+<dd><p>Constructs the basis matrix for the primitive cell from lattice constants and angles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The basis matrix of the primitive cell.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">lattice_constant</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant1D" title="elphem.lattice.lattice_constant.LatticeConstant1D"><span class="pre">LatticeConstant1D</span></a></em><a class="headerlink" href="#id19" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.primitive_cell.</span></span><span class="sig-name descname"><span class="pre">PrimitiveCell2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lattice_constant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant2D" title="elphem.lattice.lattice_constant.LatticeConstant2D"><span class="pre">LatticeConstant2D</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/primitive_cell.html#PrimitiveCell2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell2D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#elphem.lattice.cell.Cell2D" title="elphem.lattice.cell.Cell2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cell2D</span></code></a></p>
+<p>Class for the 2D primitive cell based on the lattice constants.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell2D.lattice_constant">
+<span class="sig-name descname"><span class="pre">lattice_constant</span></span><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell2D.lattice_constant" title="Link to this definition"></a></dt>
+<dd><p>lattice constants</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D" title="elphem.lattice.lattice_constant.LatticeConstant3D">LatticeConstant3D</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell2D.basis">
+<span class="sig-name descname"><span class="pre">basis</span></span><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell2D.basis" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of basis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell2D.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell2D.volume" title="Link to this definition"></a></dt>
+<dd><p>The volume</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell2D.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/primitive_cell.html#PrimitiveCell2D.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell2D.build" title="Link to this definition"></a></dt>
+<dd><p>Constructs the basis matrix for the primitive cell from lattice constants and angles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The basis matrix of the primitive cell.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">lattice_constant</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant2D" title="elphem.lattice.lattice_constant.LatticeConstant2D"><span class="pre">LatticeConstant2D</span></a></em><a class="headerlink" href="#id20" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell2D.optimize">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/primitive_cell.html#PrimitiveCell2D.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell2D.optimize" title="Link to this definition"></a></dt>
+<dd><p>Optimizes the cell basis using the LatticeRotation utility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>basis</strong> (<em>np.ndarray</em>) – The basis matrix to optimize.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The optimized basis matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell3D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.primitive_cell.</span></span><span class="sig-name descname"><span class="pre">PrimitiveCell3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lattice_constant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D" title="elphem.lattice.lattice_constant.LatticeConstant3D"><span class="pre">LatticeConstant3D</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/primitive_cell.html#PrimitiveCell3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell3D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#elphem.lattice.cell.Cell3D" title="elphem.lattice.cell.Cell3D"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cell3D</span></code></a></p>
+<p>Class for the 3D primitive cell based on the lattice constants.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell3D.lattice_constant">
+<span class="sig-name descname"><span class="pre">lattice_constant</span></span><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell3D.lattice_constant" title="Link to this definition"></a></dt>
+<dd><p>lattice constants</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D" title="elphem.lattice.lattice_constant.LatticeConstant3D">LatticeConstant3D</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell3D.basis">
+<span class="sig-name descname"><span class="pre">basis</span></span><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell3D.basis" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of basis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell3D.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell3D.volume" title="Link to this definition"></a></dt>
+<dd><p>The volume</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell3D.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/primitive_cell.html#PrimitiveCell3D.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell3D.build" title="Link to this definition"></a></dt>
+<dd><p>Constructs the basis matrix for the primitive cell from lattice constants and angles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The basis matrix of the primitive cell.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">lattice_constant</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D" title="elphem.lattice.lattice_constant.LatticeConstant3D"><span class="pre">LatticeConstant3D</span></a></em><a class="headerlink" href="#id21" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.primitive_cell.PrimitiveCell3D.optimize">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/primitive_cell.html#PrimitiveCell3D.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.primitive_cell.PrimitiveCell3D.optimize" title="Link to this definition"></a></dt>
+<dd><p>Optimizes the cell basis using the LatticeRotation utility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>basis</strong> (<em>np.ndarray</em>) – The basis matrix to optimize.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The optimized basis matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-elphem.lattice.reciprocal_cell">
+<span id="elphem-lattice-reciprocal-cell-module"></span><h2>elphem.lattice.reciprocal_cell module<a class="headerlink" href="#module-elphem.lattice.reciprocal_cell" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.reciprocal_cell.</span></span><span class="sig-name descname"><span class="pre">ReciprocalCell</span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for reciprocal cells
+.. attribute:: n_dim</p>
+<blockquote>
+<div><p>Number of dimensions</p>
+<dl class="field-list simple">
+<dt class="field-odd">type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell.calculate_special_k">
+<span class="sig-name descname"><span class="pre">calculate_special_k</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell.calculate_special_k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell.calculate_special_k" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell.get_path">
+<span class="sig-name descname"><span class="pre">get_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fractional_k_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#elphem.lattice.path.PathValues" title="elphem.lattice.path.PathValues"><span class="pre">PathValues</span></a></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell.get_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell.get_path" title="Link to this definition"></a></dt>
+<dd><p>Calculates a path through specified special points in the Brillouin zone.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fractional_k_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of special point names to form the path.</p></li>
+<li><p><strong>n_split</strong> (<em>int</em>) – Number of points between each special point.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Values with path.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>k_path (PathValue)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell.get_reciprocal_vectors">
+<span class="sig-name descname"><span class="pre">get_reciprocal_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell.get_reciprocal_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell.get_reciprocal_vectors" title="Link to this definition"></a></dt>
+<dd><p>Generate the reciprocal lattice vectors used to define the Brillouin zone boundaries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n_g</strong> – Number of reciprocal lattice vectors</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of reciprocal lattice vectors.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell.split_fractional_k_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">split_fractional_k_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fractional_k_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell.split_fractional_k_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell.split_fractional_k_name" title="Link to this definition"></a></dt>
+<dd><p>Split fractional special k points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fractional_k_name</strong> (<em>str</em>) – A string of fractional special k points</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the string format is invalid.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>fraction and the name of a special k point.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell1D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.reciprocal_cell.</span></span><span class="sig-name descname"><span class="pre">ReciprocalCell1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lattice_constant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant1D" title="elphem.lattice.lattice_constant.LatticeConstant1D"><span class="pre">LatticeConstant1D</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell1D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell" title="elphem.lattice.reciprocal_cell.ReciprocalCell"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReciprocalCell</span></code></a>, <a class="reference internal" href="#elphem.lattice.cell.Cell1D" title="elphem.lattice.cell.Cell1D"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cell1D</span></code></a></p>
+<p>Class for the 1D reciprocal cell for a crystal based on the lattice constants of the primitive cell.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell1D.lattice_constant">
+<span class="sig-name descname"><span class="pre">lattice_constant</span></span><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D.lattice_constant" title="Link to this definition"></a></dt>
+<dd><p>Lattice constants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant1D" title="elphem.lattice.lattice_constant.LatticeConstant1D">LatticeConstant1D</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell1D.basis">
+<span class="sig-name descname"><span class="pre">basis</span></span><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D.basis" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of basis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell1D.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D.volume" title="Link to this definition"></a></dt>
+<dd><p>The volume.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell1D.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell1D.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D.build" title="Link to this definition"></a></dt>
+<dd><p>Constructs the basis matrix for the reciprocal cell from the primitive cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The basis matrix of the reciprocal cell.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell1D.calculate_special_k">
+<span class="sig-name descname"><span class="pre">calculate_special_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell1D.calculate_special_k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D.calculate_special_k" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the coordinates of special k-points based on the crystal structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k_name</strong> (<em>str</em>) – The name of the special point.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The coordinates of the special point.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If an invalid crystal structure name is provided.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell1D.get_monkhorst_pack_grid">
+<span class="sig-name descname"><span class="pre">get_monkhorst_pack_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell1D.get_monkhorst_pack_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell1D.get_monkhorst_pack_grid" title="Link to this definition"></a></dt>
+<dd><p>Get 1D Monkhorst and Pack grid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n_x</strong> (<em>int</em>) – Number of x-direction points</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of k points</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>aligned_k (np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id22">
+<span class="sig-name descname"><span class="pre">lattice_constant</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant1D" title="elphem.lattice.lattice_constant.LatticeConstant1D"><span class="pre">LatticeConstant1D</span></a></em><a class="headerlink" href="#id22" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.reciprocal_cell.</span></span><span class="sig-name descname"><span class="pre">ReciprocalCell2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lattice_constant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant2D" title="elphem.lattice.lattice_constant.LatticeConstant2D"><span class="pre">LatticeConstant2D</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell" title="elphem.lattice.reciprocal_cell.ReciprocalCell"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReciprocalCell</span></code></a>, <a class="reference internal" href="#elphem.lattice.cell.Cell2D" title="elphem.lattice.cell.Cell2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cell2D</span></code></a></p>
+<p>Class for the 2D reciprocal cell for a crystal based on the lattice constants of the primitive cell.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell2D.lattice_constant">
+<span class="sig-name descname"><span class="pre">lattice_constant</span></span><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D.lattice_constant" title="Link to this definition"></a></dt>
+<dd><p>Lattice constants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant2D" title="elphem.lattice.lattice_constant.LatticeConstant2D">LatticeConstant2D</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell2D.basis">
+<span class="sig-name descname"><span class="pre">basis</span></span><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D.basis" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of basis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell2D.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D.volume" title="Link to this definition"></a></dt>
+<dd><p>The volume.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell2D.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell2D.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D.build" title="Link to this definition"></a></dt>
+<dd><p>Constructs the basis matrix for the reciprocal cell from the primitive cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The basis matrix of the reciprocal cell.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>basis (np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell2D.calculate_special_k">
+<span class="sig-name descname"><span class="pre">calculate_special_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell2D.calculate_special_k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D.calculate_special_k" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the coordinates of special k-points based on the crystal structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k_name</strong> (<em>str</em>) – The name of the special point.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The coordinates of the special point.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If an invalid crystal structure name is provided.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell2D.get_monkhorst_pack_grid">
+<span class="sig-name descname"><span class="pre">get_monkhorst_pack_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell2D.get_monkhorst_pack_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell2D.get_monkhorst_pack_grid" title="Link to this definition"></a></dt>
+<dd><p>Get 2D Monkhorst and Pack grid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_x</strong> (<em>int</em>) – Number of x-direction points</p></li>
+<li><p><strong>n_y</strong> (<em>int</em>) – Number of y-direction points</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of k points</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>aligned_k (np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id23">
+<span class="sig-name descname"><span class="pre">lattice_constant</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant2D" title="elphem.lattice.lattice_constant.LatticeConstant2D"><span class="pre">LatticeConstant2D</span></a></em><a class="headerlink" href="#id23" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell3D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.reciprocal_cell.</span></span><span class="sig-name descname"><span class="pre">ReciprocalCell3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lattice_constant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D" title="elphem.lattice.lattice_constant.LatticeConstant3D"><span class="pre">LatticeConstant3D</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#elphem.lattice.reciprocal_cell.ReciprocalCell" title="elphem.lattice.reciprocal_cell.ReciprocalCell"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReciprocalCell</span></code></a>, <a class="reference internal" href="#elphem.lattice.cell.Cell3D" title="elphem.lattice.cell.Cell3D"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cell3D</span></code></a></p>
+<p>Class for the 3D reciprocal cell for a crystal based on the lattice constants of the primitive cell.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell3D.lattice_constant">
+<span class="sig-name descname"><span class="pre">lattice_constant</span></span><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D.lattice_constant" title="Link to this definition"></a></dt>
+<dd><p>Lattice constants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D" title="elphem.lattice.lattice_constant.LatticeConstant3D">LatticeConstant3D</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell3D.basis">
+<span class="sig-name descname"><span class="pre">basis</span></span><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D.basis" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of basis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell3D.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D.volume" title="Link to this definition"></a></dt>
+<dd><p>The volume.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell3D.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell3D.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D.build" title="Link to this definition"></a></dt>
+<dd><p>Constructs the basis matrix for the reciprocal cell from the primitive cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The basis matrix of the reciprocal cell.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>basis (np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell3D.calculate_special_k">
+<span class="sig-name descname"><span class="pre">calculate_special_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell3D.calculate_special_k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D.calculate_special_k" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the coordinates of special k-points based on the crystal structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k_name</strong> (<em>str</em>) – The name of the special point.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The coordinates of the special point.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If an invalid crystal structure name is provided.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.reciprocal_cell.ReciprocalCell3D.get_monkhorst_pack_grid">
+<span class="sig-name descname"><span class="pre">get_monkhorst_pack_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/reciprocal_cell.html#ReciprocalCell3D.get_monkhorst_pack_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.reciprocal_cell.ReciprocalCell3D.get_monkhorst_pack_grid" title="Link to this definition"></a></dt>
+<dd><p>Get 3D Monkhorst and Pack grid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_x</strong> (<em>int</em>) – Number of x-direction points</p></li>
+<li><p><strong>n_y</strong> (<em>int</em>) – Number of y-direction points</p></li>
+<li><p><strong>n_z</strong> (<em>int</em>) – Number of z-direction points</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of k points</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>aligned_k (np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id24">
+<span class="sig-name descname"><span class="pre">lattice_constant</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#elphem.lattice.lattice_constant.LatticeConstant3D" title="elphem.lattice.lattice_constant.LatticeConstant3D"><span class="pre">LatticeConstant3D</span></a></em><a class="headerlink" href="#id24" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-elphem.lattice.rotation">
+<span id="elphem-lattice-rotation-module"></span><h2>elphem.lattice.rotation module<a class="headerlink" href="#module-elphem.lattice.rotation" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.rotation.LatticeRotation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.rotation.</span></span><span class="sig-name descname"><span class="pre">LatticeRotation</span></span><a class="reference internal" href="../_modules/elphem/lattice/rotation.html#LatticeRotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.rotation.LatticeRotation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.rotation.LatticeRotation.normalize">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/rotation.html#LatticeRotation.normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.rotation.LatticeRotation.normalize" title="Link to this definition"></a></dt>
+<dd><p>Normalize the given vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v</strong> (<em>np.ndarray</em>) – The vector to normalize.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The normalized vector.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the input vector is zero.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.rotation.LatticeRotation2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.rotation.</span></span><span class="sig-name descname"><span class="pre">LatticeRotation2D</span></span><a class="reference internal" href="../_modules/elphem/lattice/rotation.html#LatticeRotation2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.rotation.LatticeRotation2D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#elphem.lattice.rotation.LatticeRotation" title="elphem.lattice.rotation.LatticeRotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">LatticeRotation</span></code></a></p>
+<p>Provides methods to optimize and adjust 2D lattice orientations through rotation operations.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.rotation.LatticeRotation2D.calculate_optimized_basis">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_optimized_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/rotation.html#LatticeRotation2D.calculate_optimized_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.rotation.LatticeRotation2D.calculate_optimized_basis" title="Link to this definition"></a></dt>
+<dd><p>Optimize the rotation of the given basis to align with the specified axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>basis</strong> (<em>np.ndarray</em>) – The basis vectors of the lattice to be rotated.</p></li>
+<li><p><strong>axis</strong> (<em>np.ndarray</em>) – The target axis for alignment.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The optimized basis vectors aligned as closely as possible to the target axis.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the axis vector is zero.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.rotation.LatticeRotation2D.search_optimized_direction">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">search_optimized_direction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/rotation.html#LatticeRotation2D.search_optimized_direction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.rotation.LatticeRotation2D.search_optimized_direction" title="Link to this definition"></a></dt>
+<dd><p>search_optimized_direction the given basis direction to the specified axis using quaternion rotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>basis</strong> (<em>np.ndarray</em>) – The initial basis vectors.</p></li>
+<li><p><strong>axis</strong> (<em>np.ndarray</em>) – The axis to align the basis vectors to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The basis vectors rotated to search_optimized_direction the direction of the axis.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the axis vector is zero.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.lattice.rotation.LatticeRotation3D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.lattice.rotation.</span></span><span class="sig-name descname"><span class="pre">LatticeRotation3D</span></span><a class="reference internal" href="../_modules/elphem/lattice/rotation.html#LatticeRotation3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.rotation.LatticeRotation3D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#elphem.lattice.rotation.LatticeRotation" title="elphem.lattice.rotation.LatticeRotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">LatticeRotation</span></code></a></p>
+<p>Provides methods to optimize and adjust 3D lattice orientations through rotation operations.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.rotation.LatticeRotation3D.calculate_optimized_basis">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_optimized_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/rotation.html#LatticeRotation3D.calculate_optimized_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.rotation.LatticeRotation3D.calculate_optimized_basis" title="Link to this definition"></a></dt>
+<dd><p>Optimize the rotation of the given basis to align with the specified axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>basis</strong> (<em>np.ndarray</em>) – The basis vectors of the lattice to be rotated.</p></li>
+<li><p><strong>axis</strong> (<em>np.ndarray</em>) – The target axis for alignment.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The optimized basis vectors aligned as closely as possible to the target axis.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the axis vector is zero.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.rotation.LatticeRotation3D.rotate_vector_around_axis">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rotate_vector_around_axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/rotation.html#LatticeRotation3D.rotate_vector_around_axis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.rotation.LatticeRotation3D.rotate_vector_around_axis" title="Link to this definition"></a></dt>
+<dd><p>Rotate vector v around the given axis by angle theta.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>np.ndarray</em>) – The axis of rotation.</p></li>
+<li><p><strong>v</strong> (<em>np.ndarray</em>) – The vector to rotate.</p></li>
+<li><p><strong>theta</strong> (<em>float</em>) – The angle in radians to rotate the vector.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The rotated vector.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the axis vector is zero.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.rotation.LatticeRotation3D.search_optimized_direction">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">search_optimized_direction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/rotation.html#LatticeRotation3D.search_optimized_direction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.rotation.LatticeRotation3D.search_optimized_direction" title="Link to this definition"></a></dt>
+<dd><p>search_optimized_direction the given basis direction to the specified axis using quaternion rotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>basis</strong> (<em>np.ndarray</em>) – The initial basis vectors.</p></li>
+<li><p><strong>axis</strong> (<em>np.ndarray</em>) – The axis to align the basis vectors to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The basis vectors rotated to search_optimized_direction the direction of the axis.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the axis vector is zero.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.lattice.rotation.LatticeRotation3D.search_optimized_posture">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">search_optimized_posture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">360.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/lattice/rotation.html#LatticeRotation3D.search_optimized_posture"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.lattice.rotation.LatticeRotation3D.search_optimized_posture" title="Link to this definition"></a></dt>
+<dd><p>Search for the best posture of the basis aligned with the given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>basis</strong> (<em>np.ndarray</em>) – The basis to be rotated.</p></li>
+<li><p><strong>axis</strong> (<em>np.ndarray</em>) – The axis to align with.</p></li>
+<li><p><strong>angle_max</strong> (<em>float</em>) – The maximum angle range to search in degrees.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The optimally aligned basis after posture search.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the axis vector is zero.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-elphem.lattice">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-elphem.lattice" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Kohei Ishii.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

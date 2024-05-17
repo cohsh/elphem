@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>elphem.elph package &mdash; elphem 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=e259d695"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            elphem
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">elphem.elph package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-elphem.elph.electron_phonon">elphem.elph.electron_phonon module</a><ul>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.temperature"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.temperature</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.sigma"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.sigma</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.eta"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.eta</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.effective_potential"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.effective_potential</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.n_bands"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.n_bands</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.electron"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.electron</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.electron_inter"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.electron_inter</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.phonon"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.phonon</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.green_function"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.green_function</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.couplings"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.couplings</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_coupling_strengths"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.calculate_coupling_strengths()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_couplings"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.calculate_couplings()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_electron_phonon_renormalization"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.calculate_electron_phonon_renormalization()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_self_energies"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.calculate_self_energies()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_self_energies_over_range"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.calculate_self_energies_over_range()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_spectrum"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.calculate_spectrum()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_spectrum_over_range"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.calculate_spectrum_over_range()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.electron_phonon.ElectronPhonon.create_ggkq_grid"><code class="docutils literal notranslate"><span class="pre">ElectronPhonon.create_ggkq_grid()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-elphem.elph.green_function">elphem.elph.green_function module</a><ul>
+<li><a class="reference internal" href="#elphem.elph.green_function.GreenFunction"><code class="docutils literal notranslate"><span class="pre">GreenFunction</span></code></a><ul>
+<li><a class="reference internal" href="#elphem.elph.green_function.GreenFunction.gaussian_coefficient_a"><code class="docutils literal notranslate"><span class="pre">GreenFunction.gaussian_coefficient_a</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.green_function.GreenFunction.gaussian_coefficient_b"><code class="docutils literal notranslate"><span class="pre">GreenFunction.gaussian_coefficient_b</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.green_function.GreenFunction.poles"><code class="docutils literal notranslate"><span class="pre">GreenFunction.poles</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.green_function.GreenFunction.weights"><code class="docutils literal notranslate"><span class="pre">GreenFunction.weights</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.green_function.GreenFunction.calculate"><code class="docutils literal notranslate"><span class="pre">GreenFunction.calculate()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.green_function.GreenFunction.calculate_imag_part"><code class="docutils literal notranslate"><span class="pre">GreenFunction.calculate_imag_part()</span></code></a></li>
+<li><a class="reference internal" href="#elphem.elph.green_function.GreenFunction.calculate_real_part"><code class="docutils literal notranslate"><span class="pre">GreenFunction.calculate_real_part()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-elphem.elph">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">elphem</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">elphem.elph package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="elphem-elph-package">
+<h1>elphem.elph package<a class="headerlink" href="#elphem-elph-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-elphem.elph.electron_phonon">
+<span id="elphem-elph-electron-phonon-module"></span><h2>elphem.elph.electron_phonon module<a class="headerlink" href="#module-elphem.elph.electron_phonon" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.elph.electron_phonon.</span></span><span class="sig-name descname"><span class="pre">ElectronPhonon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">electron</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="elphem.electron.html#elphem.electron.electron.Electron" title="elphem.electron.electron.Electron"><span class="pre">Electron</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phonon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="elphem.phonon.html#elphem.phonon.phonon.Phonon" title="elphem.phonon.phonon.Phonon"><span class="pre">Phonon</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effective_potential</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0625</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bands</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/elph/electron_phonon.html#ElectronPhonon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Calculate the electron-phonon interactions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.temperature">
+<span class="sig-name descname"><span class="pre">temperature</span></span><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.temperature" title="Link to this definition"></a></dt>
+<dd><p>Temperature of the system in Kelvin</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.sigma">
+<span class="sig-name descname"><span class="pre">sigma</span></span><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.sigma" title="Link to this definition"></a></dt>
+<dd><p>Smearing parameter for the Gaussian distribution, defaults to 0.001 Hartree</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.eta">
+<span class="sig-name descname"><span class="pre">eta</span></span><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.eta" title="Link to this definition"></a></dt>
+<dd><p>Small positive constant to ensure numerical stability, defaults to 0.0005 Hartree</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.effective_potential">
+<span class="sig-name descname"><span class="pre">effective_potential</span></span><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.effective_potential" title="Link to this definition"></a></dt>
+<dd><p>Effective potential used in electron-phonon coupling calculation, defaults to 0.0625</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.n_bands">
+<span class="sig-name descname"><span class="pre">n_bands</span></span><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.n_bands" title="Link to this definition"></a></dt>
+<dd><p>Number of bands for calculating self energies</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.electron">
+<span class="sig-name descname"><span class="pre">electron</span></span><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.electron" title="Link to this definition"></a></dt>
+<dd><p>Free electron for initial and final states</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="elphem.electron.html#elphem.electron.electron.Electron" title="elphem.electron.electron.Electron">Electron</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.electron_inter">
+<span class="sig-name descname"><span class="pre">electron_inter</span></span><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.electron_inter" title="Link to this definition"></a></dt>
+<dd><p>Free electron for intermediate states</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="elphem.electron.html#elphem.electron.electron.Electron" title="elphem.electron.electron.Electron">Electron</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.phonon">
+<span class="sig-name descname"><span class="pre">phonon</span></span><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.phonon" title="Link to this definition"></a></dt>
+<dd><p>Debye Phonon</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="elphem.phonon.html#elphem.phonon.phonon.Phonon" title="elphem.phonon.phonon.Phonon">Phonon</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.green_function">
+<span class="sig-name descname"><span class="pre">green_function</span></span><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.green_function" title="Link to this definition"></a></dt>
+<dd><p>Green function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#elphem.elph.green_function.GreenFunction" title="elphem.elph.green_function.GreenFunction">GreenFunction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.couplings">
+<span class="sig-name descname"><span class="pre">couplings</span></span><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.couplings" title="Link to this definition"></a></dt>
+<dd><p>electron-phonon coupling constants squared</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.calculate_coupling_strengths">
+<span class="sig-name descname"><span class="pre">calculate_coupling_strengths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delta_omega</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/elph/electron_phonon.html#ElectronPhonon.calculate_coupling_strengths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_coupling_strengths" title="Link to this definition"></a></dt>
+<dd><p>Calculate electron-phonon coupling strengths</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>delta_omega</strong> (<em>float</em><em>, </em><em>optional</em>) – A small value used for numerical differentiation. Defaults to 0.000001 Hartree.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of coupling strengths</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.calculate_couplings">
+<span class="sig-name descname"><span class="pre">calculate_couplings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/elph/electron_phonon.html#ElectronPhonon.calculate_couplings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_couplings" title="Link to this definition"></a></dt>
+<dd><p>Calculate the lowest-order electron-phonon coupling constants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The lowest-order electron-phonon coupling constants</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.calculate_electron_phonon_renormalization">
+<span class="sig-name descname"><span class="pre">calculate_electron_phonon_renormalization</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/elph/electron_phonon.html#ElectronPhonon.calculate_electron_phonon_renormalization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_electron_phonon_renormalization" title="Link to this definition"></a></dt>
+<dd><p>Calculate electron-phonon renormalizations of electron eigenenergies (EPR).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A numpy array of EPR</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.calculate_self_energies">
+<span class="sig-name descname"><span class="pre">calculate_self_energies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omega</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/elph/electron_phonon.html#ElectronPhonon.calculate_self_energies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_self_energies" title="Link to this definition"></a></dt>
+<dd><p>Calculate Fan self-energies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>omega</strong> (<em>float</em>) – a frequency.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of Fan self-energies.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.calculate_self_energies_over_range">
+<span class="sig-name descname"><span class="pre">calculate_self_energies_over_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omega_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/elph/electron_phonon.html#ElectronPhonon.calculate_self_energies_over_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_self_energies_over_range" title="Link to this definition"></a></dt>
+<dd><p>Calculate self energies over a given array of frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>omega_array</strong> (<em>np.ndarray</em><em> | </em><em>list</em><em>[</em><em>float</em><em>]</em>) – a numpy array or list of frequencies</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a numpy array of self energies</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.calculate_spectrum">
+<span class="sig-name descname"><span class="pre">calculate_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omega</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/elph/electron_phonon.html#ElectronPhonon.calculate_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_spectrum" title="Link to this definition"></a></dt>
+<dd><p>Calculate the spectral function for a frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>omega</strong> (<em>float</em>) – a frequency</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of the spectral function at omega Hartree</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.calculate_spectrum_over_range">
+<span class="sig-name descname"><span class="pre">calculate_spectrum_over_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omega_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/elph/electron_phonon.html#ElectronPhonon.calculate_spectrum_over_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.calculate_spectrum_over_range" title="Link to this definition"></a></dt>
+<dd><p>Calculate spectral function over a given array of frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega_array</strong> (<em>np.ndarray</em><em> | </em><em>list</em><em>[</em><em>float</em><em>]</em>) – A numpy array or list of frequencies</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag for normalizing spectral functions. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of spectral functions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.elph.electron_phonon.ElectronPhonon.create_ggkq_grid">
+<span class="sig-name descname"><span class="pre">create_ggkq_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">electron</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="elphem.electron.html#elphem.electron.electron.Electron" title="elphem.electron.electron.Electron"><span class="pre">Electron</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phonon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="elphem.phonon.html#elphem.phonon.phonon.Phonon" title="elphem.phonon.phonon.Phonon"><span class="pre">Phonon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/elphem/elph/electron_phonon.html#ElectronPhonon.create_ggkq_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.electron_phonon.ElectronPhonon.create_ggkq_grid" title="Link to this definition"></a></dt>
+<dd><p>Create (<a href="#id1"><span class="problematic" id="id2">G_</span></a>!, G_2, k, q) combined grids</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>electron</strong> (<a class="reference internal" href="elphem.electron.html#elphem.electron.electron.Electron" title="elphem.electron.electron.Electron"><em>Electron</em></a>) – Free electron</p></li>
+<li><p><strong>phonon</strong> (<a class="reference internal" href="elphem.phonon.html#elphem.phonon.phonon.Phonon" title="elphem.phonon.phonon.Phonon"><em>Phonon</em></a>) – Debye phonon</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(G_1, G_2, k, q) combined grids</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-elphem.elph.green_function">
+<span id="elphem-elph-green-function-module"></span><h2>elphem.elph.green_function module<a class="headerlink" href="#module-elphem.elph.green_function" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="elphem.elph.green_function.GreenFunction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">elphem.elph.green_function.</span></span><span class="sig-name descname"><span class="pre">GreenFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">electron</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="elphem.electron.html#elphem.electron.electron.Electron" title="elphem.electron.electron.Electron"><span class="pre">Electron</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phonon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="elphem.phonon.html#elphem.phonon.phonon.Phonon" title="elphem.phonon.phonon.Phonon"><span class="pre">Phonon</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/elphem/elph/green_function.html#GreenFunction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.green_function.GreenFunction" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for Green functions
+.. attribute:: eta</p>
+<blockquote>
+<div><p>Convergence factor for calculating real parts</p>
+<dl class="field-list simple">
+<dt class="field-odd">type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.green_function.GreenFunction.gaussian_coefficient_a">
+<span class="sig-name descname"><span class="pre">gaussian_coefficient_a</span></span><a class="headerlink" href="#elphem.elph.green_function.GreenFunction.gaussian_coefficient_a" title="Link to this definition"></a></dt>
+<dd><p>Coefficient for calculating imaginary parts (a)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.green_function.GreenFunction.gaussian_coefficient_b">
+<span class="sig-name descname"><span class="pre">gaussian_coefficient_b</span></span><a class="headerlink" href="#elphem.elph.green_function.GreenFunction.gaussian_coefficient_b" title="Link to this definition"></a></dt>
+<dd><p>Coefficient for calculating imaginary parts (b)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.green_function.GreenFunction.poles">
+<span class="sig-name descname"><span class="pre">poles</span></span><a class="headerlink" href="#elphem.elph.green_function.GreenFunction.poles" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of poles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="elphem.elph.green_function.GreenFunction.weights">
+<span class="sig-name descname"><span class="pre">weights</span></span><a class="headerlink" href="#elphem.elph.green_function.GreenFunction.weights" title="Link to this definition"></a></dt>
+<dd><p>A numpy array of weights for each pole</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.elph.green_function.GreenFunction.calculate">
+<span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omega</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/elph/green_function.html#GreenFunction.calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.green_function.GreenFunction.calculate" title="Link to this definition"></a></dt>
+<dd><p>Calculate Green function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>omega</strong> (<em>float</em>) – A frequency</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of Green function (complex)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.elph.green_function.GreenFunction.calculate_imag_part">
+<span class="sig-name descname"><span class="pre">calculate_imag_part</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omega_minus_poles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/elph/green_function.html#GreenFunction.calculate_imag_part"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.green_function.GreenFunction.calculate_imag_part" title="Link to this definition"></a></dt>
+<dd><p>Calculate imaginary part of Green function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>omega_minus_poles</strong> (<em>np.ndarray</em>) – A numpy array of frequencies</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of imaginary part of Green function</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="elphem.elph.green_function.GreenFunction.calculate_real_part">
+<span class="sig-name descname"><span class="pre">calculate_real_part</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omega_minus_poles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/elphem/elph/green_function.html#GreenFunction.calculate_real_part"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elphem.elph.green_function.GreenFunction.calculate_real_part" title="Link to this definition"></a></dt>
+<dd><p>Calculate real part of Green function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>omega_minus_poles</strong> (<em>np.ndarray</em>) – A numpy array of frequencies</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of real part of Green function</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-elphem.elph">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-elphem.elph" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Kohei Ishii.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

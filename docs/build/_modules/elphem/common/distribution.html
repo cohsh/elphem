@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>elphem.common.distribution &#8212; elphem 0.3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for elphem.common.distribution</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">elphem.common.unit</span> <span class="kn">import</span> <span class="n">Energy</span>
+<span class="kn">from</span> <span class="nn">elphem.common.function</span> <span class="kn">import</span> <span class="n">safe_divide</span>
+
+<div class="viewcode-block" id="boltzmann_distribution">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.distribution.boltzmann_distribution">[docs]</a>
+<span class="k">def</span> <span class="nf">boltzmann_distribution</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the occupation number of particles following the Boltzmann distribution.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        temperature (float): Temperature in Kelvin.</span>
+<span class="sd">        energy (float | np.ndarray): Energy value(s) in Hartree atomic units.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float | np.ndarray: Occupation number(s) based on the Boltzmann distribution.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Setting up system-related constants and warning filters</span>
+    <span class="n">float_min</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">min</span>
+    <span class="n">float_max</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">max</span>
+
+    <span class="n">kbt</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">temperature</span> <span class="o">*</span> <span class="n">Energy</span><span class="o">.</span><span class="n">KELVIN</span><span class="p">[</span><span class="s2">&quot;-&gt;&quot;</span><span class="p">],</span> <span class="n">float_min</span><span class="p">)</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">kbt</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">float_max</span><span class="p">)</span>
+
+    <span class="n">ln</span> <span class="o">=</span> <span class="o">-</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">energy</span>
+    
+    <span class="n">safe_ln_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">float_min</span><span class="p">)</span>
+    <span class="n">safe_ln_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">float_max</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ln</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">energy</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="p">((</span><span class="n">ln</span> <span class="o">&gt;</span> <span class="n">safe_ln_min</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ln</span> <span class="o">&lt;</span> <span class="n">safe_ln_max</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="fermi_distribution">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.distribution.fermi_distribution">[docs]</a>
+<span class="k">def</span> <span class="nf">fermi_distribution</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the occupation number of particles following the Fermi-Dirac distribution.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        temperature (float): Temperature in Kelvin.</span>
+<span class="sd">        energy (float | np.ndarray): Energy value(s) in Hartree atomic units.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float | np.ndarray: Occupation number(s) based on the Fermi-Dirac distribution.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">boltzmann_factor</span> <span class="o">=</span> <span class="n">boltzmann_distribution</span><span class="p">(</span><span class="n">temperature</span><span class="p">,</span> <span class="n">energy</span><span class="p">)</span>
+    <span class="n">inv_boltzmann_factor</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">boltzmann_factor</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">inv_boltzmann_factor</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="bose_distribution">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.distribution.bose_distribution">[docs]</a>
+<span class="k">def</span> <span class="nf">bose_distribution</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the occupation number of particles following the Bose-Einstein distribution.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        temperature (float): Temperature in Kelvin.</span>
+<span class="sd">        energy (float | np.ndarray): Energy value(s) in Hartree atomic units.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float | np.ndarray: Occupation number(s) based on the Bose-Einstein distribution.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">boltzmann_factor</span> <span class="o">=</span> <span class="n">boltzmann_distribution</span><span class="p">(</span><span class="n">temperature</span><span class="p">,</span> <span class="n">energy</span><span class="p">)</span>
+    <span class="n">inv_boltzmann_factor</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">boltzmann_factor</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">inv_boltzmann_factor</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="gaussian_distribution">
+<a class="viewcode-back" href="../../../resources/elphem.common.html#elphem.common.distribution.gaussian_distribution">[docs]</a>
+<span class="k">def</span> <span class="nf">gaussian_distribution</span><span class="p">(</span><span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the probability density of particles following the Gaussian distribution.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sigma (float): Standard deviation of the Gaussian distribution.</span>
+<span class="sd">        energy (float | np.ndarray): Energy value(s) to evaluate the Gaussian function.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float | np.ndarray: Probability density(s) based on the Gaussian distribution.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="n">energy</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">elphem</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2024, Kohei Ishii.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

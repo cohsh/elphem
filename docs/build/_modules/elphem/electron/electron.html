@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>elphem.electron.electron &#8212; elphem 0.3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for elphem.electron.electron</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">elphem.lattice.lattice</span> <span class="kn">import</span> <span class="n">Lattice</span>
+<span class="kn">from</span> <span class="nn">elphem.lattice.path</span> <span class="kn">import</span> <span class="n">PathValues</span>
+
+<div class="viewcode-block" id="Electron">
+<a class="viewcode-back" href="../../../resources/elphem.electron.html#elphem.electron.electron.Electron">[docs]</a>
+<span class="k">class</span> <span class="nc">Electron</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents free electrons in a given empty lattice.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        lattice (Lattice): Lattice on which the free electron model is applied.</span>
+<span class="sd">        n_electrons (int): Number of electrons per unit cell.</span>
+<span class="sd">        n_bands (int): Number of energy bands considered.</span>
+<span class="sd">        n_k (int): Number of k_points.</span>
+<span class="sd">        g (np.ndarray): Reciprocal lattice vectors.</span>
+<span class="sd">        k (np.ndarray): Vectors in the reciprocal space.</span>
+<span class="sd">        eigenenergies (np.ndarray): Eigenenergies of free electron model.</span>
+<span class="sd">        fermi_energy (float): Fermi energy</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lattice</span><span class="p">:</span> <span class="n">Lattice</span><span class="p">,</span> <span class="n">n_electrons</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            lattice (Lattice): Lattice on which the free electron model is applied.</span>
+<span class="sd">            n_electrons (int): Number of electrons per unit cell.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span> <span class="o">=</span> <span class="n">lattice</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_electrons</span> <span class="o">=</span> <span class="n">n_electrons</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_bands</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_k</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eigenenergies</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fermi_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_fermi_energy</span><span class="p">()</span>
+        
+<div class="viewcode-block" id="Electron.create_from_n">
+<a class="viewcode-back" href="../../../resources/elphem.electron.html#elphem.electron.electron.Electron.create_from_n">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create_from_n</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lattice</span><span class="p">:</span> <span class="n">Lattice</span><span class="p">,</span> <span class="n">n_electrons</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_bands</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_k_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Electron&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create free electrons from the number of the number of k (array-type).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lattice (Lattice): Lattice on which the free electron model is applied</span>
+<span class="sd">            n_electrons (int): Number of electrons</span>
+<span class="sd">            n_bands (int): Number of electron bands</span>
+<span class="sd">            n_k_array (np.ndarray): Number of k vectors (array-type)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Electron: Free electron</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">electron</span> <span class="o">=</span> <span class="n">Electron</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">n_electrons</span><span class="p">)</span>
+
+        <span class="c1"># set about k vectors</span>
+        <span class="n">electron</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">lattice</span><span class="o">.</span><span class="n">reciprocal</span><span class="o">.</span><span class="n">get_monkhorst_pack_grid</span><span class="p">(</span><span class="o">*</span><span class="n">n_k_array</span><span class="p">)</span>
+        <span class="n">electron</span><span class="o">.</span><span class="n">n_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">n_k_array</span><span class="p">)</span>
+
+        <span class="c1"># update values</span>
+        <span class="n">electron</span><span class="o">.</span><span class="n">update_band</span><span class="p">(</span><span class="n">n_bands</span><span class="p">)</span>
+        <span class="n">electron</span><span class="o">.</span><span class="n">update_eigenenergies</span><span class="p">()</span>
+        
+        <span class="k">return</span> <span class="n">electron</span></div>
+
+
+<div class="viewcode-block" id="Electron.create_from_k">
+<a class="viewcode-back" href="../../../resources/elphem.electron.html#elphem.electron.electron.Electron.create_from_k">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create_from_k</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lattice</span><span class="p">:</span> <span class="n">Lattice</span><span class="p">,</span> <span class="n">n_electrons</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_bands</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">k_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Electron&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create free electrons from k vectors.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lattice (Lattice): Lattice on which the free electron model is applied</span>
+<span class="sd">            n_electrons (int): Number of electrons</span>
+<span class="sd">            n_bands (int): Number of electron bands</span>
+<span class="sd">            k_array (np.ndarray): k vectors</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Electron: Free electron</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">electron</span> <span class="o">=</span> <span class="n">Electron</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">n_electrons</span><span class="p">)</span>
+
+        <span class="c1"># check the type and shape fo k_array</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k_array</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">k_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">k_array</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">k_array</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">lattice</span><span class="o">.</span><span class="n">n_dim</span><span class="p">,):</span>
+            <span class="n">k_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">k_array</span><span class="p">])</span>
+
+        <span class="c1"># set about k vectors</span>
+        <span class="n">electron</span><span class="o">.</span><span class="n">n_k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">k_array</span><span class="p">)</span>
+        <span class="n">electron</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k_array</span>
+
+        <span class="c1"># update values</span>
+        <span class="n">electron</span><span class="o">.</span><span class="n">update_band</span><span class="p">(</span><span class="n">n_bands</span><span class="p">)</span>
+        <span class="n">electron</span><span class="o">.</span><span class="n">update_eigenenergies</span><span class="p">()</span>
+        
+        <span class="k">return</span> <span class="n">electron</span></div>
+
+
+<div class="viewcode-block" id="Electron.create_from_gk_grid">
+<a class="viewcode-back" href="../../../resources/elphem.electron.html#elphem.electron.electron.Electron.create_from_gk_grid">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create_from_gk_grid</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lattice</span><span class="p">:</span> <span class="n">Lattice</span><span class="p">,</span> <span class="n">n_electrons</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">g_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">k_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Electron&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create free electrons from G-k grid.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lattice (Lattice): Lattice on which the free electron model is applied</span>
+<span class="sd">            n_electrons (int): Number of electrons</span>
+<span class="sd">            g_array (np.ndarray): Reciprocal lattice vectors</span>
+<span class="sd">            k_array (np.ndarray): k vectors</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Electron: Free electron</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">electron</span> <span class="o">=</span> <span class="n">Electron</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">n_electrons</span><span class="p">)</span>
+        
+        <span class="n">electron</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">g_array</span>
+        <span class="n">electron</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k_array</span>
+        
+        <span class="n">electron</span><span class="o">.</span><span class="n">update_eigenenergies</span><span class="p">(</span><span class="n">expand_g</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">electron</span></div>
+
+    
+<div class="viewcode-block" id="Electron.create_from_path">
+<a class="viewcode-back" href="../../../resources/elphem.electron.html#elphem.electron.electron.Electron.create_from_path">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create_from_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lattice</span><span class="p">:</span> <span class="n">Lattice</span><span class="p">,</span> <span class="n">n_electrons</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_bands</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">k_path</span><span class="p">:</span> <span class="n">PathValues</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Electron&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create free electrons from k-path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lattice (Lattice): Lattice on which the free electron model is applied</span>
+<span class="sd">            n_electrons (int): Number of electrons</span>
+<span class="sd">            n_bands (int): Number of bands</span>
+<span class="sd">            k_path (PathValues): Path in the reciprocal lattice</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Electron: Free electron</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">electron</span> <span class="o">=</span> <span class="n">Electron</span><span class="o">.</span><span class="n">create_from_k</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">n_electrons</span><span class="p">,</span> <span class="n">n_bands</span><span class="p">,</span> <span class="n">k_path</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">electron</span></div>
+
+
+<div class="viewcode-block" id="Electron.clone_with_gk_grid">
+<a class="viewcode-back" href="../../../resources/elphem.electron.html#elphem.electron.electron.Electron.clone_with_gk_grid">[docs]</a>
+    <span class="k">def</span> <span class="nf">clone_with_gk_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">k_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Electron&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clone a free electron with changing G and k vectors.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            g_array (np.ndarray): Reciprocal lattice vectors</span>
+<span class="sd">            k_array (np.ndarray): k vectors</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Electron: Free electron</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">electron</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_from_gk_grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_electrons</span><span class="p">,</span> <span class="n">g_array</span><span class="p">,</span> <span class="n">k_array</span><span class="p">)</span>
+
+        <span class="c1"># set about numbers</span>
+        <span class="n">electron</span><span class="o">.</span><span class="n">n_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_k</span>
+        <span class="n">electron</span><span class="o">.</span><span class="n">n_bands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_bands</span>
+        
+        <span class="k">return</span> <span class="n">electron</span></div>
+
+
+<div class="viewcode-block" id="Electron.calculate_eigenenergies">
+<a class="viewcode-back" href="../../../resources/elphem.electron.html#elphem.electron.electron.Electron.calculate_eigenenergies">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_eigenenergies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">g_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the electron eigenenergies at wave vector k.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            k_array (np.ndarray): k vectors</span>
+<span class="sd">            g_array (np.ndarray): Reciprocal lattice vectors</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: The electron eigenenergies</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">g_array</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">eigenenergies</span> <span class="o">=</span>  <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">k_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">fermi_energy</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">eigenenergies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">k_array</span> <span class="o">+</span> <span class="n">g</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">g_array</span><span class="p">])</span>
+            <span class="n">eigenenergies</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fermi_energy</span>
+        
+        <span class="k">return</span> <span class="n">eigenenergies</span></div>
+
+
+<div class="viewcode-block" id="Electron.calculate_dos">
+<a class="viewcode-back" href="../../../resources/elphem.electron.html#elphem.electron.electron.Electron.calculate_dos">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_dos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">omega</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate DOS by using analytical forms.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            omega (float | np.ndarray): frequencies</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: DOS</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">omega_plus_fermi_energy</span> <span class="o">=</span> <span class="n">omega</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">fermi_energy</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">n_dim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">coefficient</span> <span class="o">=</span> <span class="mf">8.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">reciprocal</span><span class="o">.</span><span class="n">volume</span>
+            <span class="k">return</span> <span class="n">coefficient</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">omega_plus_fermi_energy</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">n_dim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">coefficient</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">reciprocal</span><span class="o">.</span><span class="n">volume</span>
+            <span class="k">return</span> <span class="n">coefficient</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">coefficient</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">reciprocal</span><span class="o">.</span><span class="n">volume</span>
+            <span class="k">return</span> <span class="n">coefficient</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">omega_plus_fermi_energy</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Electron.update_band">
+<a class="viewcode-back" href="../../../resources/elphem.electron.html#elphem.electron.electron.Electron.update_band">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_band</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_bands</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update attributes about bands</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n_bands (int): Number of bands</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_bands</span> <span class="o">=</span> <span class="n">n_bands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">reciprocal</span><span class="o">.</span><span class="n">get_reciprocal_vectors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_bands</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Electron.update_eigenenergies">
+<a class="viewcode-back" href="../../../resources/elphem.electron.html#elphem.electron.electron.Electron.update_eigenenergies">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_eigenenergies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expand_g</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update eigenenergies</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            expand_g (bool, optional): add axis about reciprocal lattice vectors. Defaults to True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">expand_g</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eigenenergies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_eigenenergies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eigenenergies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_eigenenergies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Electron.calculate_fermi_energy">
+<a class="viewcode-back" href="../../../resources/elphem.electron.html#elphem.electron.electron.Electron.calculate_fermi_energy">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_fermi_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the Fermi energy.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The Fermi energy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gamma</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">gamma</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">n_dim</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">coefficient</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="n">electron_density</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_electrons</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">primitive</span><span class="o">.</span><span class="n">volume</span>
+        
+        <span class="n">fermi_energy</span> <span class="o">=</span> <span class="n">coefficient</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">electron_density</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">n_dim</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">fermi_energy</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">elphem</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2024, Kohei Ishii.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
