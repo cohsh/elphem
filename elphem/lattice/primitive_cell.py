@@ -7,7 +7,13 @@ from elphem.lattice.lattice_constant import LatticeConstant3D, LatticeConstant2D
 
 @dataclass
 class PrimitiveCell3D(Cell3D):
-    """Defines the primitive cell for a crystal based on the lattice constants."""
+    """Class for the 3D primitive cell based on the lattice constants.
+
+    Attributes:
+        lattice_constant (LatticeConstant3D): lattice constants
+        basis (np.ndarray): A numpy array of basis
+        volume (float): The volume
+    """
     lattice_constant: LatticeConstant3D
     
     def __post_init__(self):
@@ -53,6 +59,14 @@ class PrimitiveCell3D(Cell3D):
 
 @dataclass
 class PrimitiveCell2D(Cell2D):
+    """Class for the 2D primitive cell based on the lattice constants.
+
+    Attributes:
+        lattice_constant (LatticeConstant3D): lattice constants
+        basis (np.ndarray): A numpy array of basis
+        volume (float): The volume
+    """
+
     lattice_constant: LatticeConstant2D
 
     def __post_init__(self):
@@ -95,6 +109,14 @@ class PrimitiveCell2D(Cell2D):
 
 @dataclass
 class PrimitiveCell1D(Cell1D):
+    """Class for the 1D primitive cell based on the lattice constants.
+
+    Attributes:
+        lattice_constant (LatticeConstant3D): lattice constants
+        basis (np.ndarray): A numpy array of basis
+        volume (float): The volume
+    """
+
     lattice_constant: LatticeConstant1D
 
     def __post_init__(self):
