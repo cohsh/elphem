@@ -6,6 +6,15 @@ from elphem.electron.electron import Electron
 from elphem.phonon.phonon import Phonon
 
 class GreenFunction:
+    """Class for Green functions
+        Attributes:
+            sigma (float):
+            eta (float):
+            gaussian_coefficient_a (float):
+            gaussian_coefficient_b (float):
+            poles (np.ndarray):
+            weights (np.ndarray):
+    """
     def __init__(self, electron: Electron, phonon: Phonon, temperature: float, sigma: float, eta: float):
         self.sigma = sigma
         self.eta = eta
