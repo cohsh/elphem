@@ -10,7 +10,7 @@ def main():
     q_path = lattice.reciprocal.get_path(q_names, 40)
 
     debye_temperature = 344.0
-    phonon = DebyePhonon.create_from_path(lattice, debye_temperature, q_path)
+    phonon = Phonon.create_from_path(lattice, debye_temperature, q_path)
     
     omega = phonon.eigenenergies
     
