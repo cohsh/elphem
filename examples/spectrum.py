@@ -1,5 +1,4 @@
 """Example: bcc-Li"""
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from elphem import *
@@ -7,25 +6,26 @@ from elphem import *
 def main():
     a = 2.98 * Length.ANGSTROM['->']
     debye_temperature = 344.0
-    n_q = [10, 10, 10]
+    n_q = [6, 6, 6]
     k_names = ["G", "H", "N", "G", "P", "H"]
-    n_split = 40
-    n_electron = 1
-    n_band = 7
+    n_split = 50
+    n_electrons = 1
+    n_bands_electron = 4
+    n_bands_elph = 4
 
     lattice = Lattice3D('bcc', 'Li', a)
 
     k_path = lattice.get_k_path(k_names, n_split)
 
     # Generate an electron.
-    electron = Electron.create_from_path(lattice, n_electron, n_band, k_path)
+    electron = Electron.create_from_path(lattice, n_electrons, n_bands_electron, k_path)
 
     # Generate a phonon.
     phonon = Phonon.create_from_n(lattice, debye_temperature, n_q)
 
-    electron_phonon = ElectronPhonon(electron, phonon, debye_temperature, sigma=0.001, eta=0.0005)
+    electron_phonon = ElectronPhonon(electron, phonon, debye_temperature, n_bands_elph)
 
-    n_omega = 100
+    n_omega = 200
     range_omega = [-6 * Energy.EV["->"], 20 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
     
@@ -47,7 +47,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(0.01, 0.05)
+    mappable.set_clim(0.00, 0.03)
 
     fig.savefig("spectrum.png")
 
