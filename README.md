@@ -59,7 +59,7 @@ def main():
     n_split = 50
     
     # Parameters of electron-phonon
-    temperature = 0.8 * debye_temperature
+    temperature = 300.0
     n_bands_elph = 4
 
     # Generate a lattice
@@ -75,7 +75,7 @@ def main():
     phonon = Phonon.create_from_n(lattice, debye_temperature, n_q)
 
     # Generate electron-phonon
-    electron_phonon = ElectronPhonon(electron, phonon, temperature, n_bands_elph)
+    electron_phonon = ElectronPhonon(electron, phonon, temperature, n_bands_elph, eta=0.05)
 
     # Set frequencies
     n_omega = 200
@@ -102,7 +102,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li (Normalized)")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(0.00, 0.03)
+    mappable.set_clim(0.00, 0.02)
 
     fig.savefig("spectrum.png")
 

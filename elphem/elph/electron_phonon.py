@@ -24,7 +24,7 @@ class ElectronPhonon:
         couplings (np.ndarray): electron-phonon coupling constants squared
     """
     def __init__(self, electron: Electron, phonon: Phonon, temperature: float, n_bands: int,
-                sigma: float = 0.001, eta: float = 0.0005, coupling_type: str = "bloch"):
+                sigma: float = 0.001, eta: float = 0.0005, coupling_type: str = "bardeen"):
         self.n_dim = electron.lattice.n_dim
         self.temperature = temperature
         if n_bands > electron.n_bands:

@@ -36,7 +36,7 @@ def main():
     phonon = Phonon.create_from_n(lattice, debye_temperature, n_q)
 
     # Generate electron-phonon
-    electron_phonon = ElectronPhonon(electron, phonon, temperature, n_bands_elph)
+    electron_phonon = ElectronPhonon(electron, phonon, temperature, n_bands_elph, eta=0.05)
 
     # Set frequencies
     n_omega = 200
