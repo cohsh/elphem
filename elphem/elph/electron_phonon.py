@@ -24,11 +24,9 @@ class ElectronPhonon:
         couplings (np.ndarray): electron-phonon coupling constants squared
     """
     def __init__(self, electron: Electron, phonon: Phonon, temperature: float, n_bands: int,
-                sigma: float = 0.001, eta: float = 0.0005,
-                effective_potential: float = 0.0625):
+                sigma: float = 0.001, eta: float = 0.0005, coupling_type: str = "bloch"):
         self.n_dim = electron.lattice.n_dim
         self.temperature = temperature
-        self.effective_potential = effective_potential
         if n_bands > electron.n_bands:
             self.n_bands = electron.n_bands
         else:
@@ -47,7 +45,7 @@ class ElectronPhonon:
         self.green_function = GreenFunction(self.electron_inter, self.phonon, self.temperature, sigma, eta)
 
         # set electron-phonon coupling constants squared
-        self.coupling2 = np.abs(self.calculate_couplings()) ** 2
+        self.coupling2 = np.abs(self.calculate_couplings(coupling_type)) ** 2
 
     def create_ggkq_grid(self, electron: Electron, phonon: Phonon) -> tuple:
         """Create (G_!, G_2, k, q) combined grids
@@ -68,17 +66,33 @@ class ElectronPhonon:
         
         return g1, g2, k, q
 
-    def calculate_couplings(self, coupling_type: str = "bloch") -> np.ndarray:
+    def calculate_couplings(self, coupling_type: str) -> np.ndarray:
         if coupling_type == "bloch":
             return self.calculate_couplings_bloch()
+        elif coupling_type == "nordheim":
+            return self.calculate_couplings_nordheim()
+        else:
+            raise ValueError("coupling_type is invalid.")
 
     def calculate_couplings_bloch(self) -> np.ndarray:
-        """Calculate the Bloch electron-phonon coupling constants.
+        """Calculate the Bloch (1929) electron-phonon coupling constants.
 
         Returns:
             np.ndarray: The lowest-order electron-phonon coupling constants
         """
-        return -1.0j * self.effective_potential * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        potential = 1.0 / 16.0
+        
+        return -1.0j * potential * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+
+    def calculate_couplings_nordheim(self) -> np.ndarray:
+        """Calculate the Nordheim (1931) electron-phonon coupling constants.
+
+        Returns:
+            np.ndarray: The lowest-order electron-phonon coupling constants
+        """
+        potential = 4.0 * np.pi / (self.phonon.q + self.electron.g - self.electron_inter.g)
+        
+        return -1.0j * potential * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
 
     def calculate_self_energies(self, omega: float) -> np.ndarray:
         """Calculate Fan self-energies.
