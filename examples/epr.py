@@ -9,11 +9,11 @@ def main():
 
     # Parameters of electron
     n_electrons = 1
-    n_bands_electron = 1
+    n_bands_electron = 20
 
     # Parameters of phonon
     debye_temperature = 344.0
-    n_q = [8, 8, 8]
+    n_q = [10, 10, 10]
     
     # Parameters of k-path
     k_names = ["G", "H", "N", "G", "P", "H"]
