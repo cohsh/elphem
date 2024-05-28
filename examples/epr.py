@@ -13,7 +13,7 @@ def main():
 
     # Parameters of phonon
     debye_temperature = 344.0
-    n_q = [10, 10, 10]
+    n_q = [8, 8, 8]
     
     # Parameters of k-path
     k_names = ["G", "H", "N", "G", "P", "H"]
@@ -36,7 +36,7 @@ def main():
     phonon = Phonon.create_from_n(lattice, debye_temperature, n_q)
 
     # Generate electron-phonon
-    electron_phonon = ElectronPhonon(electron, phonon, temperature, n_bands_elph, eta=0.05)
+    electron_phonon = ElectronPhonon(electron, phonon, temperature, n_bands_elph, eta=0.05, coupling_type="nordheim")
     
     # Calculate electron-phonon renormalization
     epr = electron_phonon.calculate_electron_phonon_renormalization()

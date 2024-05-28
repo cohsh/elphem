@@ -90,7 +90,7 @@ class ElectronPhonon:
         Returns:
             np.ndarray: The lowest-order electron-phonon coupling constants
         """
-        potential = 4.0 * np.pi / (self.phonon.q + self.electron.g - self.electron_inter.g)
+        potential = 4.0 * self.electron.n_electrons * np.pi / ( np.nansum(self.phonon.q + self.electron.g - self.electron_inter.g, axis=-1) ** 2)
         
         return -1.0j * potential * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
 
