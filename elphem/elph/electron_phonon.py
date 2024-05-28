@@ -68,8 +68,12 @@ class ElectronPhonon:
         
         return g1, g2, k, q
 
-    def calculate_couplings(self) -> np.ndarray:
-        """Calculate the lowest-order electron-phonon coupling constants.
+    def calculate_couplings(self, coupling_type: str = "bloch") -> np.ndarray:
+        if coupling_type == "bloch":
+            return self.calculate_couplings_bloch()
+
+    def calculate_couplings_bloch(self) -> np.ndarray:
+        """Calculate the Bloch electron-phonon coupling constants.
 
         Returns:
             np.ndarray: The lowest-order electron-phonon coupling constants
