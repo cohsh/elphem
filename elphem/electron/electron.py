@@ -16,6 +16,8 @@ class Electron:
         k (np.ndarray): Vectors in the reciprocal space.
         eigenenergies (np.ndarray): Eigenenergies of free electron model.
         fermi_energy (float): Fermi energy
+        fermi_wave_number (float): Fermi wave-number
+        thomas_fermi_wave_number (float): Thomas-Fermi wave-number
     """
     
     def __init__(self, lattice: Lattice, n_electrons: int):
@@ -34,6 +36,8 @@ class Electron:
         self.eigenenergies = None
 
         self.fermi_energy = self.calculate_fermi_energy()
+        self.fermi_wave_number = self.calculate_fermi_wave_number()
+        self.thomas_fermi_wave_number = self.calculate_thomas_fermi_wave_number()
         
     @classmethod
     def create_from_n(cls, lattice: Lattice, n_electrons: int, n_bands: int, n_k_array: np.ndarray) -> 'Electron':
@@ -217,6 +221,25 @@ class Electron:
         coefficient = 2.0 * np.pi
         electron_density = self.n_electrons / self.lattice.primitive.volume
         
-        fermi_energy = coefficient * (0.5 * gamma * electron_density) ** (2.0 / self.lattice.n_dim)
+        return coefficient * (0.5 * gamma * electron_density) ** (2.0 / self.lattice.n_dim)
+    
+    def calculate_fermi_wave_number(self) -> float:
+        """Calculate the Fermi wave-number from Fermi energy.
+
+        Returns:
+            float: The Fermi wave-number
+        """
         
-        return fermi_energy
+        return np.sqrt(2.0 * self.fermi_energy)
+    
+    def calculate_thomas_fermi_wave_number(self) -> float:
+        """Calculate the Thomas-Fermi wave-number from Fermi wave-number
+
+        Returns:
+            float: The Thomas-Fermi wave-number
+        """
+        
+        coefficient = 4.0 / np.pi * (4.0 / (9.0 * np.pi)) ** (1.0 / 3.0)
+        r = (self.lattice.primitive.volume * math.gamma(self.lattice.n_dim / 2.0 + 1.0) / (self.n_electrons * np.pi ** (self.lattice.n_dim / 2.0))) ** (1.0 / self.lattice.n_dim)
+        
+        return coefficient * r * self.fermi_wave_number ** 2

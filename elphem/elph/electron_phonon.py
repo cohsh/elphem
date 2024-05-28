@@ -71,6 +71,8 @@ class ElectronPhonon:
             return self.calculate_couplings_bloch()
         elif coupling_type == "nordheim":
             return self.calculate_couplings_nordheim()
+        elif coupling_type == "bardeen":
+            return self.calculate_couplings_bardeen()
         else:
             raise ValueError("coupling_type is invalid.")
 
@@ -93,6 +95,23 @@ class ElectronPhonon:
         potential = 4.0 * self.electron.n_electrons * np.pi / ( np.nansum(self.phonon.q + self.electron.g - self.electron_inter.g, axis=-1) ** 2)
         
         return -1.0j * potential * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+
+    def calculate_couplings_bardeen(self) -> np.ndarray:
+        """Calculate the Bardeen (1937) electron-phonon coupling constants.
+
+        Returns:
+            np.ndarray: The lowest-order electron-phonon coupling constants
+        """
+        wave_number = np.nansum(self.phonon.q + self.electron.g - self.electron_inter.g, axis=-1)
+
+        numerator = 4.0 * self.electron.n_electrons * np.pi
+        denominator = wave_number ** 2 + self.electron.thomas_fermi_wave_number ** 2 * self.calculate_lindhard_function(wave_number / (2.0 * self.electron.fermi_wave_number))
+        
+        return -1.0j * numerator / denominator * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+    
+    @staticmethod
+    def calculate_lindhard_function(x: np.ndarray) -> np.ndarray:
+        return 0.5 + (1.0 - x ** 2) / (4.0 * x) * np.log(np.abs(1.0 + x) / np.abs(1.0 - x))
 
     def calculate_self_energies(self, omega: float) -> np.ndarray:
         """Calculate Fan self-energies.
