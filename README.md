@@ -28,7 +28,10 @@ Currently, Elphem allows calculations of
 - direct and reciprocal lattice vectors from lattice constants with optimization.
 - electronic structures with empty lattice approximation.
 - phonon dispersion relations with Debye model.
-- first-order electron-phonon couplings.
+- first-order electron-phonon interactions with
+    - Bloch coupling constants.
+    - Nordheim coupling constants.
+    - Bardeen coupling constants.
 - one-electron self-energies.
 - spectral functions.
 
