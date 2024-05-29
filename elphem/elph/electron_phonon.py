@@ -84,7 +84,7 @@ class ElectronPhonon:
         """
         potential = 1.0 / 16.0
         
-        return -1.0j * potential * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        return -1.0j * potential * np.nansum((self.phonon.q + self.electron_inter.g - self.electron.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
 
     def calculate_couplings_nordheim(self) -> np.ndarray:
         """Calculate the Nordheim (1931) electron-phonon coupling constants.
@@ -92,9 +92,9 @@ class ElectronPhonon:
         Returns:
             np.ndarray: The lowest-order electron-phonon coupling constants
         """
-        potential = 4.0 / self.electron.lattice.primitive.volume * self.electron.n_electrons * np.pi / ( np.nansum(self.phonon.q + self.electron.g - self.electron_inter.g, axis=-1) ** 2)
+        potential = 4.0 / self.electron.lattice.primitive.volume * self.electron.n_electrons * np.pi / ( np.nansum(self.phonon.q + self.electron_inter.g - self.electron.g, axis=-1) ** 2)
         
-        return -1.0j * potential * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        return -1.0j * potential * np.nansum((self.phonon.q + self.electron_inter.g - self.electron.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
 
     def calculate_couplings_bardeen(self) -> np.ndarray:
         """Calculate the Bardeen (1937) electron-phonon coupling constants.
@@ -102,12 +102,12 @@ class ElectronPhonon:
         Returns:
             np.ndarray: The lowest-order electron-phonon coupling constants
         """
-        wave_number = np.nansum(self.phonon.q + self.electron.g - self.electron_inter.g, axis=-1)
+        wave_number = np.nansum(self.phonon.q + self.electron_inter.g - self.electron.g, axis=-1)
 
         numerator = 4.0 * self.electron.n_electrons * np.pi
         denominator = wave_number ** 2 + self.electron.thomas_fermi_wave_number ** 2 * self.calculate_lindhard_function(wave_number / (2.0 * self.electron.fermi_wave_number))
         
-        return -1.0j / self.electron.lattice.primitive.volume * numerator / denominator * np.nansum((self.phonon.q + self.electron.g - self.electron_inter.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        return -1.0j / self.electron.lattice.primitive.volume * numerator / denominator * np.nansum((self.phonon.q + self.electron_inter.g - self.electron.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
     
     @staticmethod
     def calculate_lindhard_function(x: np.ndarray) -> np.ndarray:

@@ -36,7 +36,7 @@ def main():
     phonon = Phonon.create_from_n(lattice, debye_temperature, n_q)
 
     # Generate electron-phonon
-    electron_phonon = ElectronPhonon(electron, phonon, temperature, n_bands_elph, eta=0.05)
+    electron_phonon = ElectronPhonon(electron, phonon, temperature, n_bands_elph, eta=0.03)
     
     # Calculate electron-phonon renormalization
     epr = electron_phonon.calculate_electron_phonon_renormalization()
