@@ -85,7 +85,7 @@ def main():
     range_omega = [-6 * Energy.EV["->"], 20 * Energy.EV["->"]]
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
     
-    # Calculate a spectral function
+    # Calculate a spectral function with normalization
     spectrum = electron_phonon.calculate_spectrum_over_range(omega_array, normalize=True)
     
     y, x = np.meshgrid(omega_array, k_path.minor_scales)
@@ -93,7 +93,7 @@ def main():
     fig = plt.figure()
     ax = fig.add_subplot(111)
     
-    mappable = ax.pcolormesh(x, y * Energy.EV["<-"], spectrum / Energy.EV["<-"])
+    mappable = ax.pcolormesh(x, y * Energy.EV["<-"], spectrum)
     
     for x0 in k_path.major_scales:
         ax.axvline(x=x0, color="black", linewidth=0.3)
@@ -105,7 +105,7 @@ def main():
     ax.set_title("Spectral function of bcc-Li (Normalized)")
     
     fig.colorbar(mappable, ax=ax)
-    mappable.set_clim(0.00, 0.02)
+    mappable.set_clim(0.00, 1.0)
 
     fig.savefig("spectrum.png")
 
