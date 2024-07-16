@@ -135,6 +135,19 @@ class Electron:
         
         return electron
 
+    def clone_with_k(self, k_array: np.ndarray) -> 'Electron':
+        """Clone a free electron with changing k vector.
+
+        Args:
+            k_array (np.ndarray): k vectors
+
+        Returns:
+            Electron: Free electron
+        """
+        electron = self.create_from_k(self.lattice, self.n_electrons, self.n_bands, k_array)
+        
+        return electron
+
     def clone_with_gk_grid(self, g_array: np.ndarray, k_array: np.ndarray) -> 'Electron':
         """Clone a free electron with changing G and k vectors.
 
