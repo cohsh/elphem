@@ -1,8 +1,8 @@
-import sys
 import numpy as np
 
 from elphem.common.unit import Energy
-from elphem.common.function import safe_divide
+
+np.seterr(divide='ignore', over='ignore')
 
 def boltzmann_distribution(temperature: float, energy: float | np.ndarray) -> float | np.ndarray:
     """
@@ -16,19 +16,13 @@ def boltzmann_distribution(temperature: float, energy: float | np.ndarray) -> fl
         float | np.ndarray: Occupation number(s) based on the Boltzmann distribution.
     """
 
-    # Setting up system-related constants and warning filters
-    float_min = sys.float_info.min
-    float_max = sys.float_info.max
-
-    kbt = max(temperature * Energy.KELVIN["->"], float_min)
-    beta = safe_divide(1.0, kbt, default=float_max)
-
-    ln = - beta * energy
-    
-    safe_ln_min = np.log(float_min)
-    safe_ln_max = np.log(float_max)
-    
-    return np.exp(ln, out=np.zeros_like(energy), where=((ln > safe_ln_min) & (ln < safe_ln_max)))
+    if temperature != 0.0:
+        beta = 1.0 / (temperature * Energy.KELVIN["->"])
+        exponent = - beta * energy
+        exponent = np.clip(exponent, -np.inf, 700.0)
+        return np.exp(exponent)
+    else:
+        return np.where(energy > 0.0, 0.0, np.inf)
 
 def fermi_distribution(temperature: float, energy: float | np.ndarray) -> float | np.ndarray:
     """
@@ -41,10 +35,11 @@ def fermi_distribution(temperature: float, energy: float | np.ndarray) -> float 
     Returns:
         float | np.ndarray: Occupation number(s) based on the Fermi-Dirac distribution.
     """
+    
     boltzmann_factor = boltzmann_distribution(temperature, energy)
-    inv_boltzmann_factor = safe_divide(1.0, boltzmann_factor)
-
-    return safe_divide(1.0, inv_boltzmann_factor + 1.0)
+    inv_boltzmann_factor = 1.0 / boltzmann_factor
+    
+    return 1.0 / (inv_boltzmann_factor + 1.0)
 
 def bose_distribution(temperature: float, energy: float | np.ndarray) -> float | np.ndarray:
     """
@@ -57,10 +52,11 @@ def bose_distribution(temperature: float, energy: float | np.ndarray) -> float |
     Returns:
         float | np.ndarray: Occupation number(s) based on the Bose-Einstein distribution.
     """
-    boltzmann_factor = boltzmann_distribution(temperature, energy)
-    inv_boltzmann_factor = safe_divide(1.0, boltzmann_factor)
     
-    return safe_divide(1.0, inv_boltzmann_factor - 1.0)
+    boltzmann_factor = boltzmann_distribution(temperature, energy)
+    inv_boltzmann_factor = 1.0 / boltzmann_factor
+    
+    return 1.0 / (inv_boltzmann_factor - 1.0)
 
 def gaussian_distribution(sigma: float, energy: float | np.ndarray) -> float | np.ndarray:
     """
