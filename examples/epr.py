@@ -39,7 +39,7 @@ def main():
     electron_phonon = ElectronPhonon(electron, phonon, temperature, n_bands_elph, eta=0.03)
     
     # Calculate electron-phonon renormalization
-    epr = electron_phonon.calculate_electron_phonon_renormalization()
+    epr = electron_phonon.calculate_electron_phonon_renormalization().real
     
     fig = plt.figure()
     ax = fig.add_subplot(111)

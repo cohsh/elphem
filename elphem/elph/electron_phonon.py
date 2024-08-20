@@ -131,13 +131,13 @@ class ElectronPhonon:
             np.ndarray: A numpy array of EPR
         """
         # prepare an array for EPR
-        epr = np.empty(self.eigenenergies.shape)
+        epr = np.empty(self.eigenenergies.shape, dtype='complex')
         
         # calculate EPR
         for i in range(self.n_bands):
             for j in range(self.electron.n_k):
                 self_energies = self.calculate_self_energies(self.eigenenergies[i, j])
-                epr[i, j] = self_energies[i, j].real
+                epr[i, j] = self_energies[i, j]
 
         return epr
 
