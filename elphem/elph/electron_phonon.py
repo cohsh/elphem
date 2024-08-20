@@ -134,8 +134,8 @@ class ElectronPhonon:
         epr = np.empty(self.eigenenergies.shape, dtype='complex')
         
         # calculate EPR
-        for i in range(self.n_bands):
-            for j in range(self.electron.n_k):
+        for i in tqdm.tqdm(range(self.n_bands)):
+            for j in tqdm.tqdm(range(self.electron.n_k), leave=False):
                 self_energies = self.calculate_self_energies(self.eigenenergies[i, j])
                 epr[i, j] = self_energies[i, j]
 
