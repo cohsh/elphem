@@ -1,10 +1,9 @@
 import numpy as np
+import tqdm
 
 from elphem.electron.electron import Electron
 from elphem.phonon.phonon import Phonon
 from elphem.elph.green_function import GreenFunction
-
-from elphem.common.stdout import ProgressBar
 from elphem.common.function import safe_divide
 
 
@@ -135,14 +134,10 @@ class ElectronPhonon:
         epr = np.empty(self.eigenenergies.shape)
         
         # calculate EPR
-        count = 0
-        progress_bar = ProgressBar('Electron Phonon Renormalization', self.n_bands * self.electron.n_k)
         for i in range(self.n_bands):
             for j in range(self.electron.n_k):
                 self_energies = self.calculate_self_energies(self.eigenenergies[i, j])
                 epr[i, j] = self_energies[i, j].real
-                count += 1
-                progress_bar.print(count)
 
         return epr
 
@@ -179,13 +174,8 @@ class ElectronPhonon:
         self_energies = np.empty(self.eigenenergies.shape + (n_omega,), dtype='complex')
         
         # calculate self energies
-        count = 0
-        progress_bar = ProgressBar('Self Energy', n_omega)
-        for omega in omega_array:
-            self_energies[..., count] = self.calculate_self_energies(omega)
-            
-            count += 1
-            progress_bar.print(count)
+        for i in tqdm.tqdm(range(n_omega)):
+            self_energies[..., i] = self.calculate_self_energies(omega_array[i])
 
         return self_energies
         
@@ -204,11 +194,8 @@ class ElectronPhonon:
         spectrum = np.empty((self.electron.n_k, n_omega))
         
         # calculate spectral functions
-        progress_bar = ProgressBar('Spectrum', n_omega)
-        for i in range(n_omega):
+        for i in tqdm.tqdm(range(n_omega)):
             spectrum[..., i] = self.calculate_spectrum(omega_array[i])
-
-            progress_bar.print(i)
         
         # normalization
         if normalize:
@@ -231,16 +218,11 @@ class ElectronPhonon:
         coupling_strengths = np.empty(self.eigenenergies.shape)
         
         # calculate coupling strengths
-        count = 0
-        progress_bar = ProgressBar('Coupling Strength', self.n_bands * self.electron.n_k)
-        for i in range(self.n_bands):
-            for j in range(self.electron.n_k):
+        for i in tqdm.tqdm(range(self.n_bands)):
+            for j in tqdm.tqdm(range(self.electron.n_k), leave=False):
                 # numerical differentiation
                 self_energies_plus = self.calculate_self_energies(self.eigenenergies[i,j] + delta_omega)
                 self_energies_minus = self.calculate_self_energies(self.eigenenergies[i,j] - delta_omega)
                 coupling_strengths[i,j] = - (self_energies_plus[i,j].real - self_energies_minus[i,j].real) / (2.0 * delta_omega)
-                
-                count += 1
-                progress_bar.print(count)
         
         return coupling_strengths
