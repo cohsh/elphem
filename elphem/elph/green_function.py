@@ -1,6 +1,5 @@
 import numpy as np
 
-from elphem.common.function import safe_divide
 from elphem.common.distribution import fermi_distribution, bose_distribution
 from elphem.electron.electron import Electron
 from elphem.phonon.phonon import Phonon
@@ -56,7 +55,7 @@ class GreenFunction:
         Returns:
             np.ndarray: A numpy array of real part of Green function
         """
-        real_part = np.nansum(safe_divide(self.weights, omega_minus_poles + 1.0j * self.eta).real, axis=0)
+        real_part = np.nansum((self.weights / (omega_minus_poles + 1.0j * self.eta)).real, axis=0)
         
         return real_part
     
