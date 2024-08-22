@@ -64,7 +64,7 @@ class Phonon:
         return phonon
     
     @classmethod
-    def create_from_n(cls, lattice: Lattice, debye_temperature: float, n_q_array: np.ndarray | list[int]) -> 'Phonon':
+    def create_from_n(cls, lattice: Lattice, debye_temperature: float, n_q_array: np.ndarray | list[int], shift: bool = False) -> 'Phonon':
         """Create Debye phonon from number of q vectors (array-type)
 
         Args:
@@ -78,7 +78,7 @@ class Phonon:
         phonon = Phonon(lattice, debye_temperature)
         
         # set about q vectors
-        phonon.q = lattice.reciprocal.get_monkhorst_pack_grid(*n_q_array)
+        phonon.q = lattice.reciprocal.get_monkhorst_pack_grid(*n_q_array, shift=shift)
         phonon.n_q = np.prod(n_q_array)
 
         # set about values

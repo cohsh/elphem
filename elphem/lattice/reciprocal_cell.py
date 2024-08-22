@@ -163,25 +163,32 @@ class ReciprocalCell3D(ReciprocalCell, Cell3D):
         
         return basis
 
-    def get_monkhorst_pack_grid(self, n_x: int, n_y: int, n_z: int) -> np.ndarray:
+    def get_monkhorst_pack_grid(self, n_x: int, n_y: int, n_z: int, shift: bool = False) -> np.ndarray:
         """Get 3D Monkhorst and Pack grid
 
         Args:
             n_x (int): Number of x-direction points
             n_y (int): Number of y-direction points
             n_z (int): Number of z-direction points
+            shift (bool): Whether to shift the grid by half a grid point
 
         Returns:
             aligned_k (np.ndarray): A numpy array of k points
         """
-        x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
-        y = (2 * np.arange(1, n_y + 1) - n_y - 1) / (2 * n_y)
-        z = (2 * np.arange(1, n_z + 1) - n_z - 1) / (2 * n_z)
+        # Calculate the grid with shift
+        shift_x = 0.5 / n_x if shift else 0.0
+        shift_y = 0.5 / n_y if shift else 0.0
+        shift_z = 0.5 / n_z if shift else 0.0
+        
+        x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x) + shift_x
+        y = (2 * np.arange(1, n_y + 1) - n_y - 1) / (2 * n_y) + shift_y
+        z = (2 * np.arange(1, n_z + 1) - n_z - 1) / (2 * n_z) + shift_z
 
         bx = np.broadcast_to(x[:, np.newaxis, np.newaxis], (n_x, n_y, n_z))
         by = np.broadcast_to(y[np.newaxis, :, np.newaxis], (n_x, n_y, n_z))
         bz = np.broadcast_to(z[np.newaxis, np.newaxis, :], (n_x, n_y, n_z))
-
+        
+        # Stack the components and apply the basis transformation
         aligned_k = np.stack([bx, by, bz], axis=-1).reshape(-1, 3) @ self.basis
 
         return aligned_k
@@ -250,19 +257,23 @@ class ReciprocalCell2D(ReciprocalCell, Cell2D):
         
         return basis
 
-    def get_monkhorst_pack_grid(self, n_x: int, n_y: int) -> np.ndarray:
+    def get_monkhorst_pack_grid(self, n_x: int, n_y: int, shift: bool = False) -> np.ndarray:
         """Get 2D Monkhorst and Pack grid
 
         Args:
             n_x (int): Number of x-direction points
             n_y (int): Number of y-direction points
+            shift (bool): Whether to shift the grid by half a grid point
 
         Returns:
             aligned_k (np.ndarray): A numpy array of k points
         """
+        # Calculate the grid with shift
+        shift_x = 0.5 / n_x if shift else 0.0
+        shift_y = 0.5 / n_y if shift else 0.0
 
-        x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
-        y = (2 * np.arange(1, n_y + 1) - n_y - 1) / (2 * n_y)
+        x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x) + shift_x
+        y = (2 * np.arange(1, n_y + 1) - n_y - 1) / (2 * n_y) + shift_y
 
         bx = np.broadcast_to(x[:, np.newaxis], (n_x, n_y))
         by = np.broadcast_to(y[np.newaxis, :], (n_x, n_y))
@@ -324,17 +335,20 @@ class ReciprocalCell1D(ReciprocalCell, Cell1D):
         
         return basis
 
-    def get_monkhorst_pack_grid(self, n_x: int) -> np.ndarray:
+    def get_monkhorst_pack_grid(self, n_x: int, shift: bool = False) -> np.ndarray:
         """Get 1D Monkhorst and Pack grid
 
         Args:
             n_x (int): Number of x-direction points
+            shift (bool): Whether to shift the grid by half a grid point
 
         Returns:
             aligned_k (np.ndarray): A numpy array of k points
         """
+        # Calculate the grid with shift
+        shift_x = 0.5 / n_x if shift else 0.0
 
-        x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
+        x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x) + shift_x
 
         aligned_k = np.stack([x], axis=-1).reshape(-1, 1) @ self.basis
         

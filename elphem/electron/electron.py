@@ -40,7 +40,7 @@ class Electron:
         self.thomas_fermi_wave_number = self.calculate_thomas_fermi_wave_number()
         
     @classmethod
-    def create_from_n(cls, lattice: Lattice, n_electrons: int, n_bands: int, n_k_array: np.ndarray) -> 'Electron':
+    def create_from_n(cls, lattice: Lattice, n_electrons: int, n_bands: int, n_k_array: np.ndarray, shift: bool = False) -> 'Electron':
         """Create free electrons from the number of the number of k (array-type).
 
         Args:
@@ -55,7 +55,7 @@ class Electron:
         electron = Electron(lattice, n_electrons)
 
         # set about k vectors
-        electron.k = lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array)
+        electron.k = lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array, shift=shift)
         electron.n_k = np.prod(n_k_array)
 
         # update values
