@@ -44,7 +44,7 @@ class ElectronPhonon:
         self.green_function = GreenFunction(self.electron_inter, self.phonon, self.temperature, sigma, eta)
 
         # set electron-phonon coupling constants squared
-        self.coupling2 = np.abs(self.calculate_couplings(coupling_type)) ** 2
+        self.coupling2 = np.abs(self.calculate_couplings(coupling_type, self.electron_inter, self.electron, self.phonon)) ** 2
 
     def create_ggkq_grid(self, electron: Electron, phonon: Phonon) -> tuple:
         """Create (G_!, G_2, k, q) combined grids
@@ -65,17 +65,19 @@ class ElectronPhonon:
         
         return g1, g2, k, q
 
-    def calculate_couplings(self, coupling_type: str) -> np.ndarray:
+    def calculate_couplings(self, coupling_type: str,
+                            electron_out: Electron, electron_in: Electron,
+                            phonon: Phonon) -> np.ndarray:
         if coupling_type == "bloch":
-            return self.calculate_couplings_bloch()
+            return self.calculate_couplings_bloch(electron_out, electron_in, phonon)
         elif coupling_type == "nordheim":
-            return self.calculate_couplings_nordheim()
+            return self.calculate_couplings_nordheim(electron_out, electron_in, phonon)
         elif coupling_type == "bardeen":
-            return self.calculate_couplings_bardeen()
+            return self.calculate_couplings_bardeen(electron_out, electron_in, phonon)
         else:
             raise ValueError("coupling_type is invalid.")
 
-    def calculate_couplings_bloch(self) -> np.ndarray:
+    def calculate_couplings_bloch(self, electron_out: Electron, electron_in: Electron, phonon: Phonon) -> np.ndarray:
         """Calculate the Bloch (1929) electron-phonon coupling constants.
 
         Returns:
@@ -83,30 +85,33 @@ class ElectronPhonon:
         """
         potential = 1.0 / 16.0
         
-        return -1.0j * potential * np.nansum((self.phonon.q + self.electron_inter.g - self.electron.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        return -1.0j * potential * np.nansum((phonon.q + electron_out.g - electron_in.g) * phonon.eigenvectors, axis=-1) * phonon.zero_point_lengths
 
-    def calculate_couplings_nordheim(self) -> np.ndarray:
+    def calculate_couplings_nordheim(self, electron_out: Electron, electron_in: Electron, phonon: Phonon) -> np.ndarray:
         """Calculate the Nordheim (1931) electron-phonon coupling constants.
 
         Returns:
             np.ndarray: The lowest-order electron-phonon coupling constants
         """
-        potential = 4.0 / self.electron.lattice.primitive.volume * self.electron.n_electrons * np.pi / ( np.nansum(self.phonon.q + self.electron_inter.g - self.electron.g, axis=-1) ** 2)
+        wave_vector = electron_out.g - electron_in.g + phonon.q
+        potential = 4.0 / self.electron.lattice.primitive.volume * electron_out.n_electrons * np.pi / ( np.nansum(wave_vector, axis=-1) ** 2)
         
-        return -1.0j * potential * np.nansum((self.phonon.q + self.electron_inter.g - self.electron.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        return -1.0j * potential * np.nansum(wave_vector * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
 
-    def calculate_couplings_bardeen(self) -> np.ndarray:
+    def calculate_couplings_bardeen(self, electron_out: Electron, electron_in: Electron, phonon: Phonon) -> np.ndarray:
         """Calculate the Bardeen (1937) electron-phonon coupling constants.
 
         Returns:
             np.ndarray: The lowest-order electron-phonon coupling constants
         """
-        wave_number = np.nansum(self.phonon.q + self.electron_inter.g - self.electron.g, axis=-1)
-
-        numerator = 4.0 * self.electron.n_electrons * np.pi
-        denominator = wave_number ** 2 + self.electron.thomas_fermi_wave_number ** 2 * self.calculate_lindhard_function(wave_number / (2.0 * self.electron.fermi_wave_number))
+        wave_vector = electron_out.g - electron_in.g + phonon.q
         
-        return -1.0j / self.electron.lattice.primitive.volume * numerator / denominator * np.nansum((self.phonon.q + self.electron_inter.g - self.electron.g) * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        wave_number = np.nansum(wave_vector, axis=-1)
+
+        numerator = 4.0 * electron_out.n_electrons * np.pi
+        denominator = wave_number ** 2 + electron_out.thomas_fermi_wave_number ** 2 * self.calculate_lindhard_function(wave_number / (2.0 * electron_out.fermi_wave_number))
+        
+        return -1.0j / electron_out.lattice.primitive.volume * numerator / denominator * np.nansum(wave_vector * phonon.eigenvectors, axis=-1) * phonon.zero_point_lengths
     
     @staticmethod
     def calculate_lindhard_function(x: np.ndarray) -> np.ndarray:
