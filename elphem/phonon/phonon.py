@@ -1,9 +1,10 @@
 import numpy as np
 
 from elphem.common.unit import Energy
-from elphem.common.function import safe_divide
 from elphem.lattice.lattice import Lattice
 from elphem.lattice.path import PathValues
+
+np.seterr(all='ignore')
 
 class Phonon:
     """ Phonon with Debye model.
@@ -140,7 +141,7 @@ class Phonon:
         """
         q_norm = np.repeat(np.linalg.norm(q_array, axis=-1, keepdims=True), q_array.shape[-1], axis=-1)
         
-        return 1.0j * safe_divide(q_array, q_norm)
+        return 1.0j * q_array / q_norm
 
     def update(self, q: np.ndarray) -> None:
         """Update attributes
@@ -181,4 +182,5 @@ class Phonon:
         Returns:
             np.ndarray: Zero point lengths
         """
-        return safe_divide(1.0, np.sqrt(2.0 * self.lattice.mass * self.eigenenergies))
+        
+        return 1.0 / np.sqrt(2.0 * self.lattice.mass * self.eigenenergies)
