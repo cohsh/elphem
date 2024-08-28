@@ -184,7 +184,19 @@ class Electron:
         
         return eigenenergies
 
-    def calculate_dos(self, omega: float | np.ndarray) -> np.ndarray:
+    def calculate_dos(self, sigma: float, omega: float | np.ndarray) -> np.ndarray:
+        gaussian_coefficient_a = 2.0 * sigma ** 2
+        gaussian_coefficient_b = np.sqrt(2.0 * np.pi) * sigma
+        
+        omega = omega[:, np.newaxis, np.newaxis]
+        
+        omega_minus_eigenenergies = omega - self.eigenenergies
+        
+        dos = np.nansum(np.exp(- omega_minus_eigenenergies ** 2 / gaussian_coefficient_a), axis=(1,2)) / gaussian_coefficient_b
+
+        return dos
+
+    def calculate_analytical_dos(self, omega: float | np.ndarray) -> np.ndarray:
         """Calculate DOS by using analytical forms.
 
         Args:
@@ -193,16 +205,15 @@ class Electron:
         Returns:
             np.ndarray: DOS
         """
-        omega_plus_fermi_energy = omega + self.fermi_energy
         if self.lattice.n_dim == 3:
             coefficient = 8.0 * np.pi / self.lattice.reciprocal.volume
-            return coefficient * np.sqrt(2.0 * omega_plus_fermi_energy)
+            return coefficient * np.sqrt(2.0 * omega)
         elif self.lattice.n_dim == 2:
             coefficient = 4.0 * np.pi / self.lattice.reciprocal.volume
             return coefficient
         else:
             coefficient = 2.0 / self.lattice.reciprocal.volume
-            return coefficient / np.sqrt(2.0 * omega_plus_fermi_energy)
+            return coefficient / np.sqrt(2.0 * omega)
 
     def update_band(self, n_bands: int) -> None:
         """Update attributes about bands
