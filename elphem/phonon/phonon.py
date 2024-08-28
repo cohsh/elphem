@@ -183,4 +183,12 @@ class Phonon:
             np.ndarray: Zero point lengths
         """
         
-        return 1.0 / np.sqrt(2.0 * self.lattice.mass * self.eigenenergies)
+        threshold = 1e-4
+        
+        zero_point_length = np.where(
+            self.eigenenergies > threshold,
+            1.0 / np.sqrt(2.0 * self.lattice.mass * self.eigenenergies),
+            0.0
+        )
+        
+        return zero_point_length
