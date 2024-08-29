@@ -176,22 +176,38 @@ class ReciprocalCell3D(ReciprocalCell, Cell3D):
             aligned_k (np.ndarray): A numpy array of k points
         """
         # Calculate the grid with shift
-        shift_x = 0.5 / n_x if shift else 0.0
-        shift_y = 0.5 / n_y if shift else 0.0
-        shift_z = 0.5 / n_z if shift else 0.0
+        self.k_shifts = self.calculate_shifts(n_x, n_y, n_z) if shift else np.zeros(3)
         
-        x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x) + shift_x
-        y = (2 * np.arange(1, n_y + 1) - n_y - 1) / (2 * n_y) + shift_y
-        z = (2 * np.arange(1, n_z + 1) - n_z - 1) / (2 * n_z) + shift_z
+        x = (2 * np.arange(1, n_x + 1) - n_x - 1) / (2 * n_x)
+        y = (2 * np.arange(1, n_y + 1) - n_y - 1) / (2 * n_y)
+        z = (2 * np.arange(1, n_z + 1) - n_z - 1) / (2 * n_z)
 
         bx = np.broadcast_to(x[:, np.newaxis, np.newaxis], (n_x, n_y, n_z))
         by = np.broadcast_to(y[np.newaxis, :, np.newaxis], (n_x, n_y, n_z))
         bz = np.broadcast_to(z[np.newaxis, np.newaxis, :], (n_x, n_y, n_z))
         
         # Stack the components and apply the basis transformation
-        aligned_k = np.stack([bx, by, bz], axis=-1).reshape(-1, 3) @ self.basis
+        aligned_k = np.stack([bx, by, bz], axis=-1).reshape(-1, 3) @ self.basis + self.k_shifts
 
         return aligned_k
+    
+    def calculate_shifts(self, n_x: int, n_y: int, n_z: int) -> np.ndarray:
+        """Calculate k-shifts
+
+        Args:
+            n_x (int): Number of x-direction points
+            n_y (int): Number of y-direction points
+            n_z (int): Number of z-direction points
+
+        Returns:
+            shifts (np.ndarray): A numpy array of k-shifts
+        """
+        # Calculate the grid with shift
+        shifts = np.array([0.5 / n_x, 0.5 / n_y, 0.5 / n_z]) @ self.basis
+        
+        return shifts
+
+        
 
     def calculate_special_k(self, k_name: str) -> np.ndarray:
         """Retrieves the coordinates of special k-points based on the crystal structure.
