@@ -191,6 +191,20 @@ class ReciprocalCell3D(ReciprocalCell, Cell3D):
 
         return aligned_k
     
+    def get_monte_carlo_grid(self, n: int) -> np.ndarray:
+        """Get 3D grid with Monte Carlo sampling
+
+        Args:
+            n (int): Number of points
+
+        Returns:
+            np.ndarray: A numpy array of k points
+        """
+        
+        b = np.random.uniform(-0.5, 0.5, (n, 3))
+        
+        return b @ self.basis
+    
     def calculate_shifts(self, n_x: int, n_y: int, n_z: int) -> np.ndarray:
         """Calculate k-shifts
 
