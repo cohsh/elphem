@@ -180,14 +180,13 @@ class Phonon:
         
         return speed_of_sound
     
-    def calculate_zero_point_lengths(self) -> np.ndarray:
+    def calculate_zero_point_lengths(self, threshold: float = 0.0) -> np.ndarray:
         """Calculate zero point lengths
 
         Returns:
             np.ndarray: Zero point lengths
+            threshold (float): The threshold for phonon eigenenergies
         """
-        
-        threshold = 1e-4
         
         zero_point_length = np.where(
             self.eigenenergies > threshold,
