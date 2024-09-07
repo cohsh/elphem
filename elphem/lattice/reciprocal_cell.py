@@ -1,6 +1,7 @@
 import numpy as np
 import re
 from dataclasses import dataclass
+from scipy.stats import cauchy
 
 from elphem.lattice.cell import Cell3D, Cell2D, Cell1D
 from elphem.lattice.primitive_cell import PrimitiveCell3D, PrimitiveCell2D, PrimitiveCell1D
@@ -191,17 +192,34 @@ class ReciprocalCell3D(ReciprocalCell, Cell3D):
 
         return aligned_k
     
-    def get_monte_carlo_grid(self, n: int) -> np.ndarray:
-        """Get 3D grid with Monte Carlo sampling
+    def get_monte_carlo_grid_uniform(self, n: int) -> np.ndarray:
+        """Get 3D grid with Monte Carlo sampling (uniform distribution)
 
         Args:
             n (int): Number of points
+            distribution (str): Type of distribution
 
         Returns:
             np.ndarray: A numpy array of k points
         """
         
         b = np.random.uniform(-0.5, 0.5, (n, 3))
+        
+        return b @ self.basis
+
+    def get_monte_carlo_grid_cauchy(self, n: int, scale: float) -> np.ndarray:
+        """Get 3D grid with Monte Carlo sampling (Cauchy distribution)
+
+        Args:
+            n (int): Number of points
+            distribution (str): Type of distribution
+
+        Returns:
+            np.ndarray: A numpy array of k points
+        """
+        
+        cauchy_distribution = cauchy(loc=0, scale=scale)
+        b = cauchy_distribution.rvs((n, 3))
         
         return b @ self.basis
     
