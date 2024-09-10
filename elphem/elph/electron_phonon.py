@@ -66,18 +66,18 @@ class ElectronPhonon:
         return g1, g2, k, q
 
     def calculate_couplings(self, coupling_type: str,
-                            electron_out: Electron, electron_in: Electron,
-                            phonon: Phonon) -> np.ndarray:
+                            electron_out: Electron, electron_in: Electron, phonon: Phonon,
+                            cutoff: float = np.inf) -> np.ndarray:
         if coupling_type == "bloch":
-            return self.calculate_couplings_bloch(electron_out, electron_in, phonon)
+            return self.calculate_couplings_bloch(electron_out, electron_in, phonon, cutoff=cutoff)
         elif coupling_type == "nordheim":
-            return self.calculate_couplings_nordheim(electron_out, electron_in, phonon)
+            return self.calculate_couplings_nordheim(electron_out, electron_in, phonon, cutoff=cutoff)
         elif coupling_type == "bardeen":
-            return self.calculate_couplings_bardeen(electron_out, electron_in, phonon)
+            return self.calculate_couplings_bardeen(electron_out, electron_in, phonon, cutoff=cutoff)
         else:
             raise ValueError("coupling_type is invalid.")
 
-    def calculate_couplings_bloch(self, electron_out: Electron, electron_in: Electron, phonon: Phonon) -> np.ndarray:
+    def calculate_couplings_bloch(self, electron_out: Electron, electron_in: Electron, phonon: Phonon, cutoff: float = np.inf) -> np.ndarray:
         """Calculate the Bloch (1929) electron-phonon coupling constants.
 
         Returns:
@@ -85,9 +85,13 @@ class ElectronPhonon:
         """
         potential = 1.0 / 16.0
         
-        return -1.0j * potential * np.nansum((phonon.q + electron_out.g - electron_in.g) * phonon.eigenvectors, axis=-1) * phonon.zero_point_lengths
+        couplings = -1.0j * potential * np.nansum((phonon.q + electron_out.g - electron_in.g) * phonon.eigenvectors, axis=-1) * phonon.zero_point_lengths
+        
+        couplings = np.where(np.abs(couplings) < cutoff, couplings, 0.0+0.0j)
 
-    def calculate_couplings_nordheim(self, electron_out: Electron, electron_in: Electron, phonon: Phonon) -> np.ndarray:
+        return couplings
+
+    def calculate_couplings_nordheim(self, electron_out: Electron, electron_in: Electron, phonon: Phonon, cutoff: float = np.inf) -> np.ndarray:
         """Calculate the Nordheim (1931) electron-phonon coupling constants.
 
         Returns:
@@ -96,9 +100,14 @@ class ElectronPhonon:
         wave_vector = electron_out.g - electron_in.g + phonon.q
         potential = 4.0 / self.electron.lattice.primitive.volume * electron_out.n_electrons * np.pi / ( np.nansum(wave_vector, axis=-1) ** 2)
         
-        return -1.0j * potential * np.nansum(wave_vector * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        couplings = -1.0j * potential * np.nansum(wave_vector * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
+        
+        couplings = np.where(np.abs(couplings) < cutoff, couplings, 0.0+0.0j)
 
-    def calculate_couplings_bardeen(self, electron_out: Electron, electron_in: Electron, phonon: Phonon) -> np.ndarray:
+        return couplings
+
+
+    def calculate_couplings_bardeen(self, electron_out: Electron, electron_in: Electron, phonon: Phonon, cutoff: float = np.inf) -> np.ndarray:
         """Calculate the Bardeen (1937) electron-phonon coupling constants.
 
         Returns:
@@ -111,7 +120,11 @@ class ElectronPhonon:
         numerator = 4.0 * electron_out.n_electrons * np.pi
         denominator = wave_number ** 2 + electron_out.thomas_fermi_wave_number ** 2 * self.calculate_lindhard_function(wave_number / (2.0 * electron_out.fermi_wave_number))
         
-        return -1.0j / electron_out.lattice.primitive.volume * numerator / denominator * np.nansum(wave_vector * phonon.eigenvectors, axis=-1) * phonon.zero_point_lengths
+        couplings = -1.0j / electron_out.lattice.primitive.volume * numerator / denominator * np.nansum(wave_vector * phonon.eigenvectors, axis=-1) * phonon.zero_point_lengths
+    
+        couplings = np.where(np.abs(couplings) < cutoff, couplings, 0.0+0.0j)
+
+        return couplings
     
     @staticmethod
     def calculate_lindhard_function(x: np.ndarray) -> np.ndarray:
