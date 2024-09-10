@@ -23,7 +23,7 @@ class ElectronPhonon:
         couplings (np.ndarray): electron-phonon coupling constants squared
     """
     def __init__(self, electron: Electron, phonon: Phonon, temperature: float, n_bands: int,
-                sigma: float = 0.001, eta: float = 0.0005, coupling_type: str = "bardeen"):
+                sigma: float = 0.001, eta: float = 0.0005, coupling_type: str = "bardeen", cutoff: float = np.inf):
         self.n_dim = electron.lattice.n_dim
         self.temperature = temperature
         if n_bands > electron.n_bands:
@@ -44,7 +44,7 @@ class ElectronPhonon:
         self.green_function = GreenFunction(self.electron_inter, self.phonon, self.temperature, sigma, eta)
 
         # set electron-phonon coupling constants squared
-        self.coupling2 = np.abs(self.calculate_couplings(coupling_type, self.electron_inter, self.electron, self.phonon)) ** 2
+        self.coupling2 = np.abs(self.calculate_couplings(coupling_type, self.electron_inter, self.electron, self.phonon, cutoff=cutoff)) ** 2
 
     def create_ggkq_grid(self, electron: Electron, phonon: Phonon) -> tuple:
         """Create (G_!, G_2, k, q) combined grids
