@@ -40,7 +40,7 @@ class Electron:
         self.thomas_fermi_wave_number = self.calculate_thomas_fermi_wave_number()
         
     @classmethod
-    def create_from_n(cls, lattice: Lattice, n_electrons: int, n_bands: int, n_k_array: np.ndarray, shift: bool = False, monte_carlo: bool = False) -> 'Electron':
+    def create_from_n(cls, lattice: Lattice, n_electrons: int, n_bands: int, n_k_array: np.ndarray, shift: bool = False) -> 'Electron':
         """Create free electrons from the number of the number of k (array-type).
 
         Args:
@@ -57,10 +57,59 @@ class Electron:
         # set about k vectors
         electron.n_k = np.prod(n_k_array)
 
-        if monte_carlo:
-            electron.k = lattice.reciprocal.get_monte_carlo_grid(electron.n_k)
-        else:
-            electron.k = lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array, shift=shift)
+        electron.k = lattice.reciprocal.get_monkhorst_pack_grid(*n_k_array, shift=shift)
+
+        # update values
+        electron.update_band(n_bands)
+        electron.update_eigenenergies()
+        
+        return electron
+
+    @classmethod
+    def create_from_n_monte_carlo_uniform(cls, lattice: Lattice, n_electrons: int, n_bands: int, n: int) -> 'Electron':
+        """Create free electrons from the number of the number of k (array-type).
+
+        Args:
+            lattice (Lattice): Lattice on which the free electron model is applied
+            n_electrons (int): Number of electrons
+            n_bands (int): Number of electron bands
+            n_k_array (np.ndarray): Number of k vectors (array-type)
+
+        Returns:
+            Electron: Free electron
+        """
+        electron = Electron(lattice, n_electrons)
+
+        # set about k vectors
+        electron.n_k = n
+
+        electron.k = lattice.reciprocal.get_monte_carlo_grid_uniform(n)
+
+        # update values
+        electron.update_band(n_bands)
+        electron.update_eigenenergies()
+        
+        return electron
+
+    @classmethod
+    def create_from_n_monte_carlo_cauchy(cls, lattice: Lattice, n_electrons: int, n_bands: int, n: int, scale: float) -> 'Electron':
+        """Create free electrons from the number of the number of k (array-type).
+
+        Args:
+            lattice (Lattice): Lattice on which the free electron model is applied
+            n_electrons (int): Number of electrons
+            n_bands (int): Number of electron bands
+            n_k_array (np.ndarray): Number of k vectors (array-type)
+
+        Returns:
+            Electron: Free electron
+        """
+        electron = Electron(lattice, n_electrons)
+
+        # set about k vectors
+        electron.n_k = n
+
+        electron.k = lattice.reciprocal.get_monte_carlo_grid_cauchy(n, scale)
 
         # update values
         electron.update_band(n_bands)
