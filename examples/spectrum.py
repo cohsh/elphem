@@ -44,7 +44,7 @@ def main():
     omega_array = np.linspace(range_omega[0] , range_omega[1], n_omega)
     
     # Calculate a spectral function with normalization
-    spectrum = electron_phonon.calculate_spectrum_over_range(omega_array, normalize=True)
+    spectrum = electron_phonon.calculate_spectrum(omega_array, normalize=True)
     
     y, x = np.meshgrid(omega_array, k_path.minor_scales)
 

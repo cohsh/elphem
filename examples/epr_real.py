@@ -38,8 +38,8 @@ def main():
     # Generate electron-phonon
     electron_phonon = ElectronPhonon(electron, phonon, temperature, n_bands_elph, eta=0.03)
     
-    # Calculate electron-phonon renormalization
-    epr = electron_phonon.calculate_electron_phonon_renormalization().real
+    # Calculate real parts of electron-phonon renormalization
+    epr = electron_phonon.calculate_electron_phonon_renormalization_fan().real
     
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -59,7 +59,7 @@ def main():
     ax.set_ylabel("Energy ($\mathrm{eV}$)")
     ax.set_title("EPR of bcc-Li ($T=300~\mathrm{K}$)")
 
-    fig.savefig("epr.png")
+    fig.savefig("epr_real.png")
 
 if __name__ == "__main__":
     main()
