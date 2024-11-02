@@ -91,7 +91,7 @@ class Phonon:
         return phonon
     
     @classmethod
-    def create_from_n_monte_carlo_uniform(cls, lattice: Lattice, debye_temperature: float, n: int) -> 'Phonon':
+    def create_from_n_monte_carlo(cls, lattice: Lattice, debye_temperature: float, n: int) -> 'Phonon':
         """Create Debye phonon from number of q vectors (array-type)
 
         Args:
@@ -106,32 +106,7 @@ class Phonon:
         
         # set about q vectors
         phonon.n_q = n
-        phonon.q = lattice.reciprocal.get_monte_carlo_grid_uniform(n)
-
-        # set about values
-        phonon.eigenenergies = phonon.calculate_eigenenergies(phonon.q)
-        phonon.eigenvectors = phonon.calculate_eigenvectors(phonon.q)
-        phonon.zero_point_lengths = phonon.calculate_zero_point_lengths()
-        
-        return phonon
-    
-    @classmethod
-    def create_from_n_monte_carlo_cauchy(cls, lattice: Lattice, debye_temperature: float, n: int, scale: float) -> 'Phonon':
-        """Create Debye phonon from number of q vectors (array-type)
-
-        Args:
-            lattice (Lattice): Lattice on which the Debye model is applied
-            debye_temperature (float): Debye temperature
-            n_q_array (np.ndarray | list[int]): Number of q arrays
-
-        Returns:
-            Phonon: Debye phonon
-        """
-        phonon = Phonon(lattice, debye_temperature)
-        
-        # set about q vectors
-        phonon.n_q = n
-        phonon.q = lattice.reciprocal.get_monte_carlo_grid_cauchy(n, scale)
+        phonon.q = lattice.reciprocal.get_monte_carlo_grid(n)
 
         # set about values
         phonon.eigenenergies = phonon.calculate_eigenenergies(phonon.q)

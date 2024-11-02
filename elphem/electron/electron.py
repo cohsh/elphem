@@ -66,7 +66,7 @@ class Electron:
         return electron
 
     @classmethod
-    def create_from_n_monte_carlo_uniform(cls, lattice: Lattice, n_electrons: int, n_bands: int, n: int) -> 'Electron':
+    def create_from_n_monte_carlo(cls, lattice: Lattice, n_electrons: int, n_bands: int, n: int) -> 'Electron':
         """Create free electrons from the number of the number of k (array-type).
 
         Args:
@@ -83,33 +83,7 @@ class Electron:
         # set about k vectors
         electron.n_k = n
 
-        electron.k = lattice.reciprocal.get_monte_carlo_grid_uniform(n)
-
-        # update values
-        electron.update_band(n_bands)
-        electron.update_eigenenergies()
-        
-        return electron
-
-    @classmethod
-    def create_from_n_monte_carlo_cauchy(cls, lattice: Lattice, n_electrons: int, n_bands: int, n: int, scale: float) -> 'Electron':
-        """Create free electrons from the number of the number of k (array-type).
-
-        Args:
-            lattice (Lattice): Lattice on which the free electron model is applied
-            n_electrons (int): Number of electrons
-            n_bands (int): Number of electron bands
-            n_k_array (np.ndarray): Number of k vectors (array-type)
-
-        Returns:
-            Electron: Free electron
-        """
-        electron = Electron(lattice, n_electrons)
-
-        # set about k vectors
-        electron.n_k = n
-
-        electron.k = lattice.reciprocal.get_monte_carlo_grid_cauchy(n, scale)
+        electron.k = lattice.reciprocal.get_monte_carlo_grid(n)
 
         # update values
         electron.update_band(n_bands)

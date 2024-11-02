@@ -192,7 +192,7 @@ class ReciprocalCell3D(ReciprocalCell, Cell3D):
 
         return aligned_k
     
-    def get_monte_carlo_grid_uniform(self, n: int) -> np.ndarray:
+    def get_monte_carlo_grid(self, n: int) -> np.ndarray:
         """Get 3D grid with Monte Carlo sampling (uniform distribution)
 
         Args:
@@ -204,22 +204,6 @@ class ReciprocalCell3D(ReciprocalCell, Cell3D):
         """
         
         b = np.random.uniform(-0.5, 0.5, (n, 3))
-        
-        return b @ self.basis
-
-    def get_monte_carlo_grid_cauchy(self, n: int, scale: float) -> np.ndarray:
-        """Get 3D grid with Monte Carlo sampling (Cauchy distribution)
-
-        Args:
-            n (int): Number of points
-            distribution (str): Type of distribution
-
-        Returns:
-            np.ndarray: A numpy array of k points
-        """
-        
-        cauchy_distribution = cauchy(loc=0, scale=scale)
-        b = cauchy_distribution.rvs((n, 3))
         
         return b @ self.basis
     
