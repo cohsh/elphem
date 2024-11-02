@@ -48,8 +48,8 @@ class ElectronPhonon:
         self.phonon = phonon.clone_with_q_grid(q)
         
         self.poles_fan = np.array([
-            electron.eigenenergies + phonon.eigenenergies,
-            electron.eigenenergies - phonon.eigenenergies
+            electron_inter.eigenenergies + self.phonon.eigenenergies,
+            electron_inter.eigenenergies - self.phonon.eigenenergies
         ])
 
         # set electron-phonon coupling constants squared
