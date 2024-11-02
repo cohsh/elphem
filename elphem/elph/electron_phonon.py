@@ -3,7 +3,7 @@ import tqdm
 
 from elphem.electron.electron import Electron
 from elphem.phonon.phonon import Phonon
-from elphem.elph.green_function import GreenFunction
+from elphem.common.distribution import fermi_distribution, bose_distribution
 
 
 class ElectronPhonon:
@@ -18,8 +18,7 @@ class ElectronPhonon:
         electron (Electron): Free electron for initial and final states
         electron_inter (Electron): Free electron for intermediate states
         phonon (Phonon): Debye Phonon
-        green_function (GreenFunction): Green function
-        couplings (np.ndarray): electron-phonon coupling constants squared
+        couplings_fan (np.ndarray): first order electron-phonon coupling constants squared
     """
     def __init__(self, electron: Electron, phonon: Phonon, temperature: float, n_bands: int,
                 sigma: float = 0.0001, eta: float = 0.0001,
@@ -44,14 +43,27 @@ class ElectronPhonon:
 
         # set electrons and a phonon
         self.electron = electron.clone_with_gk_grid(g1, k)
-        self.electron_inter = electron.clone_with_gk_grid(g2, k + q)
+        
+        electron_inter = electron.clone_with_gk_grid(g2, k + q)
         self.phonon = phonon.clone_with_q_grid(q)
         
-        # set Green function
-        self.green_function = GreenFunction(self.electron_inter, self.phonon, self.temperature, sigma, eta)
+        self.poles_fan = np.array([
+            electron.eigenenergies + phonon.eigenenergies,
+            electron.eigenenergies - phonon.eigenenergies
+        ])
 
         # set electron-phonon coupling constants squared
-        self.coupling2 = np.abs(self.calculate_couplings(coupling_type, self.electron_inter, self.electron, self.phonon, cutoff=cutoff)) ** 2
+        self.couplings_fan = np.abs(self.calculate_couplings(coupling_type, electron_inter, self.electron, self.phonon, cutoff=cutoff)) ** 2
+
+        # prepare occupations
+        electron_occupations = fermi_distribution(temperature, electron_inter.eigenenergies)
+        phonon_occupations = bose_distribution(temperature, phonon.eigenenergies)
+        
+        # set weights
+        self.weights_fan = np.array([
+            1.0 - electron_occupations + phonon_occupations,
+            electron_occupations + phonon_occupations
+        ])
 
     def create_ggkq_grid(self, electron: Electron, phonon: Phonon) -> tuple:
         """Create (G_!, G_2, k, q) combined grids
@@ -105,7 +117,7 @@ class ElectronPhonon:
             np.ndarray: The lowest-order electron-phonon coupling constants
         """
         wave_vector = electron_out.g - electron_in.g + phonon.q
-        potential = 4.0 / self.electron.lattice.primitive.volume * electron_out.n_electrons * np.pi / ( np.nansum(wave_vector, axis=-1) ** 2)
+        potential = 4.0 / electron_out.lattice.primitive.volume * electron_out.n_electrons * np.pi / ( np.nansum(wave_vector, axis=-1) ** 2)
         
         couplings = -1.0j * potential * np.nansum(wave_vector * self.phonon.eigenvectors, axis=-1) * self.phonon.zero_point_lengths
         
@@ -137,19 +149,32 @@ class ElectronPhonon:
     def calculate_lindhard_function(x: np.ndarray) -> np.ndarray:
         return 0.5 + (1.0 - x ** 2) / (4.0 * x) * np.log(np.abs(1.0 + x) / np.abs(1.0 - x))
 
-    def calculate_self_energies(self, omega: float) -> np.ndarray:
-        """Calculate Fan self-energies.
+    def calculate_self_energies_fan(self, omega_array: float | np.ndarray | list[float]) -> np.ndarray:
+        """Calculate Fan self-energies for a single frequency or over a range of frequencies.
 
         Args:
-            omega (float): a frequency.
+            omega_array (float | np.ndarray | list[float]): A single frequency or array of frequencies.
 
         Returns:
             np.ndarray: A numpy array of Fan self-energies.
         """
+        if isinstance(omega_array, float):
+            omega_array = [omega_array]
         
-        return np.nansum(self.coupling2 * self.green_function.calculate(omega), axis=(1, 3)) / self.phonon.n_q
+        # Prepare the output array for self energies
+        n_omega = len(omega_array)
+        self_energies = np.empty(self.eigenenergies.shape + (n_omega,), dtype='complex')
+        
+        # Calculate self energies for each frequency
+        for i in tqdm.tqdm(range(n_omega)):
+            omega = omega_array[i]
+            green_functions = np.nansum(self.weights_fan * self.calculate_green_functions(omega - self.poles_fan), axis=0)
+            self_energies[..., i] = np.nansum(self.couplings_fan * green_functions, axis=(1, 3)) / self.phonon.n_q
 
-    def calculate_electron_phonon_renormalization(self) -> np.ndarray:
+        # If the original input is a single float, return a simplified result
+        return self_energies if n_omega > 1 else self_energies[..., 0]
+
+    def calculate_electron_phonon_renormalization_fan(self) -> np.ndarray:
         """Calculate electron-phonon renormalizations of electron eigenenergies (EPR).
 
         Returns:
@@ -161,51 +186,13 @@ class ElectronPhonon:
         # calculate EPR
         for i in tqdm.tqdm(range(self.n_bands)):
             for j in tqdm.tqdm(range(self.electron.n_k), leave=False):
-                self_energies = self.calculate_self_energies(self.eigenenergies[i, j])
+                self_energies = self.calculate_self_energies_fan(self.eigenenergies[i, j])
                 epr[i, j] = self_energies[i, j]
 
         return epr
-
-    def calculate_spectrum(self, omega: float) -> np.ndarray:
-        """Calculate the spectral function for a frequency.
-
-        Args:
-            omega (float): a frequency
-
-        Returns:
-            np.ndarray: A numpy array of the spectral function at omega Hartree
-        """
-        # calculate self energies at omega
-        self_energies = self.calculate_self_energies(omega)
         
-        # calculate numerator and denominator separately
-        numerator = - self_energies.imag / np.pi
-        denominator = (omega - self.eigenenergies - self_energies.real) ** 2 + self_energies.imag ** 2
-        
-        # sum over bands
-        return np.nansum(numerator / denominator, axis=0)
-
-    def calculate_self_energies_over_range(self, omega_array: np.ndarray | list[float]) -> np.ndarray:
-        """Calculate self energies over a given array of frequencies.
-
-        Args:
-            omega_array (np.ndarray | list[float]): a numpy array or list of frequencies
-
-        Returns:
-            np.ndarray: a numpy array of self energies
-        """
-        # prepare the length of frequency-array and an array for self energies
-        n_omega = len(omega_array)
-        self_energies = np.empty(self.eigenenergies.shape + (n_omega,), dtype='complex')
-        
-        # calculate self energies
-        for i in tqdm.tqdm(range(n_omega)):
-            self_energies[..., i] = self.calculate_self_energies(omega_array[i])
-
-        return self_energies
-        
-    def calculate_spectrum_over_range(self, omega_array: np.ndarray | list[float], normalize: bool = False) -> np.ndarray:
-        """Calculate spectral function over a given array of frequencies.
+    def calculate_spectrum(self, omega_array: np.ndarray | list[float], normalize: bool = False) -> np.ndarray:
+        """Calculate the spectral function over a given array of frequencies.
 
         Args:
             omega_array (np.ndarray | list[float]): A numpy array or list of frequencies
@@ -218,9 +205,17 @@ class ElectronPhonon:
         n_omega = len(omega_array)
         spectrum = np.empty((self.electron.n_k, n_omega))
         
+        # calculate self energies at omega
+        self_energies = self.calculate_self_energies_fan(omega_array)
+        
         # calculate spectral functions
         for i in tqdm.tqdm(range(n_omega)):
-            spectrum[..., i] = self.calculate_spectrum(omega_array[i])
+            # calculate numerator and denominator separately
+            numerator = - self_energies[..., i].imag / np.pi
+            denominator = (omega_array[i] - self.eigenenergies - self_energies[..., i].real) ** 2 + self_energies[..., i].imag ** 2
+
+            # Sum over bands
+            spectrum[..., i] = np.nansum(numerator / denominator, axis=0)
         
         # normalization
         if normalize:
