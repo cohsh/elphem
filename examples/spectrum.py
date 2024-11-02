@@ -1,7 +1,7 @@
 """Example: bcc-Li"""
 import numpy as np
 import matplotlib.pyplot as plt
-from elphem import *
+from elphem import Length, Electron, Lattice3D, Phonon, ElectronPhonon, Energy
 
 def main():
     # Parameters of lattice
@@ -13,11 +13,11 @@ def main():
 
     # Parameters of phonon
     debye_temperature = 344.0
-    n_q = [8, 8, 8]
+    n_q = 1000
     
     # Parameters of k-path
     k_names = ["G", "H", "N", "G", "P", "H"]
-    n_split = 50
+    n_split = 40
     
     # Parameters of electron-phonon
     temperature = 300.0
@@ -33,7 +33,7 @@ def main():
     electron = Electron.create_from_path(lattice, n_electrons, n_bands_electron, k_path)
 
     # Generate a phonon.
-    phonon = Phonon.create_from_n(lattice, debye_temperature, n_q)
+    phonon = Phonon.create_from_n_monte_carlo(lattice, debye_temperature, n_q)
 
     # Generate electron-phonon
     electron_phonon = ElectronPhonon(electron, phonon, temperature, n_bands_elph, eta=0.05)

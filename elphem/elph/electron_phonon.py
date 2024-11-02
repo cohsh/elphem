@@ -22,7 +22,7 @@ class ElectronPhonon:
     """
     def __init__(self, electron: Electron, phonon: Phonon, temperature: float, n_bands: int,
                 sigma: float = 0.0001, eta: float = 0.0001,
-                coupling_type: str = "bardeen", cutoff: float = np.inf):
+                coupling_type: str = "bloch", cutoff: float = np.inf):
 
         self.sigma = sigma
         self.eta = eta
