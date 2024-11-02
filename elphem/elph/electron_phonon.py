@@ -4,7 +4,6 @@ import tqdm
 from elphem.electron.electron import Electron
 from elphem.phonon.phonon import Phonon
 from elphem.elph.green_function import GreenFunction
-from elphem.common.function import safe_divide
 
 
 class ElectronPhonon:
@@ -23,8 +22,16 @@ class ElectronPhonon:
         couplings (np.ndarray): electron-phonon coupling constants squared
     """
     def __init__(self, electron: Electron, phonon: Phonon, temperature: float, n_bands: int,
-                sigma: float = 0.001, eta: float = 0.0005, coupling_type: str = "bardeen", cutoff: float = np.inf):
+                sigma: float = 0.0001, eta: float = 0.0001,
+                coupling_type: str = "bardeen", cutoff: float = np.inf):
+
+        self.sigma = sigma
+        self.eta = eta
+        self.gaussian_coefficient_a = 2.0 * self.sigma ** 2
+        self.gaussian_coefficient_b = np.sqrt(2.0 * np.pi) * self.sigma
+        
         self.n_dim = electron.lattice.n_dim
+        
         self.temperature = temperature
         if n_bands > electron.n_bands:
             self.n_bands = electron.n_bands
@@ -176,7 +183,7 @@ class ElectronPhonon:
         denominator = (omega - self.eigenenergies - self_energies.real) ** 2 + self_energies.imag ** 2
         
         # sum over bands
-        return np.nansum(safe_divide(numerator, denominator), axis=0)
+        return np.nansum(numerator / denominator, axis=0)
 
     def calculate_self_energies_over_range(self, omega_array: np.ndarray | list[float]) -> np.ndarray:
         """Calculate self energies over a given array of frequencies.
@@ -222,25 +229,15 @@ class ElectronPhonon:
                 spectrum[..., i] /= spectrum_sum
 
         return spectrum
-
-    def calculate_coupling_strengths(self, delta_omega: float = 0.000001) -> np.ndarray:
-        """Calculate electron-phonon coupling strengths
-
-        Args:
-            delta_omega (float, optional): A small value used for numerical differentiation. Defaults to 0.000001 Hartree.
-
-        Returns:
-            np.ndarray: A numpy array of coupling strengths
-        """
-        # prepare an array
-        coupling_strengths = np.empty(self.eigenenergies.shape)
+    
+    def calculate_green_functions(self, omega: float | np.ndarray):
+        real_part = self.calculate_green_functions_real(omega)
+        imag_part = self.calculate_green_functions_imag(omega)
         
-        # calculate coupling strengths
-        for i in tqdm.tqdm(range(self.n_bands)):
-            for j in tqdm.tqdm(range(self.electron.n_k), leave=False):
-                # numerical differentiation
-                self_energies_plus = self.calculate_self_energies(self.eigenenergies[i,j] + delta_omega)
-                self_energies_minus = self.calculate_self_energies(self.eigenenergies[i,j] - delta_omega)
-                coupling_strengths[i,j] = - (self_energies_plus[i,j].real - self_energies_minus[i,j].real) / (2.0 * delta_omega)
-        
-        return coupling_strengths
+        return real_part + 1.0j * imag_part
+    
+    def calculate_green_functions_real(self, omega: float | np.ndarray):
+        return (1.0 / (omega + 1.0j * self.eta)).real
+
+    def calculate_green_functions_imag(self, omega: float | np.ndarray):
+        return - np.pi * np.exp(- omega ** 2 / self.gaussian_coefficient_a) / self.gaussian_coefficient_b
