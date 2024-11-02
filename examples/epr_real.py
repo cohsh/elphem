@@ -1,7 +1,7 @@
 """Example: bcc-Li"""
-import numpy as np
 import matplotlib.pyplot as plt
-from elphem import *
+from elphem import Length, Energy
+from elphem import Lattice3D, Electron, Phonon, ElectronPhonon
 
 def main():
     # Parameters of lattice
