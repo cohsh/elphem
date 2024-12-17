@@ -19,10 +19,10 @@ def boltzmann_distribution(temperature: float, energy: float | np.ndarray) -> fl
     if temperature != 0.0:
         beta = 1.0 / (temperature * Energy.KELVIN["->"])
         exponent = - beta * energy
-        exponent = np.clip(exponent, -np.inf, 700.0)
+#        exponent = np.clip(exponent, -np.inf, 700.0)
         return np.exp(exponent)
     else:
-        return np.where(energy > 0.0, 0.0, np.inf)
+        return np.where(energy == 0.0, 1.0, np.where(energy > 0.0, 0.0, np.inf))
 
 def fermi_distribution(temperature: float, energy: float | np.ndarray) -> float | np.ndarray:
     """
