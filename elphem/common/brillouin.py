@@ -21,8 +21,8 @@ class SpecialPoints3D:
     _SC = {**_Gamma}
     _SC.update({
         "R": (1/2, 1/2, 1/2),
-        "X": (1/2, 0, 0),
-        "M": (0, 1/2, 1/2)
+        "X": (0, 1/2, 0),
+        "M": (1/2, 1/2, 0)
     })
     SC = MappingProxyType(_SC)
 
@@ -42,18 +42,18 @@ class SpecialPoints3D:
     _BCC.update({
         "H": (-1/2, 1/2, 1/2),
         "P": (1/4, 1/4, 1/4),
-        "N": (1/2, 0, 0)
+        "N": (0, 1/2, 0)
     })
     BCC = MappingProxyType(_BCC)
 
     # Hexagonal
     _Hexagonal = {**_Gamma}
     _Hexagonal.update({
-        "A": (1/2, 0, 0),
+        "A": (0, 0, 1/2),
         "K": (2/3, 1/3, 0),
         "H": (2/3, 1/3, 1/2),
         "M": (1/2, 0, 0),
-        "L": (1/2, 1/2, 0)
+        "L": (1/2, 0, 1/2)
     })
     Hexagonal = MappingProxyType(_Hexagonal)
 
