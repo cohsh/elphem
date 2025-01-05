@@ -13,7 +13,7 @@ class ElectronPhonon:
         temperature (float): Temperature of the system in Kelvin
         sigma (float): Smearing parameter for the Gaussian distribution, defaults to 0.001 Hartree
         eta (float): Small positive constant to ensure numerical stability, defaults to 0.0005 Hartree
-        effective_potential (float): Effective potential used in electron-phonon coupling calculation, defaults to 0.0625
+        effective_potential (float): Effective potential used in electron-phonon coupling calculation, defaults to 1/16 = 0.0625
         n_bands (int): Number of bands for calculating self energies
         electron (Electron): Free electron for initial and final states
         electron_inter (Electron): Free electron for intermediate states
@@ -21,11 +21,12 @@ class ElectronPhonon:
         couplings_fan (np.ndarray): first order electron-phonon coupling constants squared
     """
     def __init__(self, electron: Electron, phonon: Phonon, temperature: float, n_bands: int,
-                sigma: float = 0.0001, eta: float = 0.0001,
+                sigma: float = 0.0001, eta: float = 0.0001, effective_potential: float = 1.0 / 16.0,
                 coupling_type: str = "bloch", cutoff: float = np.inf):
 
         self.sigma = sigma
         self.eta = eta
+        self.effective_potential = effective_potential
         self.gaussian_coefficient_a = 2.0 * self.sigma ** 2
         self.gaussian_coefficient_b = np.sqrt(2.0 * np.pi) * self.sigma
         
@@ -101,10 +102,8 @@ class ElectronPhonon:
 
         Returns:
             np.ndarray: The lowest-order electron-phonon coupling constants
-        """
-        potential = 1.0 / 16.0
-        
-        couplings = -1.0j * potential * np.nansum((phonon.q + electron_out.g - electron_in.g) * phonon.eigenvectors, axis=-1) * phonon.zero_point_lengths
+        """        
+        couplings = -1.0j * self.effective_potential * np.nansum((phonon.q + electron_out.g - electron_in.g) * phonon.eigenvectors, axis=-1) * phonon.zero_point_lengths
         
         couplings = np.where(np.abs(couplings) < cutoff, couplings, 0.0+0.0j)
 
