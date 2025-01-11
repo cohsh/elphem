@@ -1,5 +1,4 @@
 import numpy as np
-import tqdm
 
 from elphem.electron.electron import Electron
 from elphem.phonon.phonon import Phonon
@@ -165,7 +164,7 @@ class ElectronPhonon:
         self_energies = np.empty(self.eigenenergies.shape + (n_omega,), dtype='complex')
         
         # Calculate self energies for each frequency
-        for i in tqdm.tqdm(range(n_omega)):
+        for i in range(n_omega):
             omega = omega_array[i]
             green_functions = np.nansum(self.weights_fan * self.calculate_green_functions(omega - self.poles_fan), axis=0)
             self_energies[..., i] = np.nansum(self.couplings_fan * green_functions, axis=(1, 3)) / self.phonon.n_q
@@ -183,8 +182,8 @@ class ElectronPhonon:
         epr = np.empty(self.eigenenergies.shape, dtype='complex')
         
         # calculate EPR
-        for i in tqdm.tqdm(range(self.n_bands)):
-            for j in tqdm.tqdm(range(self.electron.n_k), leave=False):
+        for i in range(self.n_bands):
+            for j in range(self.electron.n_k):
                 self_energies = self.calculate_self_energies_fan(self.eigenenergies[i, j])
                 epr[i, j] = self_energies[i, j]
 
@@ -208,7 +207,7 @@ class ElectronPhonon:
         self_energies = self.calculate_self_energies_fan(omega_array)
         
         # calculate spectral functions
-        for i in tqdm.tqdm(range(n_omega)):
+        for i in range(n_omega):
             # calculate numerator and denominator separately
             numerator = - self_energies[..., i].imag / np.pi
             denominator = (omega_array[i] - self.eigenenergies - self_energies[..., i].real) ** 2 + self_energies[..., i].imag ** 2
